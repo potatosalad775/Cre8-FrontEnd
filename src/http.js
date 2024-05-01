@@ -1,5 +1,7 @@
+const apiAddress = import.meta.env.VITE_API_SERVER
+
 export async function fetchTestData() {
-  const response = await fetch("http://43.200.165.75:8080/test");
+  const response = await fetch(apiAddress + "/test");
   const resData = await response.json();
 
   if (!response.ok) {
@@ -10,7 +12,7 @@ export async function fetchTestData() {
 }
 
 export async function addTestData(name) {
-  const response = await fetch("http://43.200.165.75:8080/test", {
+  const response = await fetch(apiAddress + "/test", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -28,7 +30,7 @@ export async function addTestData(name) {
 }
 
 export async function fetchRedisTestData() {
-  const response = await fetch("http://43.200.165.75:8080/redis/test");
+  const response = await fetch(apiAddress + "/redis/test");
   const resData = await response.json();
 
   if (!response.ok) {
@@ -39,7 +41,7 @@ export async function fetchRedisTestData() {
 }
 
 export async function addRedisTestData(redisName) {
-  const response = await fetch("http://43.200.165.75:8080/redis/test", {
+  const response = await fetch(apiAddress + "/redis/test", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
