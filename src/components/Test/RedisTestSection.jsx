@@ -18,7 +18,6 @@ export default function RedisTestSection() {
     try {
       const resData = await fetchRedisTestData();
       setRedisData(resData);
-      console.log(resData);
     } catch (e) {
       setError(e);
     }

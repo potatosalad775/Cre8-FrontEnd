@@ -16,8 +16,8 @@ export default function TestContent({
         data.length > 0 &&
         data.map((items) => (
           <p id="test-content">{
-            // Object.values(items)
-            JSON.stringify(items)
+            Object.values(items || {})[1]
+            // JSON.stringify(items)
           }
           </p>
         ))}
