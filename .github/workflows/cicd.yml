@@ -27,12 +27,14 @@ jobs:
       - name: Ec2 Docker run 
         uses: appleboy/ssh-action@master
         env:
+          NAME: ${{ secrets.DOCKER_USERNAME }}
+          APP: $ {{ secrets.DEV_FRONTEND_APP_NAME }}
           COMPOSE: docker-compose.yml
         with:
           username: ubuntu
           host: ${{ secrets.UBUNTU_DEV_HOST }}
           key: ${{ secrets.UBUNTU_DEV_KEY }}
-          envs: COMPOSE
+          envs: APP, COMPOSE, NAME
           script_stop: true
           script: |
             sudo docker-compose -f $COMPOSE down --rmi all
