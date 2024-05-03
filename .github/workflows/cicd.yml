@@ -38,5 +38,5 @@ jobs:
           script_stop: true
           script: |
             sudo docker-compose -f $COMPOSE down --rmi all
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_FRONTEND_APP_NAME }}
+            sudo docker pull $NAME/$APP
             sudo docker-compose -f $COMPOSE up -d 
