@@ -16,7 +16,7 @@ jobs:
       - name: .env setting
         run: |
           touch .env 
-          echo "REACT_APP_SERVER_IP=${{ secrets.REACT_APP_DEV_SERVER_IP }}" >> .env
+          echo "VITE_API_SERVER=${{ secrets.REACT_APP_DEV_SERVER_IP }}" >> .env
    
       - name: web docker build and push
         run: |
@@ -28,7 +28,7 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           NAME: ${{ secrets.DOCKER_USERNAME }}
-          APP: $ {{ secrets.DEV_FRONTEND_APP_NAME }}
+          APP: ${{ secrets.DEV_FRONTEND_APP_NAME }}
           COMPOSE: docker-compose.yml
         with:
           username: ubuntu
