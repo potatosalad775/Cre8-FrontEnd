@@ -1,0 +1,19 @@
+.regSection {
+  padding: 1.3rem;
+  margin: 2rem auto;
+  min-width: 20rem;
+  max-width: 50rem;
+  border: 0.1rem solid var(--color-gray-400);
+  border-radius: 0.6em;
+  background-color: var(--color-gray-200);
+}
+
+.regSection h1 {
+  margin: 0;
+}
+
+.form div {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.3rem;
+}
