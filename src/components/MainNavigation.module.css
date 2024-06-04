@@ -1,0 +1,46 @@
+.header {
+  max-width: 60rem;
+  padding: 1.3rem;
+  border-bottom: 0.1rem solid var(--color-gray-700)
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.list a {
+  display: flex;
+  text-decoration: none;
+  color: var(--color-gray-900);
+}
+
+.list a:hover,
+.list a.active {
+  color: var(--color-primary-500);
+}
+
+.homeBtn {
+  font-size: 2rem;
+}
+
+.registerBtn {
+  color: var(--color-gray-900);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  background-color: var(--color-primary-200);
+}
+.registerBtn:hover,
+.registerBtnActive {
+  color: var(--color-gray-900) !important;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  background-color: var(--color-primary-300);
+}
