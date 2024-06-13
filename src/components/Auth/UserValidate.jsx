@@ -1,14 +1,6 @@
 export default function UserValidate(data, type) {
   const errors = {};
 
-  if (!data.email) {
-    errors.email = "이메일을 입력해주세요.";
-  } else if (!/\S+@\S+\.\S+/.test(data.email)) {
-    errors.email = "사용할 수 없는 이메일 주소가 입력되었습니다.";
-  } else {
-    delete errors.email;
-  }
-
   if (!data.password) {
     errors.password = "비밀번호를 입력해주세요.";
   } else if (data.password.length < 5) {
@@ -20,6 +12,14 @@ export default function UserValidate(data, type) {
   }
 
   if (type === "signup") {
+    if (!data.email) {
+      errors.email = "이메일을 입력해주세요.";
+    } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+      errors.email = "사용할 수 없는 이메일 주소가 입력되었습니다.";
+    } else {
+      delete errors.email;
+    }
+
     if (!data.confirmPassword) {
       errors.confirmPassword = "비밀번호를 다시 한 번 입력해주세요.";
     } else if (data.confirmPassword !== data.password) {
@@ -64,6 +64,16 @@ export default function UserValidate(data, type) {
       errors.birthDay = "생년월일을 입력해주세요.";
     } else {
       delete errors.birthDay;
+    }
+  }
+
+  if (type === "signin") {
+    if (!data.userID.trim()) {
+      errors.userID = "아이디를 입력해주세요.";
+    } else if (data.userID.length > 20) {
+      errors.userID = "아이디는 20글자 이하이어야 합니다.";
+    } else {
+      delete errors.userID;
     }
   }
 

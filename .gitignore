@@ -46,3 +46,4 @@ sketch
 
 /.vite/deps
 .env
+*.pem

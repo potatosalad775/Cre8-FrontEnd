@@ -1,170 +1,97 @@
+import axios from "axios";
 import { useState, useEffect } from "react";
 import { Form, useSubmit, useNavigation, redirect } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
 
 import UserValidate from "../components/Auth/UserValidate";
-
+import { Toast } from "../components/Toast";
 import classes from "./Register.module.css";
 
-const apiAddress = import.meta.env.VITE_API_SERVER
+const apiAddress = import.meta.env.VITE_API_SERVER;
 
 export default function RegisterPage() {
   const submit = useSubmit();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   // 사용자 입력 정보
-  const [data, setData] = useState(INIT_INPUT_DATA);
+  const [registerData, setRegisterData] = useState(INIT_ERROR_DATA);
   const [focus, setFocus] = useState({});
-  const [error, setError] = useState({});
+  const [registerError, setRegisterError] = useState({});
 
   const [inputCode, setInputCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   useEffect(() => {
-    setError(UserValidate(data, "signup"));
-  }, [data, focus])
+    setRegisterError(UserValidate(registerData, "signup"));
+  }, [registerData, focus]);
 
-  function handleFocus(e) {
-    setFocus({...focus, [e.target.name]: true});
-  }
+  const handleFocus = (e) => {
+    setFocus({ ...focus, [e.target.name]: true });
+  };
 
   // 사용자 입력 event handler
   // - 사용자 입력 데이터 저장
-  function handleChange(e) {
-    if(e.target.name === "authCode") {
+  const handleChange = (e) => {
+    if (e.target.name === "authCode") {
       setInputCode(e.target.value);
     } else {
-      setData((prevData) => {
+      setRegisterData((prevData) => {
         return {
           ...prevData,
           [e.target.name]: e.target.value,
         };
       });
     }
-  }
+  };
 
   // 제출 event handler
-  function handleSubmit(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (Object.keys(error).length) {
-      // 회원가입 검증 실패
-      toast("Wrong Input!");
+    if (Object.keys(registerError).length) {
+      // 입력값 오류가 한 개 이상 발견 시
+      Toast.registerError("입력하신 내용들을 다시 확인해주세요!");
       setFocus(FOCUS_ALL_DATA);
     } else if (!isCodeSent) {
-      // 이메일 인증번호 전송
-      checkDuplicateId(data.loginId).then((res) => {
-        if (res.status === 200) {
-          sendVerifyCode(data.email);
+      // 입력값 오류 없음 & 이메일 인증번호 전송 전
+      checkDuplicateId(registerData.loginId).then((resID) => {
+        switch (resID.status) {
+          // 아이디 사용 가능
+          case 200:
+            delete registerError.loginId; // 아이디 오류 메시지 제거
+            // 이메일 인증번호 발송 요청
+            sendVerifyCode(registerData.email).then((resCode) => {
+              switch (resCode.status) {
+                // 이메일 사용 가능
+                case 200:
+                  setIsCodeSent(true);
+                  break;
+                // 이메일 사용 불가 (중복)
+                case 400:
+                  setRegisterError({ ...registerError, email: "이미 사용 중인 이메일입니다." });
+                  break;
+              }
+            });
+            break;
+          // 아이디 사용 불가 (중복)
+          case 400:
+            setRegisterError({ ...registerError, loginId: "이미 사용 중인 아이디입니다." });
+            break;
         }
       });
       setFocus(FOCUS_ALL_DATA);
     } else {
-      // 회원가입 검증 통과
+      // 입력값 오류 없음 & 인증번호 전송 후
+      // 인증번호 검증
       checkVerifyCode({
-        email: data.email,
+        email: registerData.email,
         authNum: inputCode,
-      }).then((response) => {
-        submit(data, { method: "POST" });
-        console.log(data);
-      }, () => {
-        toast("Wrong Verify Code");
-      })
-    }
-  }
-
-  async function sendVerifyCode(inputEmail) {
-    let url = apiAddress + '/api/v1/mail';
-  
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({email: inputEmail})
-    });
-  
-    
-    if(!response.ok) {
-      if (response.status === 400) {
-        toast("Duplicate Email Found!")
-      } else if (response.status === 500) {
-        toast("Mail Server is currently unavailable!")
-      } else {
-        toast("Unknown Error Occurred!")
-      }
-    } else {
-      if (response.status === 200) {
-        toast("Successfully sent Verification Code!")
-        setIsCodeSent(true);
-      } else {
-        toast("Unknown Error Occurred!")
-      }
-    }
-
-    return response;
-  }
-  
-  async function checkVerifyCode(data) {
-    let url = apiAddress + '/api/v1/mail/check';
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: data.email,
-        authNum: data.authNum,
-      })
-    });
-    
-    if(!response.ok) {
-      if (response.status === 400) {
-        toast("Verification Code Incorrect!")
-      } else {
-        toast("Unknown Error Occurred!")
-      }
-    } else {
-      if (response.status === 200) {
-        toast("Email Verification Done!")
-      } else {
-        toast("Unknown Error Occurred!")
-      }
-    }
-
-    return response;
-  }
-
-  async function checkDuplicateId(loginId) {
-    let url = apiAddress + "/api/v1/members/check?login-id=" + loginId;
-  
-    try {
-      const response = await fetch(url, { method: "GET" });
-  
-      if (!response.ok) {
-        if (response.status === 400) {
-          toast("이미 사용 중인 아이디입니다!");
-          setError({...error, loginId: "이미 사용 중인 아이디입니다!"});
-        } else {
-          toast("중복 아이디를 확인하는 중 오류가 발생했습니다!");
+      }).then((res) => {
+        if (res.status === 200) {
+          submit(registerData, { method: "POST" });
         }
-      } else {
-        if (response.status === 200) {
-          delete error.loginId;
-        } else {
-          toast("중복 아이디를 확인하는 중 오류가 발생했습니다!");
-        }
-      }
-    } catch (e) {
-      console.log("Error:", e);
-    } finally {
-      console.log(response);
-      return response;
+        // console.log(registerData);
+      });
     }
-  }
+  };
 
   return (
     <div className="center">
@@ -177,12 +104,12 @@ export default function RegisterPage() {
               id="email"
               name="email"
               type="email"
-              value={data.email}
+              value={registerData.email}
               onChange={handleChange}
               onFocus={handleFocus}
               required
             />
-            {error.email && focus.email && <span>{error.email}</span>}
+            {registerError.email && focus.email && <span>{registerError.email}</span>}
           </div>
           <div>
             <label htmlFor="password">비밀번호</label>
@@ -190,12 +117,12 @@ export default function RegisterPage() {
               id="password"
               name="password"
               type="password"
-              value={data.password}
+              value={registerData.password}
               onChange={handleChange}
               onFocus={handleFocus}
               required
             />
-            {error.password && focus.password && <span>{error.password}</span>}
+            {registerError.password && focus.password && <span>{registerError.password}</span>}
           </div>
           <div>
             <label htmlFor="confirmPassword">비밀번호 확인</label>
@@ -203,12 +130,14 @@ export default function RegisterPage() {
               id="confirmPassword"
               name="confirmPassword"
               type="password"
-              value={data.confirmPassword}
+              value={registerData.confirmPassword}
               onChange={handleChange}
               onFocus={handleFocus}
               required
             />
-            {error.confirmPassword && focus.confirmPassword && <span>{error.confirmPassword}</span>}
+            {registerError.confirmPassword && focus.confirmPassword && (
+              <span>{registerError.confirmPassword}</span>
+            )}
           </div>
           <div>
             <label htmlFor="loginId">아이디</label>
@@ -216,12 +145,12 @@ export default function RegisterPage() {
               id="loginId"
               name="loginId"
               type="text"
-              value={data.loginId}
+              value={registerData.loginId}
               onChange={handleChange}
               onFocus={handleFocus}
               required
             />
-            {error.loginId && focus.loginId && <span>{error.loginId}</span>}
+            {registerError.loginId && focus.loginId && <span>{registerError.loginId}</span>}
           </div>
           <div>
             <label htmlFor="nickName">별명</label>
@@ -229,12 +158,12 @@ export default function RegisterPage() {
               id="nickName"
               name="nickName"
               type="text"
-              value={data.nickName}
+              value={registerData.nickName}
               onChange={handleChange}
               onFocus={handleFocus}
               required
             />
-            {error.nickName && focus.nickName && <span>{error.nickName}</span>}
+            {registerError.nickName && focus.nickName && <span>{registerError.nickName}</span>}
           </div>
           <div>
             <label htmlFor="name">이름</label>
@@ -242,19 +171,19 @@ export default function RegisterPage() {
               id="name"
               name="name"
               type="text"
-              value={data.name}
+              value={registerData.name}
               onChange={handleChange}
               onFocus={handleFocus}
               required
             />
-            {error.name && focus.name && <span>{error.name}</span>}
+            {registerError.name && focus.name && <span>{registerError.name}</span>}
           </div>
           <div>
             <label htmlFor="sex">성별</label>
             <select
               id="sex"
               name="sex"
-              value={data.sex}
+              value={registerData.sex}
               onChange={handleChange}
               onFocus={handleFocus}
             >
@@ -264,7 +193,7 @@ export default function RegisterPage() {
               <option value="M">남자</option>
               <option value="W">여자</option>
             </select>
-            {error.sex && focus.sex && <span>{error.sex}</span>}
+            {registerError.sex && focus.sex && <span>{registerError.sex}</span>}
           </div>
           <div>
             <label htmlFor="birthDay">생년월일</label>
@@ -272,14 +201,14 @@ export default function RegisterPage() {
               id="birthDay"
               name="birthDay"
               type="date"
-              value={data.date}
+              value={registerData.date}
               onChange={handleChange}
               onFocus={handleFocus}
               required
             />
-            {error.birthDay && focus.birthDay && <span>{error.birthDay}</span>}
+            {registerError.birthDay && focus.birthDay && <span>{registerError.birthDay}</span>}
           </div>
-          <div style={{display: isCodeSent ? undefined : 'none'}}>
+          <div style={{ display: isCodeSent ? undefined : "none" }}>
             <label htmlFor="authCode">확인 코드</label>
             <input
               id="authCode"
@@ -291,59 +220,151 @@ export default function RegisterPage() {
               disabled={!isCodeSent}
               required
             />
-            {error.authCode && focus.authCode && <span>{error.authCode}</span>}
+            {registerError.authCode && focus.authCode && <span>{registerError.authCode}</span>}
           </div>
-          <button type="submit" disabled={isSubmitting} onClick={handleSubmit}>
-            {isSubmitting ? "회원가입 중" : "회원가입"}
-          </button>
+          <div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              onClick={handleSubmit}
+            >
+              {isSubmitting ? "회원가입 중" : "회원가입"}
+            </button>
+          </div>
         </Form>
       </section>
-      <ToastContainer />
     </div>
   );
 }
 
-export async function action({request}) {
-  const data = await request.formData();
-  
-  const registerData = { 
-    "name": data.get('name'),
-    "loginId": data.get('loginId'),
-    "password": data.get('password'),
-    "sex": data.get('sex'),
-    "nickName": data.get('nickName'),
-    "birthDay": data.get('birthDay'),
-    "email": data.get('email'),
-  };
+// 중복 아이디 검증 함수
+async function checkDuplicateId(loginId) {
+  let url = apiAddress + "/api/v1/members/check?login-id=" + loginId;
 
-  let url = apiAddress + '/api/v1/members';
+  const response = await fetch(url, { method: "GET" });
+
+  switch (response.status) {
+    // 아이디 사용 가능
+    case 200:
+      break;
+    // 아이디 사용 불가 (중복)
+    case 400:
+      Toast.registerError("이미 사용 중인 아이디입니다.");
+      break;
+    // 기타 오류
+    default:
+      Toast.registerError("알 수 없는 오류가 발생했습니다.");
+      break;
+  }
+
+  return response;
+}
+
+// 이메일 인증번호 요청 함수
+async function sendVerifyCode(inputEmail) {
+  let url = apiAddress + "/api/v1/mail";
 
   const response = await fetch(url, {
-      method: "POST",
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(registerData)
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email: inputEmail }),
   });
 
-  if(!response.ok) {
-    if (response.status === 400) {
-      toast("중복된 정보가 발견되었습니다!")
-    } else {
-      toast("알 수 없는 오류가 발생했습니다!!")
-    }
-  } else {
-    if (response.status === 201) {
-      toast("성공적으로 가입되었습니다!!")
-      return redirect('/');;
-    } else {
-      toast("알 수 없는 오류가 발생했습니다!")
-    }
+  switch (response.status) {
+    case 200:
+      Toast.registerSuccess("입력한 주소로 인증번호를 전송했습니다.");
+      break;
+    case 400:
+      Toast.registerError("이미 사용 중인 이메일 주소입니다.");
+      break;
+    case 500:
+      Toast.registerError("메일 서버와 연결할 수 없습니다.");
+      break;
+    default:
+      Toast.registerError("알 수 없는 오류가 발생했습니다.");
+      break;
   }
   return response;
 }
 
-const INIT_INPUT_DATA = {
+// 이메일 인증번호 검증 함수
+async function checkVerifyCode(inputData) {
+  let url = apiAddress + "/api/v1/mail/check";
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: inputData.email,
+      authNum: inputData.authNum,
+    }),
+  });
+
+  switch (response.status) {
+    // 인증번호 일치
+    case 200:
+      Toast.registerSuccess("이메일 인증에 성공했습니다.");
+      break;
+    // 인증번호 미일치
+    case 400:
+      Toast.registerError("인증번호가 일치하지 않습니다.");
+      break;
+    // 기타 오류
+    default:
+      Toast.registerError("알 수 없는 오류가 발생했습니다.");
+      break;
+  }
+
+  return response;
+}
+
+// 회원가입 요청 전송 함수
+export async function action({ request }) {
+  const data = await request.formData();
+
+  const registerData = {
+    name: data.get("name"),
+    loginId: data.get("loginId"),
+    password: data.get("password"),
+    sex: data.get("sex"),
+    nickName: data.get("nickName"),
+    birthDay: data.get("birthDay"),
+    email: data.get("email"),
+  };
+
+  let url = apiAddress + "/api/v1/members";
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(registerData),
+  });
+
+  switch (response.status) {
+    // 인증번호 일치
+    case 201:
+      Toast.registerSuccess("회원가입 성공.");
+      return redirect("/");
+    // 인증번호 미일치
+    case 400:
+      Toast.registerError("잘못된 입력값이 존재합니다.");
+      break;
+    // 기타 오류
+    default:
+      Toast.registerError("알 수 없는 오류가 발생했습니다.");
+      break;
+  }
+
+  return response;
+}
+
+const INIT_ERROR_DATA = {
   email: "",
   password: "",
   confirmPassword: "",
