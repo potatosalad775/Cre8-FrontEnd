@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Form, useNavigation } from "react-router-dom";
+import { Form, useNavigation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../provider/authProvider";
 import UserValidate from "../components/Auth/UserValidate";
@@ -10,6 +10,7 @@ import classes from "./Register.module.css";
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   // 사용자 입력 정보
@@ -20,7 +21,7 @@ export default function LoginPage() {
   const [focus, setFocus] = useState({});
   const [loginError, setLoginError] = useState({});
 
-  const { setAccessToken, setRefreshToken } = useAuth();
+  const { setToken } = useAuth();
 
   useEffect(() => {
     setLoginError(UserValidate(loginData, "signin"));
@@ -55,15 +56,15 @@ export default function LoginPage() {
         case 201:
           // 로그인 성공
           Toast.loginSuccess("로그인 성공!");
-          setAccessToken(response.data.accessToken);
-          setRefreshToken(response.data.refreshToken);
-          return redirect("/");
+          setToken(response.headers.get("Authorization"));
+          navigate("/");
+          break;
         case 400:
           // 로그인 실패
           Toast.loginError("아이디 또는 비밀번호가 틀립니다.");
-          console.log(response);
-          setAccessToken("TESTTOKEN");
-          setRefreshToken("TESTTOKEN");
+          //console.log(response);
+          //setToken("TESTTOKEN");
+          //setRefreshToken("TESTTOKEN");
           break;
         default:
           Toast.loginError("알 수 없는 오류가 발생했습니다.");
@@ -115,15 +116,15 @@ export default function LoginPage() {
 }
 
 // 로그인 요청 함수
-async function sendLoginRequest(data) {
+async function sendLoginRequest(inputData) {
   let url = apiAddress + "/api/v1/auth/login";
 
   const response = await fetch(url, {
     method: "POST",
-    data: {
-      userID: data.userID,
-      password: data.password,
+    headers: {
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify(inputData),
   });
 
   return response;

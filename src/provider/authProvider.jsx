@@ -1,6 +1,5 @@
 import axios from "axios";
 import { createContext, useContext, useMemo, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 // 컴포넌트 간 Auth 상태를 공유하는데 사용될 Context Object
 const AuthContext = createContext();
@@ -12,7 +11,6 @@ export const AuthProvider = ({ children }) => {
 
   // Set new Access Token
   const setToken = (newAccessToken) => {
-    console.log("Setting Access Token!");
     setToken_(newAccessToken);
   };
 
