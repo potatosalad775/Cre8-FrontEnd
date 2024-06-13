@@ -125,6 +125,7 @@ async function sendLoginRequest(inputData) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(inputData),
+    credentials: 'include',
   });
 
   return response;
