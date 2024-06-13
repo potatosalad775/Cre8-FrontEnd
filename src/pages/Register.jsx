@@ -48,14 +48,19 @@ export default function RegisterPage() {
   // 제출 event handler
   function handleSubmit(e) {
     e.preventDefault();
+    
     if (Object.keys(error).length) {
       // 회원가입 검증 실패
       toast("Wrong Input!");
       setFocus(FOCUS_ALL_DATA);
-      console.log(error);
     } else if (!isCodeSent) {
       // 이메일 인증번호 전송
-      sendVerifyCode(data.email);
+      checkDuplicateId(data.loginId).then((res) => {
+        if (res.status === 200) {
+          sendVerifyCode(data.email);
+        }
+      });
+      setFocus(FOCUS_ALL_DATA);
     } else {
       // 회원가입 검증 통과
       checkVerifyCode({
@@ -122,7 +127,6 @@ export default function RegisterPage() {
       } else {
         toast("Unknown Error Occurred!")
       }
-      return;
     } else {
       if (response.status === 200) {
         toast("Email Verification Done!")
@@ -132,6 +136,34 @@ export default function RegisterPage() {
     }
 
     return response;
+  }
+
+  async function checkDuplicateId(loginId) {
+    let url = apiAddress + "/api/v1/members/check?login-id=" + loginId;
+  
+    try {
+      const response = await fetch(url, { method: "GET" });
+  
+      if (!response.ok) {
+        if (response.status === 400) {
+          toast("이미 사용 중인 아이디입니다!");
+          setError({...error, loginId: "이미 사용 중인 아이디입니다!"});
+        } else {
+          toast("중복 아이디를 확인하는 중 오류가 발생했습니다!");
+        }
+      } else {
+        if (response.status === 200) {
+          delete error.loginId;
+        } else {
+          toast("중복 아이디를 확인하는 중 오류가 발생했습니다!");
+        }
+      }
+    } catch (e) {
+      console.log("Error:", e);
+    } finally {
+      console.log(response);
+      return response;
+    }
   }
 
   return (
@@ -296,20 +328,19 @@ export async function action({request}) {
 
   if(!response.ok) {
     if (response.status === 400) {
-      toast("Duplicate Info Found!")
+      toast("중복된 정보가 발견되었습니다!")
     } else {
-      toast("Unknown Error!")
+      toast("알 수 없는 오류가 발생했습니다!!")
     }
-    return;
   } else {
     if (response.status === 201) {
-      toast("Successfully Registered!")
+      toast("성공적으로 가입되었습니다!!")
       return redirect('/');;
     } else {
-      toast("Unknown Error!")
+      toast("알 수 없는 오류가 발생했습니다!")
     }
-    return;
   }
+  return response;
 }
 
 const INIT_INPUT_DATA = {

@@ -1,7 +1,6 @@
 .header {
-  max-width: 60rem;
   padding: 1.3rem;
-  border-bottom: 0.1rem solid var(--color-gray-700)
+  border-bottom: 0.1rem solid var(--color-gray-600)
 }
 
 .nav {

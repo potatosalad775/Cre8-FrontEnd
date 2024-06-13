@@ -68,4 +68,4 @@ export default function UserValidate(data, type) {
   }
 
   return errors;
-};
+}
