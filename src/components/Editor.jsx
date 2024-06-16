@@ -136,6 +136,8 @@ export const ProfileEditor = ({ profileAbout, setProfileAbout }) => {
     onUpdate: ({editor}) => {
       const json = editor.getJSON()
       const data = json.content
+      //console.log(profileAbout)
+      //console.log(data)
       setProfileAbout(data);
     }
   });
@@ -143,6 +145,23 @@ export const ProfileEditor = ({ profileAbout, setProfileAbout }) => {
   return (
     <div className={`${classes.editor} ${classes.profileEditor}`}>
       <MenuBar editor={editor} />
+      <EditorContent editor={editor}/>
+    </div>
+  );
+};
+
+export const ReadOnlyEditor = ({ content }) => {
+  const editor = useEditor({
+    editable: false,
+    extensions: extensions,
+    content: content ? {
+      "type": "doc",
+      "content": content,
+    } : "",
+  });
+
+  return (
+    <div className={`${classes.editor} ${classes.profileEditor}`}>
       <EditorContent editor={editor}/>
     </div>
   );

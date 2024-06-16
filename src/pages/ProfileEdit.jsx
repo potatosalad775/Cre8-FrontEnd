@@ -4,6 +4,7 @@ import {
   useRouteLoaderData,
   Form,
   useSubmit,
+  redirect,
 } from "react-router-dom";
 
 import PageContent from "../components/PageContent";
@@ -20,6 +21,7 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import classes from "./Profile.module.css";
 import { ProfileEditor } from "../components/Editor";
+import { Toast } from "../components/Toast";
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
@@ -28,47 +30,60 @@ export default function ProfileEditPage() {
   const response = useRouteLoaderData("profile-page");
   const navigate = useNavigate();
   const params = useParams();
-  const { loginID } = useAuth();
+  const { token, loginID } = useAuth();
   const [profileAbout, setProfileAbout] = useState(
-    response.data.personalStatement
+    JSON.parse(response.data.personalStatement) || ""
   );
   const [profileData, setProfileData] = useState({
-    uProfileImage: response.data.multipartFile,
-    uNickName: response.data.userNickName,
-    uLinkYoutube: response.data.youtubeLink,
-    uLinkTwitter: response.data.twitterLink,
-    uLinkWebpage: response.data.personalLink,
-    uUserAbout: profileAbout,
+    uProfileImage: response.data.accessUrl || "",
+    uNickName: response.data.userNickName || "",
+    uLinkYoutube: response.data.youtubeLink || "",
+    uLinkTwitter: response.data.twitterLink || "",
+    uLinkWebpage: response.data.personalLink || "",
+    uUserAbout: response.data.personalStatement || "",
   });
   const [tabIndex, setTabIndex] = useState("1");
   const [previewImg, setPreviewImg] = useState(
-    profileData.uProfileImage ? window.URL.createObjectURL(profileData.uProfileImage) : ""
+    response.data.accessUrl || ""
   );
+  let isImageChanged = false;
 
   function handleSaveClick() {
-    setProfileData({
-      ...profileData,
-      uUserAbout: JSON.stringify(profileAbout[0]),
+    //console.log(profileData.uProfileImage)
+
+    const formData = new FormData();
+    isImageChanged && formData.append("multipartFile", profileData.uProfileImage);
+    formData.append("userNickName", profileData.uNickName);
+    formData.append("youtubeLink", profileData.uLinkYoutube);
+    formData.append("twitterLink", profileData.uLinkTwitter);
+    formData.append("personalLink", profileData.uLinkWebpage);
+    formData.append("personalStatement", JSON.stringify(profileAbout));
+    formData.append("token", token);
+    //console.log(formData.get("multipartFile"))
+
+    profileEditAction(formData).then((res) => {
+      if(res.status === 200) {
+        navigate("..");
+      }
     });
-    submit(profileData, { method: "PUT" });
   }
 
   const handleChange = (e) => {
-    if(e.target.type === "file") { 
+    if (e.target.type === "file") {
       // Fetch Preview Image
-      if(!e.target.files) return;
+      if (!e.target.files) return;
       const userImg = e.target.files[0];
       const imgURL = window.URL.createObjectURL(userImg);
       setPreviewImg(imgURL);
-      console.log(imgURL);
-
+      //console.log(imgURL);
+      isImageChanged = true;
       setProfileData((prevData) => {
         return {
           ...prevData,
           uProfileImage: userImg,
         };
       });
-    } else {  
+    } else {
       setProfileData((prevData) => {
         return {
           ...prevData,
@@ -96,7 +111,11 @@ export default function ProfileEditPage() {
             src={previewImg}
             sx={{ width: "7rem", height: "7rem" }}
           />
-          <input style={{display: "none"}} type="file" accept="image/jpeg, image/png, image/webp"/>
+          <input
+            style={{ display: "none" }}
+            type="file"
+            accept="image/jpeg, image/png, image/webp"
+          />
         </IconButton>
         <ul className={classes.contextButtonList}>
           <li>
@@ -104,7 +123,7 @@ export default function ProfileEditPage() {
           </li>
           <li>
             {params.userID === loginID && (
-              <button onClick={handleSaveClick}>저장</button>
+              <button type="submit">저장</button>
             )}
           </li>
         </ul>
@@ -174,48 +193,40 @@ export default function ProfileEditPage() {
           <TabPanel value="2">포트폴리오</TabPanel>
         </TabContext>
       </div>
-      <p>{profileData.uUserAbout}</p>
     </Form>
   );
 }
 
 // 프로필 데이터 수정 요청 함수
-export async function profileEditAction({ request }) {
-  const data = await request.formData();
+async function profileEditAction(formData) {
+  const token = formData.get("token");
+  formData.delete("token");
 
-  const profileData = {
-    multipartFile: data.get("uProfileImage"),
-    userNickName: data.get("uNickName"),
-    youtubeLink: data.get("uLinkYoutube"),
-    twitterLink: data.get("uLinkTwitter"),
-    personalLink: data.get("uLinkWebpage"),
-    personalStatement: data.get("uUserAbout"),
-  };
-
-  console.log(profileData);
-
-  let url = apiAddress + "/api/v1/profile";
+  console.log(...formData);
+  //console.log(formData.get("multipartFile"))
+  //console.log(token);
+  
+  let url = apiAddress + "/api/v1/profiles";
 
   const response = await fetch(url, {
     method: "PUT",
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Authorization": `Bearer ${token}`,
+      //"Content-Type": "multipart/form-data",
     },
-    data: profileData,
+    body: formData,
     credentials: "include",
   });
-
-  //console.log(response);
 
   switch (response.status) {
     // 저장 완료
     case 200:
       Toast.success("변경사항들을 저장했습니다.");
-      return redirect("..");
+      break;
     // 인증 실패
     case 401:
-      Toast.success("인증과정에서 오류가 발생했습니다.");
-      return redirect("..");
+      Toast.error("인증과정에서 오류가 발생했습니다.");
+      break;
     // 기타 오류
     default:
       Toast.error("알 수 없는 오류가 발생했습니다.");
