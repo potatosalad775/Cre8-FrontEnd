@@ -47,3 +47,4 @@ sketch
 /.vite/deps
 .env
 *.pem
+/.gitmessage.txt
