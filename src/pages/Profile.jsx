@@ -24,12 +24,12 @@ export default function ProfilePage() {
   const response = useRouteLoaderData("profile-page");
 
   const profileData = {
-    uPFPLink: response.data.accessUrl,
-    uNickName: response.data.userNickName,
-    uLinkYoutube: response.data.youtubeLink,
-    uLinkTwitter: response.data.twitterLink,
-    uLinkWebpage: response.data.personalLink,
-    uUserAbout: response.data.personalStatement,
+    uProfileImage: response.data.multipartFile || "",
+    uNickName: response.data.userNickName || "",
+    uLinkYoutube: response.data.youtubeLink || "",
+    uLinkTwitter: response.data.twitterLink || "",
+    uLinkWebpage: response.data.personalLink || "",
+    uUserAbout: response.data.personalStatement || "",
   };
 
   function handleEditClick() {
@@ -45,7 +45,7 @@ export default function ProfilePage() {
       <div className={classes.content}>
         <Avatar
           alt={profileData.uNickName}
-          src={profileData.uPFPLink}
+          src={profileData.uProfileImage}
           sx={{ width: "7rem", height: "7rem" }}
         />
         <ul className={classes.contextButtonList}>

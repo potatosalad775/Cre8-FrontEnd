@@ -125,7 +125,7 @@ export default function MainNavigation() {
                   sx={{ml: 2}}
                   onClick={handleClick}
                 >
-                  <Avatar sx={{width: 32, height: 32}}>M</Avatar>
+                  <Avatar sx={{width: 32, height: 32}}></Avatar>
                 </IconButton>
                 <Menu
                   anchorEl={anchorEl}

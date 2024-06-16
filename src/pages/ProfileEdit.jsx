@@ -7,10 +7,10 @@ import {
 } from "react-router-dom";
 
 import PageContent from "../components/PageContent";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "../provider/authProvider";
 
-import { Avatar, Link, Tab, Box } from "@mui/material";
+import { Avatar, Link, Tab, Box, IconButton } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
@@ -23,7 +23,7 @@ import { ProfileEditor } from "../components/Editor";
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
-export default function EditProfilePage() {
+export default function ProfileEditPage() {
   const submit = useSubmit();
   const response = useRouteLoaderData("profile-page");
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function EditProfilePage() {
     response.data.personalStatement
   );
   const [profileData, setProfileData] = useState({
-    uPFPLink: response.data.accessUrl,
+    uProfileImage: response.data.multipartFile,
     uNickName: response.data.userNickName,
     uLinkYoutube: response.data.youtubeLink,
     uLinkTwitter: response.data.twitterLink,
@@ -41,6 +41,9 @@ export default function EditProfilePage() {
     uUserAbout: profileAbout,
   });
   const [tabIndex, setTabIndex] = useState("1");
+  const [previewImg, setPreviewImg] = useState(
+    profileData.uProfileImage ? window.URL.createObjectURL(profileData.uProfileImage) : ""
+  );
 
   function handleSaveClick() {
     setProfileData({
@@ -51,12 +54,28 @@ export default function EditProfilePage() {
   }
 
   const handleChange = (e) => {
-    setProfileData((prevData) => {
-      return {
-        ...prevData,
-        [e.target.name]: e.target.value,
-      };
-    });
+    if(e.target.type === "file") { 
+      // Fetch Preview Image
+      if(!e.target.files) return;
+      const userImg = e.target.files[0];
+      const imgURL = window.URL.createObjectURL(userImg);
+      setPreviewImg(imgURL);
+      console.log(imgURL);
+
+      setProfileData((prevData) => {
+        return {
+          ...prevData,
+          uProfileImage: userImg,
+        };
+      });
+    } else {  
+      setProfileData((prevData) => {
+        return {
+          ...prevData,
+          [e.target.name]: e.target.value,
+        };
+      });
+    }
   };
 
   const handleTabChange = (e, newValue) => {
@@ -66,11 +85,19 @@ export default function EditProfilePage() {
   return (
     <Form onSubmit={handleSaveClick}>
       <div className={classes.content}>
-        <Avatar
-          alt={profileData.uNickName}
-          src={profileData.uPFPLink}
+        <IconButton
+          component="label"
           sx={{ width: "7rem", height: "7rem" }}
-        />
+          className={classes.avatarButton}
+          onChange={handleChange}
+        >
+          <Avatar
+            alt={profileData.uNickName}
+            src={previewImg}
+            sx={{ width: "7rem", height: "7rem" }}
+          />
+          <input style={{display: "none"}} type="file" accept="image/jpeg, image/png, image/webp"/>
+        </IconButton>
         <ul className={classes.contextButtonList}>
           <li>
             <h1>{profileData.uNickName}</h1>
@@ -153,17 +180,19 @@ export default function EditProfilePage() {
 }
 
 // 프로필 데이터 수정 요청 함수
-export async function editProfileAction({ request }) {
+export async function profileEditAction({ request }) {
   const data = await request.formData();
 
   const profileData = {
-    multipartFile: data.get("uPFPLink"),
+    multipartFile: data.get("uProfileImage"),
     userNickName: data.get("uNickName"),
     youtubeLink: data.get("uLinkYoutube"),
     twitterLink: data.get("uLinkTwitter"),
     personalLink: data.get("uLinkWebpage"),
     personalStatement: data.get("uUserAbout"),
   };
+
+  console.log(profileData);
 
   let url = apiAddress + "/api/v1/profile";
 
@@ -173,12 +202,12 @@ export async function editProfileAction({ request }) {
       "Content-Type": "multipart/form-data",
     },
     data: profileData,
-    credentials: 'include',
+    credentials: "include",
   });
 
   //console.log(response);
 
-  switch (response.status) {  
+  switch (response.status) {
     // 저장 완료
     case 200:
       Toast.success("변경사항들을 저장했습니다.");
