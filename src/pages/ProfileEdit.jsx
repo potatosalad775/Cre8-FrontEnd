@@ -26,7 +26,6 @@ import { Toast } from "../components/Toast";
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
 export default function ProfileEditPage() {
-  const submit = useSubmit();
   const response = useRouteLoaderData("profile-page");
   const navigate = useNavigate();
   const params = useParams();
@@ -218,6 +217,8 @@ async function profileEditAction(formData) {
     credentials: "include",
   });
 
+  const { setToken } = useAuth();
+
   switch (response.status) {
     // 저장 완료
     case 200:
@@ -225,7 +226,8 @@ async function profileEditAction(formData) {
       break;
     // 인증 실패
     case 401:
-      Toast.error("인증과정에서 오류가 발생했습니다.");
+      // Toast.error("인증과정에서 오류가 발생했습니다.");
+      setToken(); // Logout
       break;
     // 기타 오류
     default:
