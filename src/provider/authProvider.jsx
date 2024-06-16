@@ -1,4 +1,6 @@
 import { createContext, useContext, useMemo, useEffect, useState } from "react";
+import Cookie from "js-cookie";
+const apiAddress = import.meta.env.VITE_API_SERVER;
 
 // 컴포넌트 간 Auth 상태를 공유하는데 사용될 Context Object
 const AuthContext = createContext();
@@ -19,6 +21,25 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("loginID", loginID);
   };
 
+  const reissueToken = async () => {
+    const url = apiAddress + "/api/v1/auth/reissue";
+    const refreshToken = Cookie.get("refreshToken");
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "accessToken": token,
+        "refreshToken": refreshToken,
+      },
+      credentials: 'include',
+    });
+
+    console.log(response)
+    if(response.ok) {
+      console.log(response.data.accessToken)
+    }
+  }
+
   // This feature runs whenever Token values are changed
   useEffect(() => {
     if (token) {
@@ -36,6 +57,7 @@ export const AuthProvider = ({ children }) => {
       loginID,
       setToken,
       setID,
+      reissueToken,
     }),
     [token]
   );

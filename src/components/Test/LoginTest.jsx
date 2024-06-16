@@ -7,7 +7,7 @@ import { useAuth } from "../../provider/authProvider.jsx";
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
 export default function LoginTest() {
-  const { token } = useAuth();
+  const { token, reissueToken } = useAuth();
 
   const [loginMessage, setLoginMessage] = useState("");
 
@@ -31,6 +31,10 @@ export default function LoginTest() {
     }
   }
 
+  const handleReIssue = () => {
+    reissueToken();
+  }
+
   return (
     <section id="test-section">
       <h3>Login Test Section</h3>
@@ -38,6 +42,7 @@ export default function LoginTest() {
         <p>{loginMessage}</p>
       </div>
       <button onClick={handleClick}>확인</button>
+      <button onClick={handleReIssue}>토큰 재발급</button>
     </section>
   );
 }
