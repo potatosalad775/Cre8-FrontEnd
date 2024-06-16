@@ -28,4 +28,7 @@
 .tab button:hover {
   background-color: var(--color-gray-150);
 }
-
+.avatarButton,
+.avatarButton div:hover {
+  background: rgba(0,0,0,0.6);
+}
