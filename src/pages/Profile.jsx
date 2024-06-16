@@ -32,6 +32,7 @@ export default function ProfilePage() {
     uLinkWebpage: response.data.personalLink || "",
   };
   const profileAboutJSON = JSON.parse(response.data.personalStatement) || "";
+  //console.log(profileData.uProfileImage);
 
   function handleEditClick() {
     navigate("edit");

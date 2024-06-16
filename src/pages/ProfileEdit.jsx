@@ -45,7 +45,7 @@ export default function ProfileEditPage() {
   const [previewImg, setPreviewImg] = useState(
     response.data.accessUrl || ""
   );
-  let isImageChanged = false;
+  const [isImageChanged, setImageChanged] = useState(false);
 
   function handleSaveClick() {
     const formData = new FormData();
@@ -56,6 +56,8 @@ export default function ProfileEditPage() {
     formData.append("personalLink", profileData.uLinkWebpage);
     formData.append("personalStatement", JSON.stringify(profileAbout));
     formData.append("token", token);
+    //console.log(isImageChanged);
+    //console.log(profileData.uProfileImage);
 
     profileEditAction(formData).then((res) => {
       if(res.status === 200) {
@@ -70,8 +72,8 @@ export default function ProfileEditPage() {
       if (!e.target.files) return;
       const userImg = e.target.files[0];
       const imgURL = window.URL.createObjectURL(userImg);
+      setImageChanged(true);
       setPreviewImg(imgURL);
-      isImageChanged = true;
       setProfileData((prevData) => {
         return {
           ...prevData,

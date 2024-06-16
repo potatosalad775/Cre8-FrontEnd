@@ -48,3 +48,4 @@ sketch
 .env
 *.pem
 /.gitmessage.txt
+/vite.config.js
