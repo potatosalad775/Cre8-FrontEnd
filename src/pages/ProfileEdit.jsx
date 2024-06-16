@@ -48,8 +48,6 @@ export default function ProfileEditPage() {
   let isImageChanged = false;
 
   function handleSaveClick() {
-    //console.log(profileData.uProfileImage)
-
     const formData = new FormData();
     isImageChanged && formData.append("multipartFile", profileData.uProfileImage);
     formData.append("userNickName", profileData.uNickName);
@@ -58,7 +56,6 @@ export default function ProfileEditPage() {
     formData.append("personalLink", profileData.uLinkWebpage);
     formData.append("personalStatement", JSON.stringify(profileAbout));
     formData.append("token", token);
-    //console.log(formData.get("multipartFile"))
 
     profileEditAction(formData).then((res) => {
       if(res.status === 200) {
@@ -74,7 +71,6 @@ export default function ProfileEditPage() {
       const userImg = e.target.files[0];
       const imgURL = window.URL.createObjectURL(userImg);
       setPreviewImg(imgURL);
-      //console.log(imgURL);
       isImageChanged = true;
       setProfileData((prevData) => {
         return {
@@ -200,10 +196,6 @@ export default function ProfileEditPage() {
 async function profileEditAction(formData) {
   const token = formData.get("token");
   formData.delete("token");
-
-  console.log(...formData);
-  //console.log(formData.get("multipartFile"))
-  //console.log(token);
   
   let url = apiAddress + "/api/v1/profiles";
 
@@ -217,8 +209,6 @@ async function profileEditAction(formData) {
     credentials: "include",
   });
 
-  const { setToken } = useAuth();
-
   switch (response.status) {
     // 저장 완료
     case 200:
@@ -226,8 +216,8 @@ async function profileEditAction(formData) {
       break;
     // 인증 실패
     case 401:
-      // Toast.error("인증과정에서 오류가 발생했습니다.");
-      setToken(); // Logout
+      Toast.error("인증과정에서 오류가 발생했습니다.");
+      //setToken(); // Logout
       break;
     // 기타 오류
     default:
