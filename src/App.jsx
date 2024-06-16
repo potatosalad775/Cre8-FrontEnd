@@ -27,4 +27,7 @@ const theme = createTheme({
       main: "#8bc34a",
     },
   },
+  typography: {
+    "fontFamily": 'Pretendard, system-ui, Helvetica, Arial, sans-serif'
+  }
 });

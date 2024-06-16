@@ -12,6 +12,7 @@ import {
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import classes from "./Profile.module.css";
+import { ReadOnlyEditor } from "../components/Editor";
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
@@ -24,13 +25,13 @@ export default function ProfilePage() {
   const response = useRouteLoaderData("profile-page");
 
   const profileData = {
-    uProfileImage: response.data.multipartFile || "",
+    uProfileImage: response.data.accessUrl || "",
     uNickName: response.data.userNickName || "",
     uLinkYoutube: response.data.youtubeLink || "",
     uLinkTwitter: response.data.twitterLink || "",
     uLinkWebpage: response.data.personalLink || "",
-    uUserAbout: response.data.personalStatement || "",
   };
+  const profileAboutJSON = JSON.parse(response.data.personalStatement) || "";
 
   function handleEditClick() {
     navigate("edit");
@@ -52,7 +53,11 @@ export default function ProfilePage() {
           <li>
             <h1>{profileData.uNickName}</h1>
           </li>
-          <li>{params.userID === loginID && <button onClick={handleEditClick}>프로필 수정</button>}</li>
+          <li>
+            {params.userID === loginID && (
+              <button onClick={handleEditClick}>프로필 수정</button>
+            )}
+          </li>
         </ul>
         <div>
           {profileData.uLinkTwitter && (
@@ -116,11 +121,12 @@ export default function ProfilePage() {
               <Tab value="2" label="포트폴리오" />
             </TabList>
           </Box>
-          <TabPanel value="1">자기소개</TabPanel>
+          <TabPanel value="1" sx={{ padding: 0 }}>
+            <ReadOnlyEditor content={profileAboutJSON} />
+          </TabPanel>
           <TabPanel value="2">포트폴리오</TabPanel>
         </TabContext>
       </div>
-      <p>{profileData.uUserAbout}</p>
     </>
   );
 }

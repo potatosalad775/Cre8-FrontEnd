@@ -8,7 +8,7 @@ import RecruitPage from "../pages/Recruit.jsx";
 import JobPage from "../pages/Job.jsx";
 import CommunityPage from "../pages/Community.jsx";
 import ProfilePage, { profileLoader } from "../pages/Profile.jsx";
-import ProfileEditPage, { profileEditAction } from "../pages/ProfileEdit.jsx";
+import ProfileEditPage from "../pages/ProfileEdit.jsx";
 import LoginPage from "../pages/Login.jsx";
 import RegisterPage, { action as registerAction } from "../pages/Register.jsx";
 import ErrorPage from "../pages/Error.jsx";
@@ -47,7 +47,6 @@ const Routes = () => {
         {
           path: "edit",
           element: <ProfileEditPage />,
-          action: profileEditAction,
         }
       ],
     },
