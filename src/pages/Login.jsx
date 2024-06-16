@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [focus, setFocus] = useState({});
   const [loginError, setLoginError] = useState({});
 
-  const { setToken } = useAuth();
+  const { setToken, setID } = useAuth();
 
   useEffect(() => {
     setLoginError(UserValidate(loginData, "signin"));
@@ -55,16 +55,16 @@ export default function LoginPage() {
       switch(response.status) {
         case 201:
           // 로그인 성공
-          Toast.loginSuccess("로그인 성공!");
+          const json = await response.json();
+          const userID = json.data.userId
           setToken(response.headers.get("Authorization"));
+          setID(userID);
+          Toast.loginSuccess(`${userID}님 환영합니다.`);
           navigate("/");
           break;
         case 400:
           // 로그인 실패
           Toast.loginError("아이디 또는 비밀번호가 틀립니다.");
-          //console.log(response);
-          //setToken("TESTTOKEN");
-          //setRefreshToken("TESTTOKEN");
           break;
         default:
           Toast.loginError("알 수 없는 오류가 발생했습니다.");

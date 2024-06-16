@@ -1,4 +1,3 @@
-import axios from "axios";
 import { createContext, useContext, useMemo, useEffect, useState } from "react";
 
 // 컴포넌트 간 Auth 상태를 공유하는데 사용될 Context Object
@@ -14,35 +13,36 @@ export const AuthProvider = ({ children }) => {
     setToken_(newAccessToken);
   };
 
+  var loginID = localStorage.getItem("loginID");
+  const setID = (newLoginID) => {
+    loginID = newLoginID;
+    localStorage.setItem("loginID", loginID);
+  };
+
   // This feature runs whenever Token values are changed
   useEffect(() => {
     if (token) {
-      // axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-      axios.interceptors.request.use((config) => {
-        config.headers.Authorization = "Bearer " + token;
-        return config;
-      });
-      localStorage.setItem('token', token);
+      localStorage.setItem("token", token);
     } else {
-      axios.interceptors.request.use((config) => {
-        config.headers.Authorization = "";
-        return config;
-      });
-      localStorage.removeItem('token')
+      localStorage.removeItem("token");
+      loginID = "";
+      localStorage.removeItem("loginID");
     }
   }, [token]);
 
   const contextValue = useMemo(
     () => ({
       token,
+      loginID,
       setToken,
+      setID,
     }),
     [token]
   );
 
-  return <AuthContext.Provider value={contextValue}>
-    {children}
-  </AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

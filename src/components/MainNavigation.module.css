@@ -14,16 +14,28 @@
   align-items: center;
   gap: 1rem;
 }
-
 .list a {
   display: flex;
   text-decoration: none;
   color: var(--color-gray-900);
 }
-
 .list a:hover,
 .list a.active {
   color: var(--color-primary-500);
+}
+
+.buttonList {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+.buttonList button {
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1em;
+  height: 1em;
 }
 
 .homeBtn {
