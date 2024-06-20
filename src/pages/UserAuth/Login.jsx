@@ -1,11 +1,11 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { Form, useNavigation, useNavigate } from "react-router-dom";
+import { Link } from "@mui/material";
 
-import { useAuth } from "../provider/authProvider";
-import UserValidate from "../components/Auth/UserValidate";
-import { Toast } from "../components/Toast";
-import classes from "./Register.module.css";
+import { useAuth } from "../../provider/authProvider";
+import UserValidate from "../../components/Auth/UserValidate";
+import { Toast } from "../../components/Toast";
+import classes from "./UserAuth.module.css";
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
@@ -45,20 +45,20 @@ export default function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (Object.keys(loginError).length) {
-      console.log(loginError)
       // 입력값 오류가 한 개 이상 발견 시
-      Toast.registerError("입력하신 내용들을 다시 확인해주세요!");
+      Toast.loginError("입력하신 내용들을 다시 확인해주세요!");
       setFocus(FOCUS_ALL_DATA);
     } else {
       // 로그인 시도
       const response = await sendLoginRequest(loginData);
-      switch(response.status) {
+      switch (response.status) {
         case 201:
           // 로그인 성공
           const json = await response.json();
-          const userID = json.data.userId
+          const userID = json.data.userId;
+          const memberIDCode = json.data.memberId;
           setToken(response.headers.get("Authorization"));
-          setID(userID);
+          setID({ userID, memberIDCode });
           Toast.loginSuccess(`${userID}님 환영합니다.`);
           navigate("/");
           break;
@@ -74,10 +74,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="center">
-      <section className={classes.regSection}>
+    <div className={`center ${classes.authPage}`}>
+      <section className={classes.authSection}>
         <h1>로그인</h1>
-        <Form onSubmit={handleLogin} className={classes.form}>
+        <ul>
+          <li><h5>아직 회원이 아니신가요?</h5></li>
+          <li><Link href="register"><h5>회원가입</h5></Link></li>
+        </ul>
+        <Form onSubmit={handleLogin} className={classes.authForm}>
           <div>
             <label htmlFor="userID">아이디</label>
             <input
@@ -89,7 +93,9 @@ export default function LoginPage() {
               onFocus={handleFocus}
               required
             />
-            {loginError.userID && focus.userID && <span>{loginError.userID}</span>}
+            {loginError.userID && focus.userID && (
+              <span>{loginError.userID}</span>
+            )}
           </div>
           <div>
             <label htmlFor="password">비밀번호</label>
@@ -102,8 +108,14 @@ export default function LoginPage() {
               onFocus={handleFocus}
               required
             />
-            {loginError.password && focus.password && <span>{loginError.password}</span>}
+            {loginError.password && focus.password && (
+              <span>{loginError.password}</span>
+            )}
           </div>
+          <ul className={classes.rightUL}>
+            <li><h5>비밀번호가 기억나지 않으시나요?</h5></li>
+            <li><Link href="recoverPassword"><h5>비밀번호 찾기</h5></Link></li>
+          </ul>
           <div>
             <button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "로그인 중" : "로그인"}
@@ -125,7 +137,7 @@ async function sendLoginRequest(inputData) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(inputData),
-    credentials: 'include',
+    credentials: "include",
   });
 
   return response;

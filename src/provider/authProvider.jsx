@@ -16,9 +16,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   var loginID = localStorage.getItem("loginID");
-  const setID = (newLoginID) => {
+  var memberIDCode = localStorage.getItem("memberIDCode");
+  const setID = ({newLoginID, newMemberIDCode}) => {
     loginID = newLoginID;
+    memberIDCode = newMemberIDCode;
     localStorage.setItem("loginID", loginID);
+    localStorage.setItem("memberIDCode", memberIDCode);
   };
 
   const reissueToken = async () => {
@@ -48,6 +51,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("token");
       loginID = "";
       localStorage.removeItem("loginID");
+      memberIDCode = "";
+      localStorage.removeItem("memberIDCode");
     }
   }, [token]);
 
@@ -55,6 +60,7 @@ export const AuthProvider = ({ children }) => {
     () => ({
       token,
       loginID,
+      memberIDCode,
       setToken,
       setID,
       reissueToken,

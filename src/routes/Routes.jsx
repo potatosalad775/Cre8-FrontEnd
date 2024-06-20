@@ -9,8 +9,9 @@ import JobPage from "../pages/Job.jsx";
 import CommunityPage from "../pages/Community.jsx";
 import ProfilePage, { profileLoader } from "../pages/Profile.jsx";
 import ProfileEditPage from "../pages/ProfileEdit.jsx";
-import LoginPage from "../pages/Login.jsx";
-import RegisterPage, { action as registerAction } from "../pages/Register.jsx";
+import LoginPage from "../pages/UserAuth/Login.jsx";
+import RegisterPage, { action as registerAction } from "../pages/UserAuth/Register.jsx";
+import RecoverPasswordPage from "../pages/UserAuth/RecoverPassword.jsx";
 import ErrorPage from "../pages/Error.jsx";
 import TestPage from "../pages/Test.jsx";
 
@@ -37,7 +38,7 @@ const Routes = () => {
     },
     {
       path: "p/:userID",
-      id: 'profile-page',
+      id: "profile-page",
       loader: profileLoader,
       children: [
         {
@@ -47,7 +48,7 @@ const Routes = () => {
         {
           path: "edit",
           element: <ProfileEditPage />,
-        }
+        },
       ],
     },
     { path: "register", element: <RegisterPage />, action: registerAction },
@@ -71,23 +72,23 @@ const Routes = () => {
 
   // Accessible only to non-authenticated users
   const routesForNotAuthenticatedOnly = [
-    {
-      path: "login",
-      element: <LoginPage />,
-    },
+    { path: "login", element: <LoginPage /> },
+    { path: "recoverPassword", element: <RecoverPasswordPage /> },
   ];
 
   // Combine and conditionally include routes based on authentication status
-  const router = createBrowserRouter([{
-    path: "/",
-    element: <RootLayout />,
-    errorElement: <ErrorPage />,
-    children: [
-      ...routesForPublic,
-      ...(!token ? routesForNotAuthenticatedOnly : []),
-      ...routesForAuthenticatedOnly,
-    ],
-  }]);
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <RootLayout />,
+      errorElement: <ErrorPage />,
+      children: [
+        ...routesForPublic,
+        ...(!token ? routesForNotAuthenticatedOnly : []),
+        ...routesForAuthenticatedOnly,
+      ],
+    },
+  ]);
 
   // Final Router Configuration
   return <RouterProvider router={router} />;

@@ -1,12 +1,17 @@
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 1.3rem;
-  border-bottom: 0.1rem solid var(--color-gray-600)
+  height: 3dvh;
+  border-bottom: 0.1rem solid var(--color-gray-600);
 }
 
 .nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
 .list {
