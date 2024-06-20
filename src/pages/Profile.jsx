@@ -1,6 +1,11 @@
-import { useNavigate, useParams, useRouteLoaderData } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useRouteLoaderData,
+  useLocation,
+} from "react-router-dom";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../provider/authProvider";
 
 import { Avatar, Link, Tab, Box } from "@mui/material";
@@ -19,24 +24,33 @@ const apiAddress = import.meta.env.VITE_API_SERVER;
 export default function ProfilePage() {
   const navigate = useNavigate();
   const params = useParams();
+  const location = useLocation();
   const { loginID } = useAuth();
   const [tabIndex, setTabIndex] = useState("1");
-
   const response = useRouteLoaderData("profile-page");
 
-  const profileData = {
-    uProfileImage: response.data.accessUrl || "",
-    uNickName: response.data.userNickName || "",
-    uLinkYoutube: response.data.youtubeLink || "",
-    uLinkTwitter: response.data.twitterLink || "",
-    uLinkWebpage: response.data.personalLink || "",
-  };
-  const profileAboutJSON = JSON.parse(response.data.personalStatement) || "";
-  //console.log(profileData.uProfileImage);
+  let profileData;
+  let profileAboutJSON;
 
-  function handleEditClick() {
+  useEffect(() => {
+    loadProfileData();
+  }, [location]);
+
+  const loadProfileData = () => {
+    profileData = {
+      uProfileImage: response.data.accessUrl || "",
+      uNickName: response.data.userNickName || "",
+      uLinkYoutube: response.data.youtubeLink || "",
+      uLinkTwitter: response.data.twitterLink || "",
+      uLinkWebpage: response.data.personalLink || "",
+    };
+    profileAboutJSON = JSON.parse(response.data.personalStatement) || "";
+  };
+  loadProfileData();
+
+  const handleEditClick = () => {
     navigate("edit");
-  }
+  };
 
   const handleTabChange = (e, newValue) => {
     setTabIndex(newValue);
@@ -72,7 +86,11 @@ export default function ProfilePage() {
                 />
               </li>
               <li>
-                <Link href={profileData.uLinkTwitter} color="inherit">
+                <Link
+                  href={profileData.uLinkTwitter}
+                  color="inherit"
+                  rel="noopener noreferrer"
+                >
                   {profileData.uLinkTwitter}
                 </Link>
               </li>
@@ -89,7 +107,11 @@ export default function ProfilePage() {
                 />
               </li>
               <li>
-                <Link href={profileData.uLinkYoutube} color="inherit">
+                <Link
+                  href={profileData.uLinkYoutube}
+                  color="inherit"
+                  rel="noopener noreferrer"
+                >
                   {profileData.uLinkYoutube}
                 </Link>
               </li>
@@ -106,7 +128,11 @@ export default function ProfilePage() {
                 />
               </li>
               <li>
-                <Link href={profileData.uLinkWebpage} color="inherit">
+                <Link
+                  href={profileData.uLinkWebpage}
+                  color="inherit"
+                  rel="noopener noreferrer"
+                >
                   {profileData.uLinkWebpage}
                 </Link>
               </li>

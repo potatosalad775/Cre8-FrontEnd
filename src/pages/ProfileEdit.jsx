@@ -2,31 +2,28 @@ import {
   useNavigate,
   useParams,
   useRouteLoaderData,
-  Form,
-  useSubmit,
-  redirect,
+  Form
 } from "react-router-dom";
 
-import PageContent from "../components/PageContent";
-import { useState, useRef } from "react";
-import { useAuth } from "../provider/authProvider";
-
-import { Avatar, Link, Tab, Box, IconButton } from "@mui/material";
+import { useState } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import { Avatar, Tab, Box, IconButton } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import {
-  faSquareXTwitter,
-  faYoutube,
-} from "@fortawesome/free-brands-svg-icons";
-import classes from "./Profile.module.css";
-import { ProfileEditor } from "../components/Editor";
+import { faSquareXTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
+
+import { useAuth } from "../provider/authProvider";
+import { EditorMenuBar, editorExtensions } from "../components/Editor";
 import { Toast } from "../components/Toast";
+
+import classes from "./Profile.module.css";
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
 export default function ProfileEditPage() {
   const response = useRouteLoaderData("profile-page");
+  
   const navigate = useNavigate();
   const params = useParams();
   const { token, loginID } = useAuth();
@@ -47,22 +44,24 @@ export default function ProfileEditPage() {
   );
   const [isImageChanged, setImageChanged] = useState(false);
 
-  function handleSaveClick() {
+  const handleSaveClick = (e) => {
+    e.preventDefault();
+
     const formData = new FormData();
     isImageChanged && formData.append("multipartFile", profileData.uProfileImage);
     formData.append("userNickName", profileData.uNickName);
-    formData.append("youtubeLink", profileData.uLinkYoutube);
-    formData.append("twitterLink", profileData.uLinkTwitter);
-    formData.append("personalLink", profileData.uLinkWebpage);
+    formData.append("youtubeLink", getExternalLink(profileData.uLinkYoutube));
+    formData.append("twitterLink", getExternalLink(profileData.uLinkTwitter));
+    formData.append("personalLink", getExternalLink(profileData.uLinkWebpage));
     formData.append("personalStatement", JSON.stringify(profileAbout));
     formData.append("token", token);
-    //console.log(isImageChanged);
-    //console.log(profileData.uProfileImage);
 
     profileEditAction(formData).then((res) => {
+      // Success
       if(res.status === 200) {
         navigate("..");
       }
+      // TODO: error handling
     });
   }
 
@@ -95,7 +94,7 @@ export default function ProfileEditPage() {
   };
 
   return (
-    <Form onSubmit={handleSaveClick}>
+    <>
       <div className={classes.content}>
         <IconButton
           component="label"
@@ -120,7 +119,7 @@ export default function ProfileEditPage() {
           </li>
           <li>
             {params.userID === loginID && (
-              <button type="submit">저장</button>
+              <button type="submit" onClick={handleSaveClick}>저장</button>
             )}
           </li>
         </ul>
@@ -137,7 +136,7 @@ export default function ProfileEditPage() {
               <input
                 id="uLinkTwitter"
                 name="uLinkTwitter"
-                type="text"
+                type="url"
                 value={profileData.uLinkTwitter || ""}
                 onChange={handleChange}
               />
@@ -151,7 +150,7 @@ export default function ProfileEditPage() {
               <input
                 id="uLinkYoutube"
                 name="uLinkYoutube"
-                type="text"
+                type="url"
                 value={profileData.uLinkYoutube || ""}
                 onChange={handleChange}
               />
@@ -165,7 +164,7 @@ export default function ProfileEditPage() {
               <input
                 id="uLinkWebpage"
                 name="uLinkWebpage"
-                type="text"
+                type="url"
                 value={profileData.uLinkWebpage || ""}
                 onChange={handleChange}
               />
@@ -190,9 +189,32 @@ export default function ProfileEditPage() {
           <TabPanel value="2">포트폴리오</TabPanel>
         </TabContext>
       </div>
-    </Form>
+    </>
   );
 }
+
+// 프로필 에디터
+const ProfileEditor = ({ profileAbout, setProfileAbout }) => {
+  const editor = useEditor({
+    extensions: editorExtensions,
+    content: profileAbout ? {
+      "type": "doc",
+      "content": profileAbout,
+    } : "",
+    onUpdate: ({editor}) => {
+      const json = editor.getJSON()
+      const data = json.content
+      setProfileAbout(data);
+    }
+  });
+
+  return (
+    <div className={`${classes.editor} ${classes.profileEditor}`}>
+      <EditorMenuBar editor={editor} />
+      <EditorContent editor={editor}/>
+    </div>
+  );
+};
 
 // 프로필 데이터 수정 요청 함수
 async function profileEditAction(formData) {
@@ -228,4 +250,13 @@ async function profileEditAction(formData) {
   }
 
   return response;
+}
+
+// 링크 가공 함수
+function getExternalLink(link) {
+  const pattern = /^(https?:\/)/;
+  if (!pattern.test(link)) {
+    return `https://${link}`;
+  }
+  return link;
 }

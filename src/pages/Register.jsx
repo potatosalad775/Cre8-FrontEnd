@@ -201,6 +201,7 @@ export default function RegisterPage() {
               id="birthDay"
               name="birthDay"
               type="date"
+              max="9999-12-31"
               value={registerData.date}
               onChange={handleChange}
               onFocus={handleFocus}

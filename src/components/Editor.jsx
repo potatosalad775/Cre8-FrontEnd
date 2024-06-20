@@ -1,5 +1,5 @@
 import React from "react";
-import { useEditor, EditorContent, EditorProvider, useCurrentEditor } from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
@@ -22,7 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Divider } from "@mui/material";
 
-const MenuBar = ({editor}) => {
+export const EditorMenuBar = ({editor}) => {
   if (!editor) {
     return null;
   }
@@ -114,37 +114,13 @@ const MenuBar = ({editor}) => {
 
 export const TestEditor = () => {
   const editor = useEditor({
-    extensions: extensions,
+    extensions: editorExtensions,
     content: "Hello!",
   });
 
   return (
     <div className={`${classes.editor}`}>
-      <MenuBar editor={editor} />
-      <EditorContent editor={editor}/>
-    </div>
-  );
-};
-
-export const ProfileEditor = ({ profileAbout, setProfileAbout }) => {
-  const editor = useEditor({
-    extensions: extensions,
-    content: profileAbout ? {
-      "type": "doc",
-      "content": profileAbout,
-    } : "",
-    onUpdate: ({editor}) => {
-      const json = editor.getJSON()
-      const data = json.content
-      //console.log(profileAbout)
-      //console.log(data)
-      setProfileAbout(data);
-    }
-  });
-
-  return (
-    <div className={`${classes.editor} ${classes.profileEditor}`}>
-      <MenuBar editor={editor} />
+      <EditorMenuBar editor={editor} />
       <EditorContent editor={editor}/>
     </div>
   );
@@ -153,7 +129,7 @@ export const ProfileEditor = ({ profileAbout, setProfileAbout }) => {
 export const ReadOnlyEditor = ({ content }) => {
   const editor = useEditor({
     editable: false,
-    extensions: extensions,
+    extensions: editorExtensions,
     content: content ? {
       "type": "doc",
       "content": content,
@@ -167,7 +143,7 @@ export const ReadOnlyEditor = ({ content }) => {
   );
 };
 
-const extensions = [
+export const editorExtensions = [
   StarterKit,
   Underline,
   TextAlign.configure({
