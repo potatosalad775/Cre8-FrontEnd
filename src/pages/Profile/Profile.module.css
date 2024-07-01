@@ -25,6 +25,11 @@
   align-items: center;
 }
 
+.tab {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
 .tab button:hover {
   background-color: var(--color-gray-150);
 }

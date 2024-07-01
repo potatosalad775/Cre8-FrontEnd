@@ -28,5 +28,5 @@
 .profileEditor {
   border: 0;
   border-bottom: 0.1rem solid var(--color-gray-400);
-  height: 40vh;
+  height: 100%;
 }

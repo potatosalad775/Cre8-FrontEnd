@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "../provider/authProvider";
+import { useAuth } from "../../provider/authProvider";
 
 import { Avatar, Link, Tab, Box } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
@@ -17,7 +17,9 @@ import {
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import classes from "./Profile.module.css";
-import { ReadOnlyEditor } from "../components/Editor";
+
+import { ReadOnlyEditor } from "../../components/Editor";
+import { PortfolioGrid } from "../../components/Portfolio/PortfolioGrid";
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
@@ -148,10 +150,12 @@ export default function ProfilePage() {
               <Tab value="2" label="포트폴리오" />
             </TabList>
           </Box>
-          <TabPanel value="1" sx={{ padding: 0 }}>
+          <TabPanel value="1" sx={{ padding: 0, height: "80%" }}>
             <ReadOnlyEditor content={profileAboutJSON} />
           </TabPanel>
-          <TabPanel value="2">포트폴리오</TabPanel>
+          <TabPanel value="2" sx={{ padding: "1.3rem" }}>
+            <PortfolioGrid itemData={dummyItemData}/>
+          </TabPanel>
         </TabContext>
       </div>
     </>
@@ -172,3 +176,19 @@ export async function profileLoader({ request, params }) {
 
   return response;
 }
+
+// Temp Dummy Data
+const dummyItemData = [
+  {
+    img: "https://media1.tenor.com/m/CWHdjtoLXToAAAAC/among-us.gif",
+    title: 0
+  },
+  {
+    img: "https://media1.tenor.com/m/f4PUj7wUIm4AAAAC/cat-tongue.gif",
+    title: 1
+  },
+  {
+    img: "https://media1.tenor.com/m/w0dZ4Eltk7IAAAAC/vuknok.gif",
+    title: 2
+  },
+]

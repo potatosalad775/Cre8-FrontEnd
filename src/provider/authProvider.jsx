@@ -27,6 +27,8 @@ export const AuthProvider = ({ children }) => {
   const reissueToken = async () => {
     const url = apiAddress + "/api/v1/auth/reissue";
     const refreshToken = Cookie.get("refreshToken");
+ 
+    //console.log(refreshToken);
 
     const response = await fetch(url, {
       method: "POST",
@@ -38,6 +40,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     console.log(response)
+    console.log(response.data)
     if(response.ok) {
       console.log(response.data.accessToken)
     }

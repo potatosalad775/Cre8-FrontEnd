@@ -13,9 +13,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { faSquareXTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 
-import { useAuth } from "../provider/authProvider";
-import { EditorMenuBar, editorExtensions } from "../components/Editor";
-import { Toast } from "../components/Toast";
+import { useAuth } from "../../provider/authProvider";
+import { EditorMenuBar, editorExtensions } from "../../components/Editor";
+import { Toast } from "../../components/Toast";
 
 import classes from "./Profile.module.css";
 

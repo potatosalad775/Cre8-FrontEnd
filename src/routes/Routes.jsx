@@ -7,11 +7,11 @@ import HomePage from "../pages/Home.jsx";
 import RecruitPage from "../pages/Recruit.jsx";
 import JobPage from "../pages/Job.jsx";
 import CommunityPage from "../pages/Community.jsx";
-import ProfilePage, { profileLoader } from "../pages/Profile.jsx";
-import ProfileEditPage from "../pages/ProfileEdit.jsx";
 import LoginPage from "../pages/UserAuth/Login.jsx";
 import RegisterPage, { action as registerAction } from "../pages/UserAuth/Register.jsx";
 import RecoverPasswordPage from "../pages/UserAuth/RecoverPassword.jsx";
+import ProfilePage, { profileLoader } from "../pages/Profile/Profile.jsx";
+import ProfileEditPage from "../pages/Profile/ProfileEdit.jsx";
 import ErrorPage from "../pages/Error.jsx";
 import TestPage from "../pages/Test.jsx";
 
