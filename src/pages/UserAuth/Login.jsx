@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [focus, setFocus] = useState({});
   const [loginError, setLoginError] = useState({});
 
-  const { setToken, setID } = useAuth();
+  const { onLogin } = useAuth();
 
   useEffect(() => {
     setLoginError(UserValidate(loginData, "signin"));
@@ -55,10 +55,10 @@ export default function LoginPage() {
         case 201:
           // 로그인 성공
           const json = await response.json();
+          const token = response.headers.get("Authorization")
           const userID = json.data.userId;
-          const memberIDCode = json.data.memberId;
-          setToken(response.headers.get("Authorization"));
-          setID({ userID, memberIDCode });
+          const memberCode = json.data.memberId;
+          onLogin({ token, userID, memberCode });
           Toast.loginSuccess(`${userID}님 환영합니다.`);
           navigate("/");
           break;

@@ -15,35 +15,40 @@ export const AuthProvider = ({ children }) => {
     setToken_(newAccessToken);
   };
 
-  var loginID = localStorage.getItem("loginID");
-  var memberIDCode = localStorage.getItem("memberIDCode");
-  const setID = ({newLoginID, newMemberIDCode}) => {
-    loginID = newLoginID;
-    memberIDCode = newMemberIDCode;
-    localStorage.setItem("loginID", loginID);
-    localStorage.setItem("memberIDCode", memberIDCode);
-  };
-
+  // Request new accessToken
   const reissueToken = async () => {
     const url = apiAddress + "/api/v1/auth/reissue";
-    const refreshToken = Cookie.get("refreshToken");
- 
-    //console.log(refreshToken);
 
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "accessToken": token,
-        "refreshToken": refreshToken,
+        "accessToken": token
       },
       credentials: 'include',
     });
 
-    console.log(response)
-    console.log(response.data)
     if(response.ok) {
-      console.log(response.data.accessToken)
+      // Apply new Token
+      const json = await response.json();
+      setToken(json.data.accessToken);
+    } else {
+      // Auto Logout
+      setToken("")
     }
+  }
+
+  // Feature for Successful Login
+  var loginID = localStorage.getItem("loginID");
+  var memberCode = localStorage.getItem("memberCode");
+  const onLogin = ({newToken, newLoginID, newMemberCode}) => {
+    loginID = newLoginID;
+    memberCode = newMemberCode;
+    setToken(newToken);
+    localStorage.setItem("loginID", loginID);
+    localStorage.setItem("memberCode", memberCode);
+
+    // Automatically refresh Token for every 5 minutes
+    setTimeout(reissueToken, 5 * 60 * 1000);
   }
 
   // This feature runs whenever Token values are changed
@@ -54,8 +59,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("token");
       loginID = "";
       localStorage.removeItem("loginID");
-      memberIDCode = "";
-      localStorage.removeItem("memberIDCode");
+      memberCode = "";
+      localStorage.removeItem("memberCode");
     }
   }, [token]);
 
@@ -63,10 +68,10 @@ export const AuthProvider = ({ children }) => {
     () => ({
       token,
       loginID,
-      memberIDCode,
+      memberCode,
       setToken,
-      setID,
       reissueToken,
+      onLogin,
     }),
     [token]
   );

@@ -7,7 +7,7 @@ import { useAuth } from "../../provider/authProvider.jsx";
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
 export default function LoginTest() {
-  const { token, reissueToken } = useAuth();
+  const { token, reissueToken, setToken } = useAuth();
 
   const [loginMessage, setLoginMessage] = useState("");
 
@@ -35,6 +35,10 @@ export default function LoginTest() {
     reissueToken();
   }
 
+  const handleRemoveToken = () => {
+    setToken("");
+  }
+
   return (
     <section id="test-section">
       <h3>Login Test Section</h3>
@@ -43,6 +47,7 @@ export default function LoginTest() {
       </div>
       <button onClick={handleClick}>확인</button>
       <button onClick={handleReIssue}>토큰 재발급</button>
+      <button onClick={handleRemoveToken}>액세스 토큰 삭제</button>
     </section>
   );
 }
