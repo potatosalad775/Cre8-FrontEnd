@@ -1,10 +1,10 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { Form, useSubmit, useNavigation, redirect } from "react-router-dom";
+import { Link } from "@mui/material"
 
-import UserValidate from "../components/Auth/UserValidate";
-import { Toast } from "../components/Toast";
-import classes from "./Register.module.css";
+import UserValidate from "../../provider/UserValidate";
+import { Toast } from "../../components/Toast";
+import classes from "./UserAuth.module.css";
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
@@ -94,22 +94,26 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="center">
-      <section className={classes.regSection}>
+    <div className={`center ${classes.authPage}`}>
+      <section className={classes.authSection}>
         <h1>회원가입</h1>
-        <Form method="POST" className={classes.form}>
+        <ul>
+          <li><h5>이미 계정이 있으신가요?</h5></li>
+          <li><Link href="login"><h5>로그인</h5></Link></li>
+        </ul>
+        <Form method="POST" className={classes.authForm}>
           <div>
-            <label htmlFor="email">이메일</label>
+            <label htmlFor="loginId">아이디</label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              value={registerData.email}
+              id="loginId"
+              name="loginId"
+              type="text"
+              value={registerData.loginId}
               onChange={handleChange}
               onFocus={handleFocus}
               required
             />
-            {registerError.email && focus.email && <span>{registerError.email}</span>}
+            {registerError.loginId && focus.loginId && <span>{registerError.loginId}</span>}
           </div>
           <div>
             <label htmlFor="password">비밀번호</label>
@@ -140,17 +144,17 @@ export default function RegisterPage() {
             )}
           </div>
           <div>
-            <label htmlFor="loginId">아이디</label>
+            <label htmlFor="email">이메일</label>
             <input
-              id="loginId"
-              name="loginId"
-              type="text"
-              value={registerData.loginId}
+              id="email"
+              name="email"
+              type="email"
+              value={registerData.email}
               onChange={handleChange}
               onFocus={handleFocus}
               required
             />
-            {registerError.loginId && focus.loginId && <span>{registerError.loginId}</span>}
+            {registerError.email && focus.email && <span>{registerError.email}</span>}
           </div>
           <div>
             <label htmlFor="nickName">별명</label>
@@ -201,6 +205,7 @@ export default function RegisterPage() {
               id="birthDay"
               name="birthDay"
               type="date"
+              max="9999-12-31"
               value={registerData.date}
               onChange={handleChange}
               onFocus={handleFocus}

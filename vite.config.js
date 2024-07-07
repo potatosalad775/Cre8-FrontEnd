@@ -9,7 +9,7 @@ export default defineConfig({
     //mkcert({certFileName: './localhost.pem', keyFileName: './localhost-key.pem'})
   ],
   server: {
-    host:'0.0.0.0',
+    https: true,
     port: 3000,
   }
 })

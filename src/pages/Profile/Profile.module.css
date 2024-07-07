@@ -25,10 +25,24 @@
   align-items: center;
 }
 
+.tab {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
 .tab button:hover {
   background-color: var(--color-gray-150);
 }
+.tabList {
+  border-bottom: 1px solid var(--color-gray-400);
+}
+
 .avatarButton,
 .avatarButton div:hover {
-  background: rgba(0,0,0,0.6);
+  color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.profileIcon {
+  color: var(--color-gray-900);
 }

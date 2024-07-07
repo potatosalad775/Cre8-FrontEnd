@@ -1,0 +1,43 @@
+.authPage {
+  background-color: var(--color-gray-100);
+}
+
+.authSection {
+  padding: 2rem 1.3rem;
+  margin: 2rem auto;
+  min-width: 30rem;
+  max-width: 50rem;
+  border: 0.1rem solid var(--color-gray-300);
+  border-radius: 0em;
+  background-color: var(--color-gray-150);
+}
+.authSection ul {
+  display: flex;
+  gap: 0.5em;
+}
+.authSection h1 {
+  margin: 0;
+}
+.authSection h5 {
+  margin-block-end: 0.5em;
+}
+.authSection button {
+  margin-top: 1em;
+  height: 3em;
+  color: var(--color-gray-100);
+  background-color: var(--color-primary-500);
+}
+
+.authForm div {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.rightUL {
+  justify-content: flex-end;
+}
+.rightUL h5 {
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
+}

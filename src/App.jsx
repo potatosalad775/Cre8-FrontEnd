@@ -10,7 +10,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <AuthProvider>
         <Routes />
-        <ToastContainer />
+        <ToastContainer pauseOnFocusLoss={false}/>
       </AuthProvider>
     </ThemeProvider>
   )

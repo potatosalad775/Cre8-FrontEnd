@@ -1,0 +1,16 @@
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.tagSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.3rem;
+  border-bottom: 1px var(--color-gray-500) solid;
+}
+.tagSelector h4 {
+  margin: 0;
+  width: 4rem;
+}
