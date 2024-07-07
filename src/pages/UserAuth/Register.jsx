@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Form, useSubmit, useNavigation, redirect } from "react-router-dom";
 import { Link } from "@mui/material"
 
-import UserValidate from "../../components/Auth/UserValidate";
+import UserValidate from "../../provider/UserValidate";
 import { Toast } from "../../components/Toast";
 import classes from "./UserAuth.module.css";
 

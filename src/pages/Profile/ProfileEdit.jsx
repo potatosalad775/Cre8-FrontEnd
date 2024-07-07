@@ -2,68 +2,66 @@ import {
   useNavigate,
   useParams,
   useRouteLoaderData,
-  Form
+  useLocation,
 } from "react-router-dom";
-
 import { useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
-import { Avatar, Tab, Box, IconButton } from "@mui/material";
+import { Avatar, Tab, IconButton } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import { faSquareXTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
+import { RiGlobalLine, RiTwitterXLine, RiYoutubeLine } from "@remixicon/react";
 
 import { useAuth } from "../../provider/authProvider";
+import apiInstance from "../../provider/networkProvider"
 import { EditorMenuBar, editorExtensions } from "../../components/Editor";
+import { PortfolioGrid } from "../../components/Portfolio/PortfolioGrid";
 import { Toast } from "../../components/Toast";
-
 import classes from "./Profile.module.css";
 
-const apiAddress = import.meta.env.VITE_API_SERVER;
-
 export default function ProfileEditPage() {
-  const response = useRouteLoaderData("profile-page");
-  
+  const response = useRouteLoaderData("profile-page-edit");
   const navigate = useNavigate();
   const params = useParams();
-  const { token, loginID } = useAuth();
-  const [profileAbout, setProfileAbout] = useState(
-    JSON.parse(response.data.personalStatement) || ""
-  );
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const { token, userID, memberCode } = useAuth();
+  // Tab Index
+  const tabIndex = searchParams.get("tab") || "1";
+  // Profile Data
   const [profileData, setProfileData] = useState({
     uProfileImage: response.data.accessUrl || "",
     uNickName: response.data.userNickName || "",
     uLinkYoutube: response.data.youtubeLink || "",
     uLinkTwitter: response.data.twitterLink || "",
     uLinkWebpage: response.data.personalLink || "",
-    uUserAbout: response.data.personalStatement || "",
   });
-  const [tabIndex, setTabIndex] = useState("1");
-  const [previewImg, setPreviewImg] = useState(
-    response.data.accessUrl || ""
+  // Profile Description in JSON type
+  const [profileAbout, setProfileAbout] = useState(
+    JSON.parse(response.data.personalStatement) || ""
   );
-  const [isImageChanged, setImageChanged] = useState(false);
+  // Uploaded Profile Image
+  const [uploadedPFP, setUploadedPFP] = useState(null);
 
   const handleSaveClick = (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    isImageChanged && formData.append("multipartFile", profileData.uProfileImage);
+    if (uploadedPFP) {
+      formData.append("multipartFile", uploadedPFP);
+    }
     formData.append("userNickName", profileData.uNickName);
     formData.append("youtubeLink", getExternalLink(profileData.uLinkYoutube));
     formData.append("twitterLink", getExternalLink(profileData.uLinkTwitter));
     formData.append("personalLink", getExternalLink(profileData.uLinkWebpage));
     formData.append("personalStatement", JSON.stringify(profileAbout));
-    formData.append("token", token);
 
     profileEditAction(formData).then((res) => {
       // Success
-      if(res.status === 200) {
+      if (res && res.status === 200) {
         navigate("..");
       }
       // TODO: error handling
     });
-  }
+  };
 
   const handleChange = (e) => {
     if (e.target.type === "file") {
@@ -71,12 +69,11 @@ export default function ProfileEditPage() {
       if (!e.target.files) return;
       const userImg = e.target.files[0];
       const imgURL = window.URL.createObjectURL(userImg);
-      setImageChanged(true);
-      setPreviewImg(imgURL);
+      setUploadedPFP(userImg);
       setProfileData((prevData) => {
         return {
           ...prevData,
-          uProfileImage: userImg,
+          uProfileImage: imgURL,
         };
       });
     } else {
@@ -90,9 +87,11 @@ export default function ProfileEditPage() {
   };
 
   const handleTabChange = (e, newValue) => {
-    setTabIndex(newValue);
+    searchParams.set("tab", newValue);
+    navigate(`?${searchParams.toString()}`);
   };
 
+  // !!! 프로필 수정 완료 버튼 = 임시 조치
   return (
     <>
       <div className={classes.content}>
@@ -104,7 +103,7 @@ export default function ProfileEditPage() {
         >
           <Avatar
             alt={profileData.uNickName}
-            src={previewImg}
+            src={profileData.uProfileImage}
             sx={{ width: "7rem", height: "7rem" }}
           />
           <input
@@ -118,19 +117,17 @@ export default function ProfileEditPage() {
             <h1>{profileData.uNickName}</h1>
           </li>
           <li>
-            {params.userID === loginID && (
-              <button type="submit" onClick={handleSaveClick}>저장</button>
+            {params.userID === memberCode && (
+              <button type="submit" onClick={handleSaveClick}>
+                저장
+              </button>
             )}
           </li>
         </ul>
         <div>
           <ul className={classes.list}>
             <li>
-              <FontAwesomeIcon
-                icon={faSquareXTwitter}
-                fixedWidth
-                fontSize="1.2rem"
-              />
+              <RiTwitterXLine size={22} className={classes.profileIcon} />
             </li>
             <li>
               <input
@@ -144,7 +141,7 @@ export default function ProfileEditPage() {
           </ul>
           <ul className={classes.list}>
             <li>
-              <FontAwesomeIcon icon={faYoutube} fixedWidth fontSize="1.2rem" />
+              <RiYoutubeLine size={22} className={classes.profileIcon} />
             </li>
             <li>
               <input
@@ -158,7 +155,7 @@ export default function ProfileEditPage() {
           </ul>
           <ul className={classes.list}>
             <li>
-              <FontAwesomeIcon icon={faGlobe} fixedWidth fontSize="1.2rem" />
+              <RiGlobalLine size={22} className={classes.profileIcon} />
             </li>
             <li>
               <input
@@ -174,19 +171,19 @@ export default function ProfileEditPage() {
       </div>
       <div className={classes.tab}>
         <TabContext value={tabIndex}>
-          <Box sx={{ borderBottom: 1, borderColor: "#aeaba7" }}>
-            <TabList onChange={handleTabChange}>
-              <Tab value="1" label="자기소개" />
-              <Tab value="2" label="포트폴리오" />
-            </TabList>
-          </Box>
+          <TabList onChange={handleTabChange} className={classes.tabList}>
+            <Tab value="1" label="자기소개" />
+            <Tab value="2" label="포트폴리오" />
+          </TabList>
           <TabPanel value="1" sx={{ padding: 0 }}>
             <ProfileEditor
               profileAbout={profileAbout}
               setProfileAbout={setProfileAbout}
             />
           </TabPanel>
-          <TabPanel value="2">포트폴리오</TabPanel>
+          <TabPanel value="2" sx={{ padding: "1.3rem" }}>
+            <PortfolioGrid memberCode={params.userID} isEditing={true} />
+          </TabPanel>
         </TabContext>
       </div>
     </>
@@ -197,59 +194,58 @@ export default function ProfileEditPage() {
 const ProfileEditor = ({ profileAbout, setProfileAbout }) => {
   const editor = useEditor({
     extensions: editorExtensions,
-    content: profileAbout ? {
-      "type": "doc",
-      "content": profileAbout,
-    } : "",
-    onUpdate: ({editor}) => {
-      const json = editor.getJSON()
-      const data = json.content
+    content: profileAbout
+      ? {
+          type: "doc",
+          content: profileAbout,
+        }
+      : "",
+    onUpdate: ({ editor }) => {
+      const json = editor.getJSON();
+      const data = json.content;
       setProfileAbout(data);
-    }
+    },
   });
 
   return (
-    <div className={`${classes.editor} ${classes.profileEditor}`}>
+    <>
       <EditorMenuBar editor={editor} />
-      <EditorContent editor={editor}/>
-    </div>
+      <EditorContent editor={editor} />
+    </>
   );
 };
 
 // 프로필 데이터 수정 요청 함수
 async function profileEditAction(formData) {
-  const token = formData.get("token");
-  formData.delete("token");
-  
-  let url = apiAddress + "/api/v1/profiles";
-
-  const response = await fetch(url, {
-    method: "PUT",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      //"Content-Type": "multipart/form-data",
-    },
-    body: formData,
-    credentials: "include",
-  });
-
-  switch (response.status) {
-    // 저장 완료
-    case 200:
-      Toast.success("변경사항들을 저장했습니다.");
-      break;
-    // 인증 실패
-    case 401:
-      Toast.error("인증과정에서 오류가 발생했습니다.");
-      //setToken(); // Logout
-      break;
-    // 기타 오류
-    default:
-      Toast.error("알 수 없는 오류가 발생했습니다.");
-      break;
+  /*
+  for (let [key, value] of formData.entries()) {
+    console.log(key, value);
   }
-
-  return response;
+  */
+  try {
+    const response = await apiInstance({
+      method: "put",
+      url: "/api/v1/profiles", 
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    if (response.status === 200) {
+      // 저장 성공
+      Toast.success("변경사항들을 저장했습니다.");
+      return response;
+    }
+  } catch (error) {
+    // 로그인 실패
+    console.log(error.message);
+    if (error.response && error.response.status === 401) {
+      Toast.error("인증과정에서 오류가 발생했습니다.");
+    } else {
+      Toast.error("알 수 없는 오류가 발생했습니다.");
+    }
+  } 
+  return null;
 }
 
 // 링크 가공 함수
@@ -260,3 +256,19 @@ function getExternalLink(link) {
   }
   return link;
 }
+
+// Temp Dummy Data
+const dummyPortfolioListData = [
+  {
+    id: 0,
+    accessUrl: "https://media1.tenor.com/m/CWHdjtoLXToAAAAC/among-us.gif",
+  },
+  {
+    id: 1,
+    accessUrl: "https://media1.tenor.com/m/f4PUj7wUIm4AAAAC/cat-tongue.gif",
+  },
+  {
+    id: 2,
+    accessUrl: "https://media1.tenor.com/m/w0dZ4Eltk7IAAAAC/vuknok.gif",
+  },
+];

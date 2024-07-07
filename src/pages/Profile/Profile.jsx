@@ -4,22 +4,15 @@ import {
   useRouteLoaderData,
   useLocation,
 } from "react-router-dom";
-
 import { useState, useEffect } from "react";
-import { useAuth } from "../../provider/authProvider";
-
 import { Avatar, Link, Tab, Box } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import {
-  faSquareXTwitter,
-  faYoutube,
-} from "@fortawesome/free-brands-svg-icons";
+import { RiGlobalLine, RiTwitterXLine, RiYoutubeLine } from "@remixicon/react";
 import classes from "./Profile.module.css";
 
 import { ReadOnlyEditor } from "../../components/Editor";
 import { PortfolioGrid } from "../../components/Portfolio/PortfolioGrid";
+import { useAuth } from "../../provider/authProvider";
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
@@ -27,37 +20,31 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
-  const { loginID } = useAuth();
-  const [tabIndex, setTabIndex] = useState("1");
+  const searchParams = new URLSearchParams(location.search);
   const response = useRouteLoaderData("profile-page");
-
-  let profileData;
-  let profileAboutJSON;
-
-  useEffect(() => {
-    loadProfileData();
-  }, [location]);
-
-  const loadProfileData = () => {
-    profileData = {
-      uProfileImage: response.data.accessUrl || "",
-      uNickName: response.data.userNickName || "",
-      uLinkYoutube: response.data.youtubeLink || "",
-      uLinkTwitter: response.data.twitterLink || "",
-      uLinkWebpage: response.data.personalLink || "",
-    };
-    profileAboutJSON = JSON.parse(response.data.personalStatement) || "";
+  const { memberCode } = useAuth();
+  // Profile Data
+  const profileData = {
+    uProfileImage: response.data.accessUrl || "",
+    uNickName: response.data.userNickName || "",
+    uLinkYoutube: response.data.youtubeLink || "",
+    uLinkTwitter: response.data.twitterLink || "",
+    uLinkWebpage: response.data.personalLink || "",
+    uAbout: JSON.parse(response.data.personalStatement) || "",
   };
-  loadProfileData();
+  // Tab Index
+  const tabIndex = searchParams.get("tab") || "1";
 
   const handleEditClick = () => {
     navigate("edit");
   };
 
   const handleTabChange = (e, newValue) => {
-    setTabIndex(newValue);
+    searchParams.set("tab", newValue);
+    navigate(`?${searchParams.toString()}`);
   };
 
+  // !!! 프로필 수정 버튼 = 임시 조치
   return (
     <>
       <div className={classes.content}>
@@ -71,7 +58,7 @@ export default function ProfilePage() {
             <h1>{profileData.uNickName}</h1>
           </li>
           <li>
-            {params.userID === loginID && (
+            {params.userID === memberCode && (
               <button onClick={handleEditClick}>프로필 수정</button>
             )}
           </li>
@@ -80,12 +67,7 @@ export default function ProfilePage() {
           {profileData.uLinkTwitter && (
             <ul className={classes.list}>
               <li>
-                <FontAwesomeIcon
-                  icon={faSquareXTwitter}
-                  fixedWidth
-                  fontSize="1.2rem"
-                  transform="down-1.0"
-                />
+                <RiTwitterXLine size={22} className={classes.profileIcon} />
               </li>
               <li>
                 <Link
@@ -101,12 +83,7 @@ export default function ProfilePage() {
           {profileData.uLinkYoutube && (
             <ul className={classes.list}>
               <li>
-                <FontAwesomeIcon
-                  icon={faYoutube}
-                  fixedWidth
-                  fontSize="1.2rem"
-                  transform="down-1.0"
-                />
+                <RiYoutubeLine size={22} className={classes.profileIcon} />
               </li>
               <li>
                 <Link
@@ -122,12 +99,7 @@ export default function ProfilePage() {
           {profileData.uLinkWebpage && (
             <ul className={classes.list}>
               <li>
-                <FontAwesomeIcon
-                  icon={faGlobe}
-                  fixedWidth
-                  fontSize="1.2rem"
-                  transform="down-1.0"
-                />
+                <RiGlobalLine size={22} className={classes.profileIcon} />
               </li>
               <li>
                 <Link
@@ -144,17 +116,15 @@ export default function ProfilePage() {
       </div>
       <div className={classes.tab}>
         <TabContext value={tabIndex}>
-          <Box sx={{ borderBottom: 1, borderColor: "#ccc9c6" }}>
-            <TabList onChange={handleTabChange}>
-              <Tab value="1" label="자기소개" />
-              <Tab value="2" label="포트폴리오" />
-            </TabList>
-          </Box>
-          <TabPanel value="1" sx={{ padding: 0, height: "80%" }}>
-            <ReadOnlyEditor content={profileAboutJSON} />
+          <TabList onChange={handleTabChange} className={classes.tabList}>
+            <Tab value="1" label="자기소개" />
+            <Tab value="2" label="포트폴리오" />
+          </TabList>
+          <TabPanel value="1" sx={{ padding: "0.5rem 1.3rem", height: "80%" }}>
+            <ReadOnlyEditor content={profileData.uAbout} />
           </TabPanel>
           <TabPanel value="2" sx={{ padding: "1.3rem" }}>
-            <PortfolioGrid itemData={dummyItemData}/>
+            <PortfolioGrid memberCode={params.userID} />
           </TabPanel>
         </TabContext>
       </div>
@@ -177,18 +147,11 @@ export async function profileLoader({ request, params }) {
   return response;
 }
 
-// Temp Dummy Data
-const dummyItemData = [
-  {
-    img: "https://media1.tenor.com/m/CWHdjtoLXToAAAAC/among-us.gif",
-    title: 0
-  },
-  {
-    img: "https://media1.tenor.com/m/f4PUj7wUIm4AAAAC/cat-tongue.gif",
-    title: 1
-  },
-  {
-    img: "https://media1.tenor.com/m/w0dZ4Eltk7IAAAAC/vuknok.gif",
-    title: 2
-  },
-]
+const INIT_PROFILE_DATA = {
+  uProfileImage: "",
+  uNickName: "",
+  uLinkYoutube: "",
+  uLinkTwitter: "",
+  uLinkWebpage: "",
+  uAbout: "",
+};

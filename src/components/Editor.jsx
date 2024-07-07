@@ -6,23 +6,22 @@ import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import classes from "./Editor.module.css";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBold,
-  faStrikethrough,
-  faListUl,
-  faListOl,
-  faMinus,
-  faRotateLeft,
-  faRotateRight,
-  faUnderline,
-  faAlignLeft,
-  faAlignCenter,
-  faAlignRight,
-} from "@fortawesome/free-solid-svg-icons";
+  RiBold,
+  RiStrikethrough2,
+  RiListUnordered,
+  RiListOrdered2,
+  RiSubtractLine,
+  RiArrowGoBackLine,
+  RiArrowGoForwardLine,
+  RiUnderline,
+  RiAlignLeft,
+  RiAlignCenter,
+  RiAlignRight,
+} from "@remixicon/react";
 import { Divider } from "@mui/material";
 
-export const EditorMenuBar = ({editor}) => {
+export const EditorMenuBar = ({ editor }) => {
   if (!editor) {
     return null;
   }
@@ -34,94 +33,80 @@ export const EditorMenuBar = ({editor}) => {
         disabled={!editor.can().chain().focus().toggleBold().run()}
         className={editor.isActive("bold") ? "is-active" : ""}
       >
-        <FontAwesomeIcon icon={faBold} fixedWidth />
+        <RiBold size={22} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleStrike().run()}
         disabled={!editor.can().chain().focus().toggleStrike().run()}
         className={editor.isActive("strike") ? "is-active" : ""}
       >
-        <FontAwesomeIcon icon={faStrikethrough} fixedWidth />
+        <RiStrikethrough2 size={22} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         disabled={!editor.can().chain().focus().toggleUnderline().run()}
         className={editor.isActive("underline") ? "is-active" : ""}
       >
-        <FontAwesomeIcon icon={faUnderline} fixedWidth />
+        <RiUnderline size={22} />
       </button>
       <Divider
         orientation="vertical"
         variant="middle"
         flexItem
-        sx={{ "border-color": "#aeaba7" }}
+        sx={{ borderColor: "#aeaba7" }}
       />
       <button onClick={() => editor.chain().focus().setTextAlign("left").run()}>
-        <FontAwesomeIcon icon={faAlignLeft} fixedWidth />
+        <RiAlignLeft size={22} />
       </button>
       <button
         onClick={() => editor.chain().focus().setTextAlign("center").run()}
       >
-        <FontAwesomeIcon icon={faAlignCenter} fixedWidth />
+        <RiAlignCenter size={22} />
       </button>
       <button
         onClick={() => editor.chain().focus().setTextAlign("right").run()}
       >
-        <FontAwesomeIcon icon={faAlignRight} fixedWidth />
+        <RiAlignRight size={22} />
       </button>
       <Divider
         orientation="vertical"
         variant="middle"
         flexItem
-        sx={{ "border-color": "#aeaba7" }}
+        sx={{ borderColor: "#aeaba7" }}
       />
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={editor.isActive("bulletList") ? "is-active" : ""}
       >
-        <FontAwesomeIcon icon={faListUl} fixedWidth />
+        <RiListUnordered size={22} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={editor.isActive("orderedList") ? "is-active" : ""}
       >
-        <FontAwesomeIcon icon={faListOl} fixedWidth />
+        <RiListOrdered2 size={22} />
       </button>
       <button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-        <FontAwesomeIcon icon={faMinus} fixedWidth />
+        <RiSubtractLine size={22} />
       </button>
       <Divider
         orientation="vertical"
         variant="middle"
         flexItem
-        sx={{ "border-color": "#aeaba7" }}
+        sx={{ borderColor: "#aeaba7" }}
       />
       <button
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().chain().focus().undo().run()}
       >
-        <FontAwesomeIcon icon={faRotateLeft} fixedWidth />
+        <RiArrowGoBackLine size={22} />
       </button>
       <button
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().chain().focus().redo().run()}
       >
-        <FontAwesomeIcon icon={faRotateRight} fixedWidth />
+        <RiArrowGoForwardLine size={22} />
       </button>
-    </div>
-  );
-};
-
-export const TestEditor = () => {
-  const editor = useEditor({
-    extensions: editorExtensions,
-    content: "Hello!",
-  });
-
-  return (
-    <div className={`${classes.editor}`}>
-      <EditorMenuBar editor={editor} />
-      <EditorContent editor={editor}/>
     </div>
   );
 };
@@ -130,15 +115,22 @@ export const ReadOnlyEditor = ({ content }) => {
   const editor = useEditor({
     editable: false,
     extensions: editorExtensions,
-    content: content ? {
-      "type": "doc",
-      "content": content,
-    } : "",
+    content: content
+      ? {
+          type: "doc",
+          content: content,
+        }
+      : "",
+    editorProps: {
+      attributes: {
+        style: "padding: 0.3rem 0;",
+      },
+    },
   });
 
   return (
-    <div className={`${classes.editor} ${classes.profileEditor}`}>
-      <EditorContent editor={editor}/>
+    <div className={classes.editor}>
+      <EditorContent editor={editor} />
     </div>
   );
 };

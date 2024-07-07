@@ -1,0 +1,64 @@
+.ptfEditPage h3 {
+  margin: 1.3rem 1.3rem 0.9rem 1.3rem;
+  padding: 0;
+}
+
+.ptfDescArea {
+  padding: 0.5rem 1.3rem;
+}
+
+.editTagArea p {
+  margin: 0;
+  padding: 0 1.3rem 1rem 1.3rem;
+  border-bottom: 1px solid var(--color-gray-500);
+}
+
+.editImageArea .imgAddBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  border: 1px dashed var(--color-gray-900);
+}
+.editImageArea .imgAddBtn:hover {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+.editImageArea .imgAddBtn svg {
+  fill: var(--color-gray-900);
+}
+.editImageArea .deleteButton {
+  position: absolute !important;
+  top: 4px;
+  right: 4px;
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  transition: opacity 0.3s ease;
+}
+
+.editDescArea {
+  display: flex;
+  flex-direction: column;
+}
+.editDescArea textarea {
+  resize: vertical;
+  min-height: 10rem;
+  margin: 0.5rem 1.3rem;
+  padding: 0.5rem;
+  color: var(--color-gray-900);
+  background-color: var(--color-gray-150);
+}
+
+.editBtnArea {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.7rem 1.3rem;
+  gap: 0.7rem;
+}
+.editBtnArea .cancelEditBtn {
+  background-color: var(--color-gray-300);
+}
+
+.editor {
+  margin: 0.7rem 1.3rem;
+  border: 1px solid var(--color-gray-500);
+  min-height: 20rem;
+}

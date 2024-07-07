@@ -1,19 +1,23 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; 
-import { faMessage, faBell } from "@fortawesome/free-solid-svg-icons";
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  Avatar,
+  Divider,
+} from "@mui/material";
+import { RiChat4Line, RiNotification3Line } from "@remixicon/react";
 
 import classes from "./MainNavigation.module.css";
-
 import { useAuth } from "../provider/authProvider";
 import { Toast } from "../components/Toast";
-import { IconButton, Menu, MenuItem, Avatar, Divider } from "@mui/material";
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 
 export default function MainNavigation() {
   const navigate = useNavigate();
-  const { token, setToken, loginID } = useAuth();
+  const { token, logout, userID } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -25,12 +29,12 @@ export default function MainNavigation() {
   };
 
   const handleProfile = () => {
-    navigate(`/p/${loginID}`)
-  }
+    navigate(`/p/${userID}`);
+  };
   const handleLogout = () => {
     sendLogoutRequest(token).then(() => {
-      setToken();
-    })
+      logout();
+    });
   };
 
   return (
@@ -110,38 +114,30 @@ export default function MainNavigation() {
           <>
             <ul className={classes.buttonList}>
               <li>
-                <button>
-                  <FontAwesomeIcon icon={faBell}/>
-                </button>
+                <IconButton>
+                  <RiChat4Line size={18} className={classes.navIcon} />
+                </IconButton>
               </li>
               <li>
-                <button>
-                  <FontAwesomeIcon icon={faMessage}/>
-                </button>
+                <IconButton>
+                  <RiNotification3Line size={18} className={classes.navIcon} />
+                </IconButton>
               </li>
               <li>
-                <IconButton
-                  size="small"
-                  sx={{ml: 2}}
-                  onClick={handleClick}
-                >
-                  <Avatar sx={{width: 32, height: 32}}></Avatar>
+                <IconButton onClick={handleClick}>
+                  <Avatar sx={{ width: 32, height: 32 }}></Avatar>
                 </IconButton>
                 <Menu
                   anchorEl={anchorEl}
                   open={open}
                   onClose={handleClose}
                   onClick={handleClose}
-                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
-                  <MenuItem onClick={handleProfile}>
-                    프로필
-                  </MenuItem>
+                  <MenuItem onClick={handleProfile}>프로필</MenuItem>
                   <Divider />
-                  <MenuItem onClick={handleLogout}>
-                    로그아웃
-                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>로그아웃</MenuItem>
                 </Menu>
               </li>
             </ul>
@@ -156,12 +152,12 @@ export default function MainNavigation() {
 async function sendLogoutRequest(token) {
   let url = apiAddress + "/api/v1/auth/logout";
 
-  const response = await fetch(url, { 
+  const response = await fetch(url, {
     method: "POST",
     headers: {
-      "accessToken": token,
+      accessToken: token,
     },
-    credentials: 'include',
+    credentials: "include",
   });
 
   switch (response.status) {

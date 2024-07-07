@@ -12,6 +12,8 @@ import RegisterPage, { action as registerAction } from "../pages/UserAuth/Regist
 import RecoverPasswordPage from "../pages/UserAuth/RecoverPassword.jsx";
 import ProfilePage, { profileLoader } from "../pages/Profile/Profile.jsx";
 import ProfileEditPage from "../pages/Profile/ProfileEdit.jsx";
+import PortfolioPage, { portfolioLoader } from "../pages/Portfolio/Portfolio.jsx";
+import PortfolioEditPage from "../pages/Portfolio/PortfolioEdit.jsx";
 import ErrorPage from "../pages/Error.jsx";
 import TestPage from "../pages/Test.jsx";
 
@@ -46,8 +48,10 @@ const Routes = () => {
           element: <ProfilePage />,
         },
         {
-          path: "edit",
-          element: <ProfileEditPage />,
+          path: ":portfolioID",
+          id: "portfolio-page",
+          loader: portfolioLoader,
+          element: <PortfolioPage />,
         },
       ],
     },
@@ -65,6 +69,23 @@ const Routes = () => {
         {
           path: "logout",
           element: <div>Logout</div>,
+        },
+        {
+          path: "p/:userID",
+          id: "profile-page-edit",
+          loader: profileLoader,
+          children: [
+            {
+              path: "edit",
+              element: <ProfileEditPage />,
+            },
+            {
+              path: "edit/:portfolioID",
+              id: "portfolio-page-edit",
+              loader: portfolioLoader,
+              element: <PortfolioEditPage />,
+            },
+          ],
         },
       ],
     },
