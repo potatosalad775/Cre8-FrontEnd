@@ -13,24 +13,23 @@ import classes from "./Profile.module.css";
 import { ReadOnlyEditor } from "../../components/Editor";
 import { PortfolioGrid } from "../../components/Portfolio/PortfolioGrid";
 import { useAuth } from "../../provider/authProvider";
-
-const apiAddress = import.meta.env.VITE_API_SERVER;
+import apiInstance from "../../provider/networkProvider";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const params = useParams();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const response = useRouteLoaderData("profile-page");
+  const data = useRouteLoaderData("profile-page");
   const { memberCode } = useAuth();
   // Profile Data
   const profileData = {
-    uProfileImage: response.data.accessUrl || "",
-    uNickName: response.data.userNickName || "",
-    uLinkYoutube: response.data.youtubeLink || "",
-    uLinkTwitter: response.data.twitterLink || "",
-    uLinkWebpage: response.data.personalLink || "",
-    uAbout: JSON.parse(response.data.personalStatement) || "",
+    uProfileImage: data.accessUrl || "",
+    uNickName: data.userNickName || "",
+    uLinkYoutube: data.youtubeLink || "",
+    uLinkTwitter: data.twitterLink || "",
+    uLinkWebpage: data.personalLink || "",
+    uAbout: JSON.parse(data.personalStatement) || "",
+    uMemberCode: data.memberCode,
   };
   // Tab Index
   const tabIndex = searchParams.get("tab") || "1";
@@ -58,7 +57,7 @@ export default function ProfilePage() {
             <h1>{profileData.uNickName}</h1>
           </li>
           <li>
-            {params.userID === memberCode && (
+            {data.memberCode == memberCode && (
               <button onClick={handleEditClick}>프로필 수정</button>
             )}
           </li>
@@ -124,7 +123,7 @@ export default function ProfilePage() {
             <ReadOnlyEditor content={profileData.uAbout} />
           </TabPanel>
           <TabPanel value="2" sx={{ padding: "1.3rem" }}>
-            <PortfolioGrid memberCode={params.userID} />
+            <PortfolioGrid memberCode={profileData.uMemberCode} />
           </TabPanel>
         </TabContext>
       </div>
@@ -135,23 +134,37 @@ export default function ProfilePage() {
 // 프로필 데이터 요청 함수
 export async function profileLoader({ request, params }) {
   const uID = params.userID;
-  let url = apiAddress + `/api/v1/${uID}/profile`;
 
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const codeResponse = await apiInstance.get("/api/v1/members/pk", {
+      params: { loginId: uID },
+    });
 
-  return response;
+    // code 요청 성공
+    if (codeResponse.status === 200) {
+      const memberCode = codeResponse.data.data;
+
+      // code 기반 데이터 요청
+      try {
+        const dataResponse = await apiInstance.get(
+          `/api/v1/${memberCode}/profile`
+        );
+
+        // 프로필 데이터 로드 성공
+        if (dataResponse.status === 200) {
+          const profileData = {
+            ...dataResponse.data.data,
+            memberCode: memberCode,
+          }
+          return profileData;
+        }
+      } catch (error) {
+        console.log(error.message);
+        return null;
+      }
+    }
+  } catch (error) {
+    console.log(error.message);
+    return null;
+  }
 }
-
-const INIT_PROFILE_DATA = {
-  uProfileImage: "",
-  uNickName: "",
-  uLinkYoutube: "",
-  uLinkTwitter: "",
-  uLinkWebpage: "",
-  uAbout: "",
-};
