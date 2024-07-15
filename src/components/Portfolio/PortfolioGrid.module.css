@@ -15,6 +15,9 @@
 .editThumbnail {
   border: 1px solid var(--color-gray-600);
 }
+.editThumbnail img {
+  aspect-ratio: 1 / 1;
+}
 
 .moreButton {
   position: absolute !important;
