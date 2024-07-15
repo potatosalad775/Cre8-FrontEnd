@@ -4,7 +4,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 
 import RootLayout from "../pages/RootLayout.jsx";
 import HomePage from "../pages/Home.jsx";
-import RecruitPage from "../pages/Recruit.jsx";
+import RecruitPage from "../pages/Recruit/Recruit.jsx";
 import JobPage from "../pages/Job.jsx";
 import CommunityPage from "../pages/Community.jsx";
 import LoginPage from "../pages/UserAuth/Login.jsx";

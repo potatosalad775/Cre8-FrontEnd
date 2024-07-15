@@ -46,3 +46,9 @@
 .profileIcon {
   color: var(--color-gray-900);
 }
+
+.nicknameInput {
+  font-size: 1.5rem;
+  font-weight: bold;
+  width: 15rem;
+}

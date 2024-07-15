@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import classes from "./TagList.module.css";
+import classes from "./Tag.module.css";
 
 export default function TagList({ tagList }) {
   return (

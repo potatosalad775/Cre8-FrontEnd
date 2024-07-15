@@ -12,7 +12,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Button
+  Button,
 } from "@mui/material";
 import { RiMoreFill, RiAddFill } from "@remixicon/react";
 
@@ -31,6 +31,10 @@ export const PortfolioGrid = ({ memberCode, isEditing = false }) => {
 
   // Run only once
   useEffect(() => {
+    reloadGridData();
+  }, []);
+
+  const reloadGridData = () => {
     // Load Portfolio list using memberCode
     // Set State to Loading
     setLoadingData(true);
@@ -48,7 +52,7 @@ export const PortfolioGrid = ({ memberCode, isEditing = false }) => {
         // Remove Loading State
         setLoadingData(false);
       });
-  }, []);
+  };
 
   // View Portfolio - only available in 'Non-Edit' Page
   const handleImgClick = (e, portfolioID) => {
@@ -64,15 +68,19 @@ export const PortfolioGrid = ({ memberCode, isEditing = false }) => {
     setAnchorEl(null);
   };
   const handleEdit = (e, portfolioID) => {
-    navigate(`./${portfolioID}`);
+    navigate(`./${portfolioID}`, { state: { isCreation: false }});
   };
-  const handleRemove = (e, portfolioID) => {};
+  const handleRemove = (e, portfolioID) => {
+    removePortfolioPost(portfolioID).then(() => {
+      reloadGridData();
+    });
+  };
   // Add Portfolio - only available in 'Edit' Page
   const handleAddPtf = () => {
     setIsDialogOpen(false);
     // Add Portfolio
     createPortfolioPost().then((ptfID) => {
-      navigate(`./${ptfID}`);
+      navigate(`./${ptfID}`, { state: { isCreation: true }});
     });
   };
   const handleDialogOpen = () => {
@@ -141,19 +149,27 @@ export const PortfolioGrid = ({ memberCode, isEditing = false }) => {
                           편집
                         </MenuItem>
                         <Divider />
-                        <MenuItem onClick={handleRemove}>삭제</MenuItem>
+                        <MenuItem
+                          onClick={(e) => {
+                            handleRemove(e, item.id);
+                          }}
+                        >
+                          삭제
+                        </MenuItem>
                       </Menu>
                     </div>
                   )}
                 </ImageListItem>
               ))}
-            <ImageListItem
-              key={"ptfAddBtn"}
-              onClick={handleDialogOpen}
-              className={classes.ptfAddBtn}
-            >
-              <RiAddFill />
-            </ImageListItem>
+            {isEditing && (
+              <ImageListItem
+                key={"ptfAddBtn"}
+                onClick={handleDialogOpen}
+                className={classes.ptfAddBtn}
+              >
+                <RiAddFill />
+              </ImageListItem>
+            )}
           </ImageList>
           <Dialog open={isDialogOpen} onClose={handleDialogClose}>
             <DialogTitle>{"포트폴리오를 수정 / 생성하시겠습니까?"}</DialogTitle>
@@ -163,7 +179,9 @@ export const PortfolioGrid = ({ memberCode, isEditing = false }) => {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleDialogClose} autoFocus>취소</Button>
+              <Button onClick={handleDialogClose} autoFocus>
+                취소
+              </Button>
               <Button onClick={handleAddPtf}>확인</Button>
             </DialogActions>
           </Dialog>
@@ -179,7 +197,12 @@ async function fetchPortfolioGrid(memberCode) {
     const response = await apiInstance.get(`/portfolios/member/${memberCode}`);
     if (response.status === 200) {
       // 조회 성공
-      return response.data.data;
+      if (response.data.data == "") {
+        // 데이터가 비어있으면 null 반환
+        return null;
+      } else {
+        return response.data.data;
+      }
     }
   } catch (error) {
     // 조회 실패
@@ -188,11 +211,26 @@ async function fetchPortfolioGrid(memberCode) {
   return null;
 }
 
-// 포트폴리오 목록 데이터 요청 함수
+// 포트폴리오 생성 함수
 async function createPortfolioPost() {
   try {
     const response = await apiInstance.post(`/portfolios`);
     if (response.status === 201) {
+      // 생성 성공
+      return response.data.data;
+    }
+  } catch (error) {
+    // 조회 실패
+    console.log(error.message);
+  }
+  return null;
+}
+
+// 포트폴리오 삭제 함수
+export async function removePortfolioPost(portfolioID) {
+  try {
+    const response = await apiInstance.delete(`/portfolios/${portfolioID}`);
+    if (response.status === 200) {
       // 생성 성공
       return response.data.data;
     }

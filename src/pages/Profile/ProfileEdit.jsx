@@ -4,7 +4,7 @@ import {
   useRouteLoaderData,
   useLocation,
 } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { Avatar, Tab, IconButton } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
@@ -18,25 +18,25 @@ import { Toast } from "../../components/Toast";
 import classes from "./Profile.module.css";
 
 export default function ProfileEditPage() {
-  const response = useRouteLoaderData("profile-page-edit");
+  const data = useRouteLoaderData("profile-page-edit");
   const navigate = useNavigate();
-  const params = useParams();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const { token, userID, memberCode } = useAuth();
+  const { memberCode } = useAuth();
   // Tab Index
   const tabIndex = searchParams.get("tab") || "1";
   // Profile Data
   const [profileData, setProfileData] = useState({
-    uProfileImage: response.data.accessUrl || "",
-    uNickName: response.data.userNickName || "",
-    uLinkYoutube: response.data.youtubeLink || "",
-    uLinkTwitter: response.data.twitterLink || "",
-    uLinkWebpage: response.data.personalLink || "",
+    uProfileImage: data.accessUrl || "",
+    uNickName: data.userNickName || "",
+    uLinkYoutube: data.youtubeLink || "",
+    uLinkTwitter: data.twitterLink || "",
+    uLinkWebpage: data.personalLink || "",
+    uMemberCode: data.memberCode,
   });
   // Profile Description in JSON type
   const [profileAbout, setProfileAbout] = useState(
-    JSON.parse(response.data.personalStatement) || ""
+    JSON.parse(data.personalStatement) || ""
   );
   // Uploaded Profile Image
   const [uploadedPFP, setUploadedPFP] = useState(null);
@@ -48,7 +48,9 @@ export default function ProfileEditPage() {
     if (uploadedPFP) {
       formData.append("multipartFile", uploadedPFP);
     }
-    formData.append("userNickName", profileData.uNickName);
+    if (profileData.uNickName != data.userNickName) {
+      formData.append("userNickName", profileData.uNickName);
+    }
     formData.append("youtubeLink", getExternalLink(profileData.uLinkYoutube));
     formData.append("twitterLink", getExternalLink(profileData.uLinkTwitter));
     formData.append("personalLink", getExternalLink(profileData.uLinkWebpage));
@@ -109,15 +111,22 @@ export default function ProfileEditPage() {
           <input
             style={{ display: "none" }}
             type="file"
-            accept="image/jpeg, image/png, image/webp"
+            accept="image/jpeg, image/png"
           />
         </IconButton>
         <ul className={classes.contextButtonList}>
           <li>
-            <h1>{profileData.uNickName}</h1>
+            <input
+                id="uNickName"
+                name="uNickName"
+                type="text"
+                className={classes.nicknameInput}
+                value={profileData.uNickName || ""}
+                onChange={handleChange}
+              />
           </li>
           <li>
-            {params.userID === memberCode && (
+            {data.memberCode == memberCode && (
               <button type="submit" onClick={handleSaveClick}>
                 저장
               </button>
@@ -182,7 +191,7 @@ export default function ProfileEditPage() {
             />
           </TabPanel>
           <TabPanel value="2" sx={{ padding: "1.3rem" }}>
-            <PortfolioGrid memberCode={params.userID} isEditing={true} />
+            <PortfolioGrid memberCode={data.memberCode} isEditing={true} />
           </TabPanel>
         </TabContext>
       </div>
@@ -239,9 +248,13 @@ async function profileEditAction(formData) {
   } catch (error) {
     // 로그인 실패
     console.log(error.message);
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 400) {
+      Toast.error("이미 사용 중인 닉네임입니다.");
+    }
+    else if (error.response && error.response.status === 401) {
       Toast.error("인증과정에서 오류가 발생했습니다.");
-    } else {
+    } 
+    else {
       Toast.error("알 수 없는 오류가 발생했습니다.");
     }
   } 
@@ -250,7 +263,10 @@ async function profileEditAction(formData) {
 
 // 링크 가공 함수
 function getExternalLink(link) {
-  const pattern = /^(https?:\/)/;
+  if (link == "") {
+    return "";
+  }
+  const pattern = /^(https?:\/\/)/;
   if (!pattern.test(link)) {
     return `https://${link}`;
   }
@@ -272,3 +288,4 @@ const dummyPortfolioListData = [
     accessUrl: "https://media1.tenor.com/m/w0dZ4Eltk7IAAAAC/vuknok.gif",
   },
 ];
+

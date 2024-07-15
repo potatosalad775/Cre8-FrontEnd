@@ -3,9 +3,16 @@ import { IconButton } from "@mui/material";
 import { RiArrowLeftLine } from "@remixicon/react";
 import classes from "./Tag.module.css";
 
-export default function TagSelector({ title, tagList, selectedTag, setTag }) {
+export default function TagChildSelector({ title, tagList, selectedElement, setElement }) {
   const handleClick = (tagID) => {
-    setTag(tagID);
+    if(selectedElement.has(tagID)) {
+      //console.log("deleting tag")
+      selectedElement.delete(tagID);
+    } else {
+      //console.log("adding tag")
+      selectedElement.add(tagID)
+    }
+    setElement(new Set(selectedElement));
   };
 
   return (
@@ -17,9 +24,9 @@ export default function TagSelector({ title, tagList, selectedTag, setTag }) {
             <li className={classes.chip} key={index}>
               <Chip
                 label={tag.name}
-                color={(selectedTag == tag.workFieldTagId) ? "primary" : "default"}
+                color={(selectedElement.has(tag.workFieldChildTagId)) ? "primary" : "default"}
                 onClick={() => {
-                  handleClick(tag.workFieldTagId);
+                  handleClick(tag.workFieldChildTagId);
                 }}
               />
             </li>

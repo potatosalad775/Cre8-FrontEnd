@@ -34,6 +34,10 @@ export const AuthProvider = ({ children }) => {
         setToken(json.data.accessToken);
         //console.log("Token reissued successfully");
       }
+      if (response && response.status == 400) {
+        // refreshToken deprecated
+        logout();
+      }
     } catch (error) {
       console.error("Error reissuing token:", error);
       logout();
@@ -66,7 +70,7 @@ export const AuthProvider = ({ children }) => {
 
   // Logout Feature
   const logout = useCallback(() => {
-    console.log("Logging out!")
+    //console.log("Logging out!")
     setToken("");
     setUserID("");
     setMemberCode("");

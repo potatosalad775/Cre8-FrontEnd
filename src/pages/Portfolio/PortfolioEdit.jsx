@@ -1,14 +1,25 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useRouteLoaderData } from "react-router-dom";
-import { ImageList, ImageListItem, IconButton } from "@mui/material";
+import {
+  useParams,
+  useNavigate,
+  useLocation,
+  useRouteLoaderData,
+} from "react-router-dom";
+import {
+  ImageList,
+  ImageListItem,
+  IconButton,
+  Backdrop,
+  CircularProgress,
+} from "@mui/material";
 import { RiAddFill, RiDeleteBinLine } from "@remixicon/react";
 import { useEditor, EditorContent } from "@tiptap/react";
 
-import PageContent from "../../components/PageContent";
 import TitleBar from "../../components/TitleBar";
-import TagList from "../../components/Tag/TagList";
 import TagSelector from "../../components/Tag/TagSelector";
-import { tagLoader } from "../../components/Tag/TagLoader";
+import TagChildSelector from "../../components/Tag/TagChildSelector";
+import { tagElementLoader, tagLoader } from "../../components/Tag/TagLoader";
+import { removePortfolioPost } from "../../components/Portfolio/PortfolioGrid";
 import apiInstance from "../../provider/networkProvider";
 import { Toast } from "../../components/Toast";
 import { EditorMenuBar, editorExtensions } from "../../components/Editor";
@@ -17,30 +28,68 @@ import classes from "./Portfolio.module.css";
 export default function PortfolioEditPage() {
   const params = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [data, setData] = useState(useRouteLoaderData("portfolio-page-edit"));
   // Portfolio Description in JSON type
   const [ptfDesc, setPtfDesc] = useState(JSON.parse(data.description) || "");
-  const [uploadedImgArray, setUploadedImgArray] = useState([]);
-  const [mainTag, setMainTag] = useState();
+  const [uploadedImgArray, setUploadedImgArray] = useState([
+    ...Array(data.accessUrl.length).fill(null),
+  ]);
+  // Tag Data
+  const [tagData, setTagData] = useState();
+  const [tagElementData, setTagElementData] = useState();
+  // User selected tag
+  const [selectedTag, setSelectedTag] = useState();
+  const [selectedElement, setSelectedElement] = useState(new Set());
+  // Uploading Status
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
-    // Load Global Tag
-    tagLoader().then((tagData) => {
-      setMainTag(tagData);
-    });
-    //console.log(data);
+    // on Initial Load...
+    // Load Main Tag
+    if (!tagData) {
+      //console.log("Loading Main Tag");
+      tagLoader().then((res) => {
+        setTagData(res);
+      });
+    }
   }, []);
 
-  const handleDeleteImg = () => {
-    console.log("REMOVE IMAGE!!");
+  useEffect(() => {
+    // on Main Tag Change...
+    // Load Tag Child
+    if (selectedTag) {
+      //console.log("Loading Tag Child");
+      tagElementLoader(selectedTag).then((res) => {
+        setTagElementData(res);
+        //console.log(tagElementData);
+      });
+    }
+  }, [selectedTag]);
+
+  const handleDeleteImg = (index) => {
+    //console.log("REMOVE IMAGE!!");
+    setUploadedImgArray((prevArray) => {
+      prevArray.splice(index, 1);
+      return prevArray;
+    });
+    setData((prevData) => {
+      const newArray = [...prevData.accessUrl];
+      newArray.splice(index, 1);
+      return {
+        ...prevData,
+        accessUrl: newArray,
+      };
+    });
   };
   const handleAddImg = (e) => {
-    console.log("ADD IMAGE!!");
+    //console.log("ADD IMAGE!!");
+    setIsUploading(true);
     if (e.target.type === "file" && e.target.files && e.target.files[0]) {
       // Fetch Preview Image
       const uploadedImg = e.target.files[0];
       const imgURL = window.URL.createObjectURL(uploadedImg);
-      setUploadedImgArray(prevArray => [...prevArray, uploadedImg]);
+      setUploadedImgArray((prevArray) => [...prevArray, uploadedImg]);
       setData((prevData) => {
         return {
           ...prevData,
@@ -48,21 +97,33 @@ export default function PortfolioEditPage() {
         };
       });
     }
+    setIsUploading(false);
   };
   const handleCancelEdit = () => {
+    console.log(location.state);
+    if (location.state.isCreation == true) {
+      console.log("DELETING");
+      removePortfolioPost(params.portfolioID);
+    }
     navigate("../");
   };
   const handleSaveEdit = (e) => {
-    console.log("Saving!!");
     e.preventDefault();
-    console.log(uploadedImgArray);
 
     const formData = new FormData();
     formData.append("portfolioId", params.portfolioID);
-    //formData.append("workFieldId", "");
-    //formData.append("workFieldChildTagId", "");
-    uploadedImgArray.forEach((file, index) => {
-      formData.append("multipartFileList", file);
+    if (selectedTag) {
+      formData.append("workFieldId", selectedTag);
+    }
+    selectedElement.forEach((elementID) => {
+      if (elementID) {
+        formData.append("workFieldChildTagId", elementID);
+      }
+    });
+    uploadedImgArray.forEach((file) => {
+      if (file) {
+        formData.append("multipartFileList", file);
+      }
     });
     formData.append("description", JSON.stringify(ptfDesc));
 
@@ -77,13 +138,33 @@ export default function PortfolioEditPage() {
 
   return (
     <div className={classes.ptfEditPage}>
-      <TitleBar title="포트폴리오 수정" />
+      <Backdrop open={isUploading}>
+        <CircularProgress />
+      </Backdrop>
+      <TitleBar
+        title={
+          location.state.isCreation ? "포트폴리오 작성" : "포트폴리오 수정"
+        }
+      />
       <div className={classes.editTagArea}>
         <h3>태그 설정</h3>
         <p>작업물을 가장 잘 설명하는 태그를 선택해주세요.</p>
-        <TagSelector title="테스트" tagList={data.tagName} />
-        <TagSelector title="테스트" tagList={data.tagName} />
-        <TagSelector title="테스트" tagList={data.tagName} />
+        <TagSelector
+          title="작업 분야"
+          tagList={tagData}
+          selectedTag={selectedTag}
+          setTag={setSelectedTag}
+        />
+        {tagElementData &&
+          tagElementData.map((subTag, index) => (
+            <TagChildSelector
+              key={index}
+              title={subTag.subCategoryName}
+              tagList={subTag.workFieldChildTagResponseDtoList}
+              selectedElement={selectedElement}
+              setElement={setSelectedElement}
+            />
+          ))}
       </div>
       <div className={classes.editImageArea}>
         <h3>이미지 첨부</h3>
@@ -93,7 +174,9 @@ export default function PortfolioEditPage() {
               <img src={`${item}`} alt={`IMG_${index}`} />
               <IconButton
                 className={classes.deleteButton}
-                onClick={handleDeleteImg}
+                onClick={() => {
+                  handleDeleteImg(index);
+                }}
               >
                 <RiDeleteBinLine />
               </IconButton>
@@ -106,7 +189,7 @@ export default function PortfolioEditPage() {
                 id="ptfImgUploadBtn"
                 style={{ display: "none" }}
                 type="file"
-                accept="image/jpeg, image/png, image/webp"
+                accept="image/jpeg, image/png"
                 onChange={handleAddImg}
               />
             </ImageListItem>
@@ -127,7 +210,7 @@ export default function PortfolioEditPage() {
   );
 }
 
-// 프로필 데이터 수정 요청 함수
+// 포트폴리오 데이터 수정 요청 함수
 async function portfolioEditAction(formData) {
   /*
   for (let [key, value] of formData.entries()) {

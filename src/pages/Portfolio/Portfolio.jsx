@@ -24,16 +24,20 @@ export default function PortfolioPage() {
           <div className={classes.ptfDescArea}>
             <ReadOnlyEditor content={JSON.parse(data.description)} />
           </div>
-          <div>
+          <div className={classes.ptfTagArea}>
             <TagList tagList={data.tagName} />
-            <ImageList cols={1} gap={20} sx={{ padding: "1.3rem 0" }}>
-              {data.accessUrl.map((item, index) => (
-                <ImageListItem key={`IMG_${index}`}>
-                  <img src={`${item}`} alt={`IMG_${index}`} />
-                </ImageListItem>
-              ))}
-            </ImageList>
           </div>
+          <ImageList
+            cols={1}
+            gap={20}
+            sx={{ padding: "0 1.3rem 1.3rem 1.3rem" }}
+          >
+            {data.accessUrl.map((item, index) => (
+              <ImageListItem key={`IMG_${index}`}>
+                <img src={`${item}`} alt={`IMG_${index}`} />
+              </ImageListItem>
+            ))}
+          </ImageList>
         </>
       )}
     </>
