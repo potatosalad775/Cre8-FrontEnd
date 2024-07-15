@@ -4,6 +4,7 @@ import {
   useNavigate,
   useLocation,
   useRouteLoaderData,
+  useBlocker,
 } from "react-router-dom";
 import {
   ImageList,
@@ -11,6 +12,12 @@ import {
   IconButton,
   Backdrop,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import { RiAddFill, RiDeleteBinLine } from "@remixicon/react";
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -29,6 +36,10 @@ export default function PortfolioEditPage() {
   const params = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      currentLocation.pathname !== nextLocation.pathname
+  );
   const [data, setData] = useState(useRouteLoaderData("portfolio-page-edit"));
   // Portfolio Description in JSON type
   const [ptfDesc, setPtfDesc] = useState(JSON.parse(data.description) || "");
@@ -56,6 +67,19 @@ export default function PortfolioEditPage() {
   }, []);
 
   useEffect(() => {
+    // After Main Tag Data is loaded...
+    // load portfolio data as initial value
+    if (tagData && data.tagName) {
+      const savedTagName = data.tagName[0];
+      tagData.map((item) => {
+        if (savedTagName == item.name) {
+          setSelectedTag(item.workFieldTagId);
+        }
+      });
+    }
+  }, [tagData]);
+
+  useEffect(() => {
     // on Main Tag Change...
     // Load Tag Child
     if (selectedTag) {
@@ -66,6 +90,28 @@ export default function PortfolioEditPage() {
       });
     }
   }, [selectedTag]);
+
+  useEffect(() => {
+    // After Tag Element loaded...
+    // load portfolio data as initial value
+    const tempData = [...data.tagName];
+    const tempElement = new Set();
+    // Remove first tag (non-element)
+    tempData.shift();
+    if (tagElementData && tempData) {
+      tagElementData.map((elementItem) => {
+        elementItem.workFieldChildTagResponseDtoList.map((childItem) => {
+          if (tempData.length == 0) {
+            setSelectedElement(new Set(tempElement));
+          }
+          if (tempData[0] == childItem.name) {
+            tempElement.add(childItem.workFieldChildTagId);
+            tempData.shift();
+          }
+        });
+      });
+    }
+  }, [tagElementData]);
 
   const handleDeleteImg = (index) => {
     //console.log("REMOVE IMAGE!!");
@@ -100,9 +146,7 @@ export default function PortfolioEditPage() {
     setIsUploading(false);
   };
   const handleCancelEdit = () => {
-    console.log(location.state);
-    if (location.state.isCreation == true) {
-      console.log("DELETING");
+    if (location.state.isCreation) {
       removePortfolioPost(params.portfolioID);
     }
     navigate("../");
@@ -141,6 +185,25 @@ export default function PortfolioEditPage() {
       <Backdrop open={isUploading}>
         <CircularProgress />
       </Backdrop>
+      <Dialog open={blocker.state === "blocked"}>
+        <DialogTitle>{"뒤로 가시겠습니까?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            저장하지 않은 변경사항은 폐기됩니다.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { 
+            blocker.proceed() 
+            handleCancelEdit()
+          }}>확인</Button>
+          <Button
+            onClick={() => { blocker.reset() }} autoFocus
+          >
+            취소
+          </Button>
+        </DialogActions>
+      </Dialog>
       <TitleBar
         title={
           location.state.isCreation ? "포트폴리오 작성" : "포트폴리오 수정"

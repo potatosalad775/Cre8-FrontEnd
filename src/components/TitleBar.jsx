@@ -3,7 +3,7 @@ import { IconButton } from "@mui/material";
 import { RiArrowLeftLine } from "@remixicon/react";
 import classes from "./TitleBar.module.css";
 
-export default function TitleBar({ backBtnTarget = null, title }) {
+export default function TitleBar({ backBtnTarget = null, title, children }) {
   const navigate = useNavigate();
 
   const handleBackBtnClick = () => {
@@ -24,6 +24,7 @@ export default function TitleBar({ backBtnTarget = null, title }) {
       <li>
         <h2>{title}</h2>
       </li>
+      {children}
     </ul>
   );
 }

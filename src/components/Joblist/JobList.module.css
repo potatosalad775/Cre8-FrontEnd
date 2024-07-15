@@ -1,0 +1,40 @@
+.jobListSortBar {
+  display: flex;
+  padding: 0.7em;
+  color: var(--color-gray-200);
+  gap: 0.3em;
+  background-color: var(--color-gray-150);
+  border-bottom: 0.1rem solid var(--color-gray-500);
+}
+.jobListSortBar li {
+  display: flex;
+  gap: 0.3em;
+}
+.jobListSortBar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  font-size: 0.85rem;
+  height: 2em;
+  padding: 0.5rem;
+}
+.jobListSortBar button:hover {
+  background-color: var(--color-gray-200);
+  border: 0.1rem solid var(--color-gray-500);
+}
+
+.jobListCard {
+  padding: 1rem 1.2rem 1rem 1.2rem;
+  border-bottom: 0.1rem solid var(--color-gray-400);
+}
+.jobListCard:hover {
+  background-color: var(--color-gray-200);
+}
+.jobListCard h3 {
+  margin: 0 0.1rem 0 0.1rem;
+}
+.jobListCard h5 {
+  font-weight: 500;
+  margin: 0.2rem 0.1rem 0.5rem 0.1rem;
+}
