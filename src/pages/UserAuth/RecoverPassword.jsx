@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Form, useNavigation, useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
 import { Toast } from "../../components/Toast";
 import classes from "./UserAuth.module.css";
 
@@ -46,28 +47,33 @@ export default function LoginPage() {
 
   return (
     <div className={`center ${classes.authPage}`}>
-      <section className={classes.authSection}>
-        <h1>비밀번호 복구</h1>
-        <h4>가입 당시 사용한 이메일 주소를 입력해주세요.</h4>
-        <Form onSubmit={handleSubmit} className={classes.authForm}>
-          <div>
-            <label htmlFor="email">이메일</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={requestData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "임시 비밀번호 요청 중" : "임시 비밀번호 전송"}
-            </button>
-          </div>
-        </Form>
-      </section>
+      <Form onSubmit={handleSubmit} className={classes.authForm}>
+        <h2>비밀번호 복구</h2>
+        <h5>가입 당시 사용한 이메일 주소를 입력해주세요.</h5>
+        <div className={classes.authLabel}>
+          <label htmlFor="email">이메일</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={requestData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className={classes.authLabel}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large" 
+            sx={{ marginTop: "2rem" }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "임시 비밀번호 요청 중" : "임시 비밀번호 전송"}
+          </Button>
+        </div>
+      </Form>
     </div>
   );
 }

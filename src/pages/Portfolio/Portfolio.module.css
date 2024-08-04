@@ -11,6 +11,9 @@
   padding: 0rem 1.2rem 1.3rem 1.2rem;
 }
 
+.editTagArea h3 {
+  margin: 0.3rem 1.3rem 1rem 1.3rem;
+}
 .editTagArea p {
   margin: 0;
   padding: 0 1.3rem 1rem 1.3rem;
@@ -59,9 +62,6 @@
   justify-content: flex-end;
   padding: 0.7rem 1.3rem;
   gap: 0.7rem;
-}
-.editBtnArea .cancelEditBtn {
-  background-color: var(--color-gray-300);
 }
 
 .editor {

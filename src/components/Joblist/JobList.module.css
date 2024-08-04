@@ -11,22 +11,12 @@
   gap: 0.3em;
 }
 .jobListSortBar button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  font-size: 0.85rem;
-  height: 2em;
-  padding: 0.5rem;
-}
-.jobListSortBar button:hover {
-  background-color: var(--color-gray-200);
-  border: 0.1rem solid var(--color-gray-500);
+  color: var(--color-gray-900);
 }
 
 .jobListCard {
   padding: 1rem 1.2rem 1rem 1.2rem;
-  border-bottom: 0.1rem solid var(--color-gray-400);
+  border-bottom: 0.1rem solid var(--color-gray-500);
 }
 .jobListCard:hover {
   background-color: var(--color-gray-200);

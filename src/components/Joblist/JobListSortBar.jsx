@@ -1,4 +1,4 @@
-import { Divider } from "@mui/material";
+import { Button, Divider } from "@mui/material";
 import classes from "./JobList.module.css";
 
 export default function JobListSortBar() {
@@ -7,19 +7,19 @@ export default function JobListSortBar() {
     "마감일 순",
     "요구 경력 낮은 순",
     "요구 경력 높은 순",
-    "무작위 순서",
   ];
 
   return (
     <ul className={classes.jobListSortBar}>
       {sortMenu.map((menu, index) => (
         <li key={`btn${index}`}>
-          <button
+          <Button
+            color="inherit"
             onClick={() => {}}
             disabled={false}
           >
             {menu}
-          </button>
+          </Button>
           {!(index == sortMenu.length - 1) && <Divider
             orientation="vertical"
             variant="middle"

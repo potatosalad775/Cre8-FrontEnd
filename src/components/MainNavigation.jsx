@@ -17,7 +17,7 @@ const apiAddress = import.meta.env.VITE_API_SERVER;
 
 export default function MainNavigation() {
   const navigate = useNavigate();
-  const { token, logout, userID } = useAuth();
+  const { token, logout, userID, isLoggedIn } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -87,7 +87,7 @@ export default function MainNavigation() {
             </NavLink>
           </li>
         </ul>
-        {!token ? (
+        {!isLoggedIn ? (
           <ul className={classes.list}>
             <li>
               <NavLink

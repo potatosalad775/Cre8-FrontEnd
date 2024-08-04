@@ -16,7 +16,7 @@ export default function TagChildSelector({ title, tagList, selectedElement, setE
   };
 
   return (
-    <div className={classes.tagSelector}>
+    <div className={`${classes.tagSelector} ${classes.tagChildSelector}`}>
       <h4>{title}</h4>
       <ul>
         {tagList &&

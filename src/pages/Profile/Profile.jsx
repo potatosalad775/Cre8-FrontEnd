@@ -5,7 +5,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Avatar, Link, Tab, Box } from "@mui/material";
+import { Avatar, Link, Tab, Button } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { RiGlobalLine, RiTwitterXLine, RiYoutubeLine } from "@remixicon/react";
 import classes from "./Profile.module.css";
@@ -58,7 +58,13 @@ export default function ProfilePage() {
           </li>
           <li>
             {data.memberCode == memberCode && (
-              <button onClick={handleEditClick}>프로필 수정</button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleEditClick}
+              >
+                프로필 수정
+              </Button>
             )}
           </li>
         </ul>
@@ -155,7 +161,7 @@ export async function profileLoader({ request, params }) {
           const profileData = {
             ...dataResponse.data.data,
             memberCode: memberCode,
-          }
+          };
           return profileData;
         }
       } catch (error) {

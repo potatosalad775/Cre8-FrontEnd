@@ -11,34 +11,41 @@ import {
   IconButton,
   Backdrop,
   CircularProgress,
+  TextField,
+  Chip,
+  Divider,
   Button,
 } from "@mui/material";
-import { RiAddFill, RiDeleteBinLine } from "@remixicon/react";
 import { useEditor, EditorContent } from "@tiptap/react";
 
 import TitleBar from "../../components/TitleBar";
 import TagSelector from "../../components/Tag/TagSelector";
+import SubTagSelector from "../../components/Tag/SubTagSelector";
 import TagChildSelector from "../../components/Tag/TagChildSelector";
 import { tagElementLoader, tagLoader } from "../../components/Tag/TagLoader";
 import { removePortfolioPost } from "../../components/Portfolio/PortfolioGrid";
 import apiInstance from "../../provider/networkProvider";
 import { Toast } from "../../components/Toast";
 import { EditorMenuBar, editorExtensions } from "../../components/Editor";
-import classes from "./Portfolio.module.css";
+import classes from "./Job.module.css";
+import { useAuth } from "../../provider/authProvider";
+import { isEmpty } from "../../provider/utilityProvider";
 
-export default function PortfolioEditPage() {
+export default function JobEditPage() {
   const params = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const [data, setData] = useState(useRouteLoaderData("portfolio-page-edit"));
-  // Portfolio Description in JSON type
-  const [ptfDesc, setPtfDesc] = useState(JSON.parse(data.description) || "");
-  const [uploadedImgArray, setUploadedImgArray] = useState([
-    ...Array(data.accessUrl.length).fill(null),
-  ]);
+  const { memberCode } = useAuth();
+  //const [data, setData] = useState(useRouteLoaderData("job-page-edit"));
+  const [data, setData] = useState(dummyPageData);
+  // Job Description in JSON type
+  const [postContent, setPostContent] = useState(
+    JSON.parse(data.contents) || ""
+  );
   // Tag Data
   const [tagData, setTagData] = useState();
   const [tagElementData, setTagElementData] = useState();
+  const payType = ["작업물 건 당 지급", "작업물 분 당 지급", "월급", "기타"];
   // User selected tag
   const [selectedTag, setSelectedTag] = useState();
   const [selectedElement, setSelectedElement] = useState(new Set());
@@ -58,11 +65,10 @@ export default function PortfolioEditPage() {
   }, []);
   useEffect(() => {
     // After Main Tag Data is loaded...
-    // load portfolio data as initial value
-    if (tagData && data.tagName) {
-      const savedTagName = data.tagName[0];
+    // load recruit data as initial value
+    if (tagData && data.tagPostResponseDto.workFieldTagName) {
       tagData.map((item) => {
-        if (savedTagName == item.name) {
+        if (data.tagPostResponseDto.workFieldTagName == item.name) {
           setSelectedTag(item.workFieldTagId);
         }
       });
@@ -81,11 +87,15 @@ export default function PortfolioEditPage() {
   }, [selectedTag]);
   useEffect(() => {
     // After Tag Element loaded...
-    // load portfolio data as initial value
-    const tempData = [...data.tagName];
+    // load post data as initial value
+    let tempData = [];
+    data.tagPostResponseDto.subCategoryWithChildTagResponseDtoList.map(
+      (subItem) => {
+        tempData = [...tempData, ...subItem.childTagName];
+      }
+    );
     const tempElement = new Set();
-    // Remove first tag (non-element)
-    tempData.shift();
+    //
     if (tagElementData && tempData) {
       tagElementData.map((elementItem) => {
         elementItem.workFieldChildTagResponseDtoList.map((childItem) => {
@@ -101,92 +111,81 @@ export default function PortfolioEditPage() {
     }
   }, [tagElementData]);
 
-  const handleDeleteImg = (index) => {
-    //console.log("REMOVE IMAGE!!");
-    setUploadedImgArray((prevArray) => {
-      prevArray.splice(index, 1);
-      return prevArray;
-    });
+  const handleInputChange = (e) => {
     setData((prevData) => {
-      const newArray = [...prevData.accessUrl];
-      newArray.splice(index, 1);
       return {
         ...prevData,
-        accessUrl: newArray,
+        [e.target.name]: e.target.value,
       };
     });
   };
 
-  const handleAddImg = (e) => {
-    //console.log("ADD IMAGE!!");
-    setIsUploading(true);
-    if (e.target.type === "file" && e.target.files && e.target.files[0]) {
-      // Fetch Preview Image
-      const uploadedImg = e.target.files[0];
-      const imgURL = window.URL.createObjectURL(uploadedImg);
-      setUploadedImgArray((prevArray) => [...prevArray, uploadedImg]);
-      setData((prevData) => {
-        return {
-          ...prevData,
-          accessUrl: [...prevData.accessUrl, imgURL],
-        };
-      });
-    }
-    setIsUploading(false);
-  };
-
   const handleCancelEdit = () => {
-    if (location.state?.isCreation) {
-      removePortfolioPost(params.portfolioID);
-    }
     navigate("../");
   };
 
   const handleSaveEdit = (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("portfolioId", params.portfolioID);
-    if (selectedTag) {
-      formData.append("workFieldId", selectedTag);
+    if (isEmpty(memberCode) || isEmpty(data.title) || isEmpty(postContent)) {
+      Toast.error("입력되지 않은 내용이 있습니다.");
+      return;
     }
-    selectedElement.forEach((elementID) => {
-      if (elementID) {
-        formData.append("workFieldChildTagId", elementID);
-      }
-    });
-    uploadedImgArray.forEach((file) => {
-      if (file) {
-        formData.append("multipartFileList", file);
-      }
-    });
-    formData.append("description", JSON.stringify(ptfDesc));
 
-    portfolioEditAction(formData)
+    setIsUploading(true);
+
+    var inputData = {
+      employeePostId: memberCode,
+      title: data.title,
+      workFieldId: selectedTag,
+      workFieldChildTagId: [...selectedElement],
+      paymentMethod: data.paymentMethod,
+      paymentAmount: data.paymentAmount,
+      careerYear: data.careerYear,
+      contents: JSON.stringify(postContent),
+    };
+
+    //console.log(inputData);
+
+    jobPostEditAction(inputData, location.state.isCreation)
       .then((res) => {
         // Success
         if (res && res.status === 200) {
-          navigate("../");
+          navigate("..");
         }
       })
       .catch((error) => {
         // TODO: error handling
+      })
+      .finally(() => {
+        setIsUploading(false);
       });
   };
 
   return (
-    <div className={classes.ptfEditPage}>
+    <div className={classes.jobEditPage}>
       <Backdrop open={isUploading}>
         <CircularProgress />
       </Backdrop>
       <TitleBar
         title={
-          location.state.isCreation ? "포트폴리오 작성" : "포트폴리오 수정"
+          location.state.isCreation ? "구직 게시글 작성" : "구직 게시글 수정"
         }
       />
+      <div className={classes.editTitleArea}>
+        <h3>게시글 정보</h3>
+        <TextField
+          fullWidth
+          label="제목"
+          variant="outlined"
+          name="title"
+          value={data.title}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
       <div className={classes.editTagArea}>
-        <h3>태그 설정</h3>
-        <p>작업물을 가장 잘 설명하는 태그를 선택해주세요.</p>
+        <h3>구인 태그 설정</h3>
         <TagSelector
           title="작업 분야"
           tagList={tagData}
@@ -204,52 +203,59 @@ export default function PortfolioEditPage() {
             />
           ))}
       </div>
-      <div className={classes.editImageArea}>
-        <h3>이미지 첨부</h3>
-        <ImageList cols={5} gap={10} sx={{ padding: "0.4rem 1.3rem" }}>
-          {data.accessUrl.map((item, index) => (
-            <ImageListItem key={`IMG_${index}`}>
-              <img src={`${item}`} alt={`IMG_${index}`} />
-              <IconButton
-                className={classes.deleteButton}
-                onClick={() => {
-                  handleDeleteImg(index);
-                }}
-              >
-                <RiDeleteBinLine />
-              </IconButton>
-            </ImageListItem>
-          ))}
-          <label htmlFor="ptfImgUploadBtn">
-            <ImageListItem key={"imgAddBtn"} className={classes.imgAddBtn}>
-              <RiAddFill />
-              <input
-                id="ptfImgUploadBtn"
-                style={{ display: "none" }}
-                type="file"
-                accept="image/jpeg, image/png"
-                onChange={handleAddImg}
-              />
-            </ImageListItem>
-          </label>
-        </ImageList>
+      <div className={classes.jobPostInfoArea}>
+        <div className={classes.jobPostInfoAreaBox}>
+          <h3>급여 정보</h3>
+          <div className={classes.jobPostInfoAreaRow}>
+            <p>지급 방식</p>
+            <SubTagSelector
+              tagList={payType}
+              selectedTag={data.paymentMethod}
+              setTag={(input) => {
+                setData({
+                  ...data,
+                  paymentMethod: input,
+                });
+              }}
+            />
+          </div>
+          <div className={classes.jobPostInfoAreaInputRow}>
+            <p>희망 급여</p>
+            <input
+              type="number"
+              name="paymentAmount"
+              value={data.paymentAmount}
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+        <Divider orientation="vertical" flexItem />
+        <div className={classes.jobPostInfoAreaBox}>
+          <h3>추가 정보</h3>
+          <div className={classes.jobPostInfoAreaInputRow}>
+            <p>요구 경력</p>
+            <input
+              type="number"
+              name="careerYear"
+              value={data.careerYear}
+              onChange={handleInputChange}
+            />
+            <b>년</b>
+          </div>
+        </div>
       </div>
       <div className={classes.editDescArea}>
         <h3>작업물 설명</h3>
-        <PortfolioEditor ptfDesc={ptfDesc} setPtfDesc={setPtfDesc} />
+        <RecPostEditor
+          postContent={postContent}
+          setPostContent={setPostContent}
+        />
       </div>
       <div className={classes.editBtnArea}>
-        <Button 
-          variant="outlined"
-          onClick={handleCancelEdit}
-          className={classes.cancelEditBtn}
-        >
+        <Button variant="outlined" onClick={handleCancelEdit}>
           취소
         </Button>
-        <Button 
-          variant="contained"
-          onClick={handleSaveEdit}
-        >
+        <Button variant="contained" onClick={handleSaveEdit}>
           저장
         </Button>
       </div>
@@ -258,7 +264,7 @@ export default function PortfolioEditPage() {
 }
 
 // 포트폴리오 데이터 수정 요청 함수
-async function portfolioEditAction(formData) {
+async function jobPostEditAction(inputData, isCreation = true) {
   /*
   for (let [key, value] of formData.entries()) {
     console.log(key, value);
@@ -266,12 +272,9 @@ async function portfolioEditAction(formData) {
   */
   try {
     const response = await apiInstance({
-      method: "put",
-      url: "/portfolios",
-      data: formData,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      method: isCreation ? "post" : "put",
+      url: "/employee/posts",
+      data: inputData,
     });
     if (response.status === 200) {
       // 저장 성공
@@ -282,9 +285,9 @@ async function portfolioEditAction(formData) {
     // 로그인 실패
     console.log(error.message);
     if (error.response && error.response.status === 400) {
-      Toast.error("인증과정에서 오류가 발생했습니다.");
+      Toast.error("태그 데이터를 다루는 도중 오류가 발생했습니다.");
     } else if (error.response && error.response.status === 404) {
-      Toast.error("태그를 다루는 도중 오류가 발생했습니다.");
+      Toast.error("잘못된 데이터가 입력되었습니다.");
     } else {
       Toast.error("알 수 없는 오류가 발생했습니다.");
     }
@@ -293,19 +296,19 @@ async function portfolioEditAction(formData) {
 }
 
 // 포트폴리오 에디터
-const PortfolioEditor = ({ ptfDesc, setPtfDesc }) => {
+const RecPostEditor = ({ postContent, setPostContent }) => {
   const editor = useEditor({
     extensions: editorExtensions,
-    content: ptfDesc
+    content: postContent
       ? {
           type: "doc",
-          content: ptfDesc,
+          content: postContent,
         }
       : "",
     onUpdate: ({ editor }) => {
       const json = editor.getJSON();
       const data = json.content;
-      setPtfDesc(data);
+      setPostContent(data);
     },
     editorProps: {
       attributes: {
@@ -322,12 +325,28 @@ const PortfolioEditor = ({ ptfDesc, setPtfDesc }) => {
   );
 };
 
-const dummyPortfolioPageData = {
-  tagName: ["Sample Tag", "Tag2", "Looooooooooong Tag"],
-  accessUrl: [
-    "https://media1.tenor.com/m/CWHdjtoLXToAAAAC/among-us.gif",
-    "https://media1.tenor.com/m/f4PUj7wUIm4AAAAC/cat-tongue.gif",
-    "https://media1.tenor.com/m/w0dZ4Eltk7IAAAAC/vuknok.gif",
+const dummyPageData = {
+  title: "string",
+  name: "string",
+  sex: "string",
+  birthYear: 0,
+  tagPostResponseDto: {
+    workFieldTagName: "string",
+    subCategoryWithChildTagResponseDtoList: [
+      {
+        subCategoryName: "string",
+        childTagName: ["string"],
+      },
+    ],
+  },
+  portfolioSimpleResponseDtoList: [
+    {
+      id: 0,
+      accessUrl: "string",
+    },
   ],
-  description: "This is dummy data",
+  paymentMethod: "string",
+  paymentAmount: 0,
+  careerYear: 0,
+  contents: JSON.stringify({}),
 };

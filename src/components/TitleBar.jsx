@@ -21,10 +21,8 @@ export default function TitleBar({ backBtnTarget = null, title, children }) {
           </IconButton>
         </li>
       )}
-      <li>
-        <h2>{title}</h2>
-      </li>
-      {children}
+      <li><h2>{title}</h2></li>
+      <li>{children}</li>
     </ul>
   );
 }

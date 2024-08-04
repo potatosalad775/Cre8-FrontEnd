@@ -2,6 +2,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import AuthProvider from "./provider/authProvider";
+import { useAuth } from "./provider/authProvider";
 import { createTheme, ThemeProvider } from "@mui/material";
 import Routes from "./routes/Routes";
 
@@ -21,11 +22,12 @@ export default App;
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#673ab7",
+      main: '#673AB7',
     },
     secondary: {
-      main: "#8bc34a",
+      main: '#F39C12',
     },
+    divider: '#AEABA7'
   },
   typography: {
     "fontFamily": 'Pretendard, system-ui, Helvetica, Arial, sans-serif'

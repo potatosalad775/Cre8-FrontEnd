@@ -21,3 +21,7 @@
   gap: 0.5rem;
   flex-shrink: 1;
 }
+
+.tagChildSelector {
+  background-color: var(--color-gray-150);
+}

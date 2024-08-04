@@ -1,57 +1,115 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import { Button, Pagination } from "@mui/material";
 
 import TitleBar from "../../components/TitleBar";
 import TagSelector from "../../components/Tag/TagSelector";
 import TagChildSelector from "../../components/Tag/TagChildSelector";
 import JobListSortBar from "../../components/Joblist/JobListSortBar";
-import JobListCard from "../../components/Joblist/JobListCard";
-import { tagLoader, tagElementLoader } from "../../components/Tag/TagLoader";
+import { RecruitListCard } from "../../components/Joblist/JobListCard";
+import { tagElementLoader } from "../../components/Tag/TagLoader";
+import apiInstance from "../../provider/networkProvider";
+import { debounce } from "../../provider/utilityProvider";
+import { useAuth } from "../../provider/authProvider";
 import classes from "./Recruit.module.css";
 
 export default function RecruitPage() {
-  //const data = useRouteLoaderData("recruit-page");
-  const data = dummyData;
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
   // Tag Data
-  const [tagData, setTagData] = useState();
+  const tagData = useRouteLoaderData("recruit-page");
   const [tagElementData, setTagElementData] = useState();
   // User selected tag
   const [selectedTag, setSelectedTag] = useState();
   const [selectedElement, setSelectedElement] = useState(new Set());
+  // Recruit Post Data
+  const [recruitPostData, setRecruitPostData] = useState({});
+  const [recruitSearchObj, setRecruitSearchObj] = useState({});
+  const [recruitPageObj, setRecruitPageObj] = useState({ size: 10 });
 
-  useEffect(() => {
-    // on Initial Load...
-    // Load Main Tag
-    if (!tagData) {
-      //console.log("Loading Main Tag");
-      tagLoader().then((res) => {
-        setTagData(res);
+  // Debounced Search Callback
+  const debouncedSearchRecruitPost = useCallback(
+    debounce((searchObj, pageObj) => {
+      searchRecruitPost(searchObj, pageObj).then((data) => {
+        console.log(data)
+        setRecruitPostData(data);
       });
-    }
-  }, []);
+    }, 300),
+    []
+  );
 
+  //console.log(tagData);
+  //console.log(recruitPostData);
+
+  // on Main Tag Change
   useEffect(() => {
-    // on Main Tag Change...
-    // Load Tag Child
+    // Update Tag Child
     if (selectedTag) {
-      //console.log("Loading Tag Child");
       tagElementLoader(selectedTag).then((res) => {
         setTagElementData(res);
-        //console.log(tagElementData);
+      });
+    } else {
+      setTagElementData();
+    }
+    // Update Search Key Object
+    setRecruitSearchObj({
+      ...recruitSearchObj,
+      workFieldId: selectedTag,
+    });
+  }, [selectedTag]);
+
+  // on Tag Child Change
+  useEffect(() => {
+    // Update Search Key Object
+    if (selectedElement) {
+      setRecruitSearchObj({
+        ...recruitSearchObj,
+        workFieldChildTagId: [...selectedElement],
       });
     }
-    //console.log(tagData)
-    //console.log(tagElementData)
-  }, [selectedTag]);
+  }, [selectedElement]);
+
+  // on Search Key and Page Key Change
+  useEffect(() => {
+    // re-search and fetch Post Data
+    debouncedSearchRecruitPost(recruitSearchObj, recruitPageObj);
+  }, [recruitSearchObj, recruitPageObj]);
+
+  const onPageChange = (event, value) => {
+    setRecruitPageObj({
+      ...recruitPageObj,
+      page: value - 1,
+    });
+  };
+
+  const handleAddClick = () => {
+    navigate("./edit", { state: { isCreation: true } });
+  };
+
+  const handleCardClick = (postID) => {
+    navigate(`./${postID}`);
+  };
 
   return (
     <div>
-      <TitleBar title="구인" />
+      <TitleBar title="구인">
+        {isLoggedIn && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleAddClick}
+          >
+            구인 글 작성
+          </Button>
+        )}
+      </TitleBar>
       <div className={classes.recruitTagArea}>
         <TagSelector
           title="작업 분야"
           tagList={tagData}
           selectedTag={selectedTag}
           setTag={setSelectedTag}
+          toggle={true}
         />
         {tagElementData &&
           tagElementData.map((subTag, index) => (
@@ -65,14 +123,62 @@ export default function RecruitPage() {
           ))}
       </div>
       <JobListSortBar />
-      <div>
-        {data.employerPostSearchResponseDtoList &&
-          data.employerPostSearchResponseDtoList.map((item, index) => (
-            <JobListCard key={index} itemData={item}/>
-          ))}
+      <div className={classes.recruitPostArea}>
+        {Object.keys(recruitPostData).length === 0 && <p>불러오는 중</p>}
+        {Object.keys(recruitPostData).length !== 0 &&
+          recruitPostData.totalCount == 0 && <p>표시할 내용이 없습니다.</p>}
+        {Object.keys(recruitPostData).length !== 0 &&
+          recruitPostData.totalCount > 0 &&
+          recruitPostData.employerPostSearchResponseDtoList.map(
+            (item, index) => (
+              <RecruitListCard
+                key={index}
+                itemData={item}
+                onClick={() => {
+                  handleCardClick(item.employerPostId);
+                }}
+              />
+            )
+          )}
+      </div>
+      <div className={classes.recruitPageArea}>
+        <Pagination
+          count={recruitPostData.totalPages || 1}
+          page={recruitPageObj.page + 1 || 1}
+          onChange={onPageChange}
+        />
       </div>
     </div>
   );
+}
+
+// 구인 게시글 검색 함수
+async function searchRecruitPost(recruitSearchObj, recruitPageObj) {
+  //console.log("Searching!");
+  console.log(recruitSearchObj);
+  //console.log(recruitPageObj);
+
+  try {
+    const response = await apiInstance.get("/api/v1/employer-post/search", {
+      params: {
+        ...recruitSearchObj,
+        ...recruitPageObj,
+      },
+    });
+    if (response.status === 200) {
+      // 조회 성공
+      if (response.data.data == "") {
+        // 데이터가 비어있으면 null 반환
+        return {};
+      } else {
+        return response.data.data;
+      }
+    }
+  } catch (error) {
+    // 조회 실패
+    console.error(error.message);
+  }
+  return {};
 }
 
 const dummyData = {

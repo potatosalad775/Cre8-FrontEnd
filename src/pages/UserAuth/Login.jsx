@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Form, useNavigation, useNavigate } from "react-router-dom";
-import { Link } from "@mui/material";
+import { Link, Button } from "@mui/material";
 
 import { onLogin } from "../../provider/authProvider";
 import UserValidate from "../../provider/UserValidate";
@@ -50,16 +50,16 @@ export default function LoginPage() {
       // 로그인 시도
       const success = await sendLoginRequest(loginData);
       // 로그인 성공 시 메인 페이지로 이동
-      if(success) {
-        navigate("/", {replace: true});
+      if (success) {
+        navigate("/", { replace: true });
       }
     }
   };
 
   return (
     <div className={`center ${classes.authPage}`}>
-      <section className={classes.authSection}>
-        <h1>로그인</h1>
+      <Form onSubmit={handleLogin} className={classes.authForm}>
+        <h2>로그인</h2>
         <ul>
           <li>
             <h5>아직 회원이 아니신가요?</h5>
@@ -70,54 +70,58 @@ export default function LoginPage() {
             </Link>
           </li>
         </ul>
-        <Form onSubmit={handleLogin} className={classes.authForm}>
-          <div>
-            <label htmlFor="userID">아이디</label>
-            <input
-              id="userID"
-              name="userID"
-              type="text"
-              value={loginData.userID}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              required
-            />
-            {loginError.userID && focus.userID && (
-              <span>{loginError.userID}</span>
-            )}
-          </div>
-          <div>
-            <label htmlFor="password">비밀번호</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={loginData.password}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              required
-            />
-            {loginError.password && focus.password && (
-              <span>{loginError.password}</span>
-            )}
-          </div>
-          <ul className={classes.rightUL}>
-            <li>
-              <h5>비밀번호가 기억나지 않으시나요?</h5>
-            </li>
-            <li>
-              <Link href="recoverPassword">
-                <h5>비밀번호 찾기</h5>
-              </Link>
-            </li>
-          </ul>
-          <div>
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "로그인 중" : "로그인"}
-            </button>
-          </div>
-        </Form>
-      </section>
+        <div className={classes.authLabel}>
+          <label htmlFor="userID">아이디</label>
+          <input
+            id="userID"
+            name="userID"
+            type="text"
+            value={loginData.userID}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            required
+          />
+          {loginError.userID && focus.userID && (
+            <span>{loginError.userID}</span>
+          )}
+        </div>
+        <div className={classes.authLabel}>
+          <label htmlFor="password">비밀번호</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            value={loginData.password}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            required
+          />
+          {loginError.password && focus.password && (
+            <span>{loginError.password}</span>
+          )}
+        </div>
+        <ul className={classes.rightUL}>
+          <li>
+            <h5>비밀번호가 기억나지 않으시나요?</h5>
+          </li>
+          <li>
+            <Link href="recoverPassword">
+              <h5>비밀번호 찾기</h5>
+            </Link>
+          </li>
+        </ul>
+        <div className={classes.authLabel}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "로그인 중" : "로그인"}
+          </Button>
+        </div>
+      </Form>
     </div>
   );
 }
@@ -146,7 +150,7 @@ const sendLoginRequest = async (inputData) => {
     }
   }
   return false;
-}
+};
 
 const FOCUS_ALL_DATA = {
   userID: true,

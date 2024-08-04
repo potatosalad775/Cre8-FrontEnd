@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useAuth } from "../provider/authProvider";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -5,7 +6,11 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import RootLayout from "../pages/RootLayout.jsx";
 import HomePage from "../pages/Home.jsx";
 import RecruitPage from "../pages/Recruit/Recruit.jsx";
+import RecruitPostPage, { recruitPostLoader } from "../pages/Recruit/RecruitPost.jsx";
+import RecruitEditPage from "../pages/Recruit/RecruitEdit.jsx";
 import JobPage from "../pages/Job/Job.jsx";
+import JobPostPage, { jobPostLoader } from "../pages/Job/JobPost.jsx";
+import JobEditPage from "../pages/Job/JobEdit.jsx";
 import CommunityPage from "../pages/Community.jsx";
 import LoginPage from "../pages/UserAuth/Login.jsx";
 import RegisterPage, { action as registerAction } from "../pages/UserAuth/Register.jsx";
@@ -16,22 +21,52 @@ import PortfolioPage, { portfolioLoader } from "../pages/Portfolio/Portfolio.jsx
 import PortfolioEditPage from "../pages/Portfolio/PortfolioEdit.jsx";
 import ErrorPage from "../pages/Error.jsx";
 import TestPage from "../pages/Test.jsx";
+import { tagLoader } from "../components/Tag/TagLoader.jsx";
 
 const Routes = () => {
-  const { token } = useAuth();
+  const { isLoggedIn, reissueToken } = useAuth();
+
+  // Refresh Token on initial open
+  useEffect(() => {
+    reissueToken();
+  }, [])
 
   // Define public routes accessible to all users
   const routesForPublic = [
     { index: true, element: <HomePage /> },
     {
       path: "recruit",
-      element: <RecruitPage />,
-      children: [{}],
+      id: "recruit-page",
+      loader: tagLoader,
+      children: [
+        {
+          index: true,
+          element: <RecruitPage />,
+        },
+        {
+          path: ":recruitPostID",
+          id: "recruitPost-page",
+          loader: recruitPostLoader,
+          element: <RecruitPostPage />,
+        },
+      ],
     },
     {
       path: "job",
-      element: <JobPage />,
-      children: [{}],
+      id: "job-page",
+      loader: tagLoader,
+      children: [
+        {
+          index: true,
+          element: <JobPage />,
+        },
+        {
+          path: ":jobPostID",
+          id: "jobPost-page",
+          loader: jobPostLoader,
+          element: <JobPostPage />,
+        },
+      ],
     },
     {
       path: "community",
@@ -87,6 +122,36 @@ const Routes = () => {
             },
           ],
         },
+        {
+          path: "recruit/edit",
+          children: [
+            {
+              index: true,
+              element: <RecruitEditPage />,
+            },
+            {
+              path: ":recruitPostID",
+              id: "recruit-page-edit",
+              loader: recruitPostLoader,
+              element: <RecruitEditPage />,
+            }
+          ]
+        },
+        {
+          path: "job/edit",
+          children: [
+            {
+              index: true,
+              element: <JobEditPage />,
+            },
+            {
+              path: ":jobPostID",
+              id: "job-page-edit",
+              loader: jobPostLoader,
+              element: <JobEditPage />,
+            }
+          ]
+        },
       ],
     },
   ];
@@ -105,7 +170,7 @@ const Routes = () => {
       errorElement: <ErrorPage />,
       children: [
         ...routesForPublic,
-        ...(!token ? routesForNotAuthenticatedOnly : []),
+        ...(!isLoggedIn ? routesForNotAuthenticatedOnly : []),
         ...routesForAuthenticatedOnly,
       ],
     },

@@ -1,16 +1,17 @@
 import { Chip } from "@mui/material";
-import { IconButton } from "@mui/material";
-import { RiArrowLeftLine } from "@remixicon/react";
 import classes from "./Tag.module.css";
 
-export default function TagSelector({ title, tagList, selectedTag, setTag }) {
+export default function TagSelector({ title, tagList, selectedTag, setTag, toggle = false }) {
   const handleClick = (tagID) => {
     setTag(tagID);
+    if(selectedTag == tagID && toggle) {
+      setTag();
+    }
   };
 
   return (
     <div className={classes.tagSelector}>
-      <h4>{title}</h4>
+      {title && <h4>{title}</h4>}
       <ul>
         {tagList &&
           tagList.map((tag, index) => (
