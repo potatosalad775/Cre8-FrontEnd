@@ -6,7 +6,7 @@ import mkcert from 'vite-plugin-mkcert'
 export default defineConfig({
   plugins: [
     react(),
-    mkcert({certFileName: './localhost.pem', keyFileName: './localhost-key.pem'})
+    //mkcert({certFileName: './localhost.pem', keyFileName: './localhost-key.pem'})
   ],
   server: {
     https: true,
