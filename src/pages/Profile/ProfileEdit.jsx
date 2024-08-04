@@ -1,12 +1,11 @@
 import {
   useNavigate,
-  useParams,
   useRouteLoaderData,
   useLocation,
 } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
-import { Avatar, Tab, IconButton } from "@mui/material";
+import { Avatar, Tab, IconButton, Button } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { RiGlobalLine, RiTwitterXLine, RiYoutubeLine } from "@remixicon/react";
 
@@ -127,9 +126,14 @@ export default function ProfileEditPage() {
           </li>
           <li>
             {data.memberCode == memberCode && (
-              <button type="submit" onClick={handleSaveClick}>
+              <Button 
+                type="submit" 
+                onClick={handleSaveClick}
+                variant="contained"
+                color="secondary"
+              >
                 저장
-              </button>
+              </Button>
             )}
           </li>
         </ul>

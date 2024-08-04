@@ -1,57 +1,112 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import { Button, Pagination } from "@mui/material";
 
 import TitleBar from "../../components/TitleBar";
 import TagSelector from "../../components/Tag/TagSelector";
 import TagChildSelector from "../../components/Tag/TagChildSelector";
 import JobListSortBar from "../../components/Joblist/JobListSortBar";
-import JobListCard from "../../components/Joblist/JobListCard";
-import { tagLoader, tagElementLoader } from "../../components/Tag/TagLoader";
+import { JobListCard } from "../../components/Joblist/JobListCard";
+import { tagElementLoader } from "../../components/Tag/TagLoader";
+import apiInstance from "../../provider/networkProvider";
+import { debounce } from "../../provider/utilityProvider";
+import { useAuth } from "../../provider/authProvider";
 import classes from "./Job.module.css";
 
 export default function JobPage() {
-  //const data = useRouteLoaderData("job-page");
-  const data = dummyData;
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
   // Tag Data
-  const [tagData, setTagData] = useState();
+  const tagData = useRouteLoaderData("job-page");
   const [tagElementData, setTagElementData] = useState();
   // User selected tag
   const [selectedTag, setSelectedTag] = useState();
   const [selectedElement, setSelectedElement] = useState(new Set());
+  // Job Post Data
+  const [jobPostData, setJobPostData] = useState({});
+  const [jobSearchObj, setJobSearchObj] = useState({});
+  const [jobPageObj, setJobPageObj] = useState({ size: 10 });
 
-  useEffect(() => {
-    // on Initial Load...
-    // Load Main Tag
-    if (!tagData) {
-      //console.log("Loading Main Tag");
-      tagLoader().then((res) => {
-        setTagData(res);
+  // Debounced Search Callback
+  const debouncedSearchJobPost = useCallback(
+    debounce((searchObj, pageObj) => {
+      searchJobPost(searchObj, pageObj).then((data) => {
+        console.log(data)
+        setJobPostData(data);
       });
-    }
-  }, []);
+    }, 300),
+    []
+  );
 
+  // on Main Tag Change
   useEffect(() => {
-    // on Main Tag Change...
-    // Load Tag Child
+    // Update Tag Child
     if (selectedTag) {
-      //console.log("Loading Tag Child");
       tagElementLoader(selectedTag).then((res) => {
         setTagElementData(res);
-        //console.log(tagElementData);
+      });
+    } else {
+      setTagElementData();
+    }
+    // Update Search Key Object
+    setJobSearchObj({
+      ...jobSearchObj,
+      workFieldId: selectedTag,
+    });
+  }, [selectedTag]);
+
+  // on Tag Child Change
+  useEffect(() => {
+    // Update Search Key Object
+    if (selectedElement) {
+      setJobSearchObj({
+        ...jobSearchObj,
+        workFieldChildTagId: [...selectedElement],
       });
     }
-    //console.log(tagData)
-    //console.log(tagElementData)
-  }, [selectedTag]);
+  }, [selectedElement]);
+
+  // on Search Key and Page Key Change
+  useEffect(() => {
+    // re-search and fetch Post Data
+    debouncedSearchJobPost(jobSearchObj, jobPageObj);
+  }, [jobSearchObj, jobPageObj]);
+
+  const onPageChange = (event, value) => {
+    setJobPageObj({
+      ...jobPageObj,
+      page: value - 1,
+    });
+  };
+
+  const handleAddClick = () => {
+    navigate("./edit", { state: { isCreation: true } });
+  };
+
+  const handleCardClick = (postID) => {
+    navigate(`./${postID}`);
+  };
 
   return (
     <div>
-      <TitleBar title="구직" />
+      <TitleBar title="구직">
+        {isLoggedIn && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleAddClick}
+          >
+            구직 글 작성
+          </Button>
+        )}
+      </TitleBar>
       <div className={classes.jobTagArea}>
         <TagSelector
           title="작업 분야"
           tagList={tagData}
           selectedTag={selectedTag}
           setTag={setSelectedTag}
+          toggle={true}
         />
         {tagElementData &&
           tagElementData.map((subTag, index) => (
@@ -65,32 +120,83 @@ export default function JobPage() {
           ))}
       </div>
       <JobListSortBar />
-      <div>
-        {data.employerPostSearchResponseDtoList &&
-          data.employerPostSearchResponseDtoList.map((item, index) => (
-            <JobListCard key={index} itemData={item}/>
-          ))}
+      <div className={classes.jobPostArea}>
+        {Object.keys(jobPostData).length === 0 && <p>불러오는 중</p>}
+        {Object.keys(jobPostData).length !== 0 &&
+          jobPostData.totalCount == 0 && <p>표시할 내용이 없습니다.</p>}
+        {Object.keys(jobPostData).length !== 0 &&
+          jobPostData.totalCount > 0 &&
+          jobPostData.employeePostSearchResponseDtoList.map(
+            (item, index) => (
+              <JobListCard
+                key={index}
+                itemData={item}
+                onClick={() => {
+                  handleCardClick(item.employeePostId);
+                }}
+              />
+            )
+          )}
+      </div>
+      <div className={classes.jobPageArea}>
+        <Pagination
+          count={jobPostData.totalPages || 1}
+          page={jobPageObj.page + 1 || 1}
+          onChange={onPageChange}
+        />
       </div>
     </div>
   );
+}
+
+// 구직 게시글 검색 함수
+async function searchJobPost(jobSearchObj, jobPageObj) {
+  //console.log("Searching!");
+  console.log(jobSearchObj);
+  console.log(jobPageObj);
+
+  try {
+    const response = await apiInstance.get("/api/v1/employee-post/search", {
+      params: {
+        ...jobSearchObj,
+        ...jobPageObj,
+      },
+    });
+    if (response.status === 200) {
+      // 조회 성공
+      if (response.data.data == "") {
+        // 데이터가 비어있으면 null 반환
+        return {};
+      } else {
+        console.log(response.data.data)
+        return response.data.data;
+      }
+    }
+  } catch (error) {
+    // 조회 실패
+    console.error(error.message);
+  }
+  return {};
 }
 
 const dummyData = {
   totalCount: 2,
   employerPostSearchResponseDtoList: [
     {
-      employerPostId: 0,
+      employeePostId: 1,
       title: "Test Post 1",
-      companyName: "Test Company",
-      enrollDurationType: "Duration 1",
-      tagNameList: ["Tag1", "Tag2"],
+      memberName: "Member1",
+      sex: "M",
+      year: 0,
+      tagNameList: ["hello?", "yyyyyyy"],
     },
     {
-      employerPostId: 1,
+      employeePostId: 2,
       title: "Test Post 2",
-      companyName: "테스트 회사",
-      enrollDurationType: "Duration 2",
-      tagNameList: ["hello?", "yyyyyyy"],
+      memberName: "Member2",
+      sex: "W",
+      year: 3,
+      tagNameList: ["asdgfsdg?", "wewewegyyyyy"],
     },
   ],
   totalPages: 1,

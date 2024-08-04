@@ -33,21 +33,21 @@ export const EditorMenuBar = ({ editor }) => {
         disabled={!editor.can().chain().focus().toggleBold().run()}
         className={editor.isActive("bold") ? "is-active" : ""}
       >
-        <RiBold size={22} />
+        <RiBold size={20} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleStrike().run()}
         disabled={!editor.can().chain().focus().toggleStrike().run()}
         className={editor.isActive("strike") ? "is-active" : ""}
       >
-        <RiStrikethrough2 size={22} />
+        <RiStrikethrough2 size={20} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         disabled={!editor.can().chain().focus().toggleUnderline().run()}
         className={editor.isActive("underline") ? "is-active" : ""}
       >
-        <RiUnderline size={22} />
+        <RiUnderline size={20} />
       </button>
       <Divider
         orientation="vertical"
@@ -56,17 +56,17 @@ export const EditorMenuBar = ({ editor }) => {
         sx={{ borderColor: "#aeaba7" }}
       />
       <button onClick={() => editor.chain().focus().setTextAlign("left").run()}>
-        <RiAlignLeft size={22} />
+        <RiAlignLeft size={20} />
       </button>
       <button
         onClick={() => editor.chain().focus().setTextAlign("center").run()}
       >
-        <RiAlignCenter size={22} />
+        <RiAlignCenter size={20} />
       </button>
       <button
         onClick={() => editor.chain().focus().setTextAlign("right").run()}
       >
-        <RiAlignRight size={22} />
+        <RiAlignRight size={20} />
       </button>
       <Divider
         orientation="vertical"
@@ -78,16 +78,16 @@ export const EditorMenuBar = ({ editor }) => {
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={editor.isActive("bulletList") ? "is-active" : ""}
       >
-        <RiListUnordered size={22} />
+        <RiListUnordered size={20} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={editor.isActive("orderedList") ? "is-active" : ""}
       >
-        <RiListOrdered2 size={22} />
+        <RiListOrdered2 size={20} />
       </button>
       <button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-        <RiSubtractLine size={22} />
+        <RiSubtractLine size={20} />
       </button>
       <Divider
         orientation="vertical"
@@ -99,13 +99,13 @@ export const EditorMenuBar = ({ editor }) => {
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().chain().focus().undo().run()}
       >
-        <RiArrowGoBackLine size={22} />
+        <RiArrowGoBackLine size={20} />
       </button>
       <button
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().chain().focus().redo().run()}
       >
-        <RiArrowGoForwardLine size={22} />
+        <RiArrowGoForwardLine size={20} />
       </button>
     </div>
   );

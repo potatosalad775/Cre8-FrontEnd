@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Form, useSubmit, useNavigation, redirect } from "react-router-dom";
-import { Link } from "@mui/material"
+import { Link, Button, Select, MenuItem } from "@mui/material";
 
 import UserValidate from "../../provider/UserValidate";
 import { Toast } from "../../components/Toast";
@@ -66,14 +66,20 @@ export default function RegisterPage() {
                   break;
                 // 이메일 사용 불가 (중복)
                 case 400:
-                  setRegisterError({ ...registerError, email: "이미 사용 중인 이메일입니다." });
+                  setRegisterError({
+                    ...registerError,
+                    email: "이미 사용 중인 이메일입니다.",
+                  });
                   break;
               }
             });
             break;
           // 아이디 사용 불가 (중복)
           case 400:
-            setRegisterError({ ...registerError, loginId: "이미 사용 중인 아이디입니다." });
+            setRegisterError({
+              ...registerError,
+              loginId: "이미 사용 중인 아이디입니다.",
+            });
             break;
         }
       });
@@ -95,149 +101,173 @@ export default function RegisterPage() {
 
   return (
     <div className={`center ${classes.authPage}`}>
-      <section className={classes.authSection}>
-        <h1>회원가입</h1>
+      <Form method="POST" className={classes.authForm}>
+        <h2>회원가입</h2>
         <ul>
-          <li><h5>이미 계정이 있으신가요?</h5></li>
-          <li><Link href="login"><h5>로그인</h5></Link></li>
+          <li>
+            <h5>이미 계정이 있으신가요?</h5>
+          </li>
+          <li>
+            <Link href="login">
+              <h5>로그인</h5>
+            </Link>
+          </li>
         </ul>
-        <Form method="POST" className={classes.authForm}>
-          <div>
-            <label htmlFor="loginId">아이디</label>
-            <input
-              id="loginId"
-              name="loginId"
-              type="text"
-              value={registerData.loginId}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              required
-            />
-            {registerError.loginId && focus.loginId && <span>{registerError.loginId}</span>}
-          </div>
-          <div>
-            <label htmlFor="password">비밀번호</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={registerData.password}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              required
-            />
-            {registerError.password && focus.password && <span>{registerError.password}</span>}
-          </div>
-          <div>
-            <label htmlFor="confirmPassword">비밀번호 확인</label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              value={registerData.confirmPassword}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              required
-            />
-            {registerError.confirmPassword && focus.confirmPassword && (
-              <span>{registerError.confirmPassword}</span>
-            )}
-          </div>
-          <div>
-            <label htmlFor="email">이메일</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={registerData.email}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              required
-            />
-            {registerError.email && focus.email && <span>{registerError.email}</span>}
-          </div>
-          <div>
-            <label htmlFor="nickName">별명</label>
-            <input
-              id="nickName"
-              name="nickName"
-              type="text"
-              value={registerData.nickName}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              required
-            />
-            {registerError.nickName && focus.nickName && <span>{registerError.nickName}</span>}
-          </div>
-          <div>
-            <label htmlFor="name">이름</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={registerData.name}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              required
-            />
-            {registerError.name && focus.name && <span>{registerError.name}</span>}
-          </div>
-          <div>
-            <label htmlFor="sex">성별</label>
-            <select
-              id="sex"
-              name="sex"
-              value={registerData.sex}
-              onChange={handleChange}
-              onFocus={handleFocus}
-            >
-              <option value="" disabled>
-                선택해주세요.
-              </option>
-              <option value="M">남자</option>
-              <option value="W">여자</option>
-            </select>
-            {registerError.sex && focus.sex && <span>{registerError.sex}</span>}
-          </div>
-          <div>
-            <label htmlFor="birthDay">생년월일</label>
-            <input
-              id="birthDay"
-              name="birthDay"
-              type="date"
-              max="9999-12-31"
-              value={registerData.date}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              required
-            />
-            {registerError.birthDay && focus.birthDay && <span>{registerError.birthDay}</span>}
-          </div>
-          <div style={{ display: isCodeSent ? undefined : "none" }}>
-            <label htmlFor="authCode">확인 코드</label>
-            <input
-              id="authCode"
-              name="authCode"
-              type="authCode"
-              value={inputCode}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              disabled={!isCodeSent}
-              required
-            />
-            {registerError.authCode && focus.authCode && <span>{registerError.authCode}</span>}
-          </div>
-          <div>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              onClick={handleSubmit}
-            >
-              {isSubmitting ? "회원가입 중" : "회원가입"}
-            </button>
-          </div>
-        </Form>
-      </section>
+        <div className={classes.authLabel}>
+          <label htmlFor="loginId">아이디</label>
+          <input
+            id="loginId"
+            name="loginId"
+            type="text"
+            value={registerData.loginId}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            required
+          />
+          {registerError.loginId && focus.loginId && (
+            <span>{registerError.loginId}</span>
+          )}
+        </div>
+        <div className={classes.authLabel}>
+          <label htmlFor="password">비밀번호</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            value={registerData.password}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            required
+          />
+          {registerError.password && focus.password && (
+            <span>{registerError.password}</span>
+          )}
+        </div>
+        <div className={classes.authLabel}>
+          <label htmlFor="confirmPassword">비밀번호 확인</label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            value={registerData.confirmPassword}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            required
+          />
+          {registerError.confirmPassword && focus.confirmPassword && (
+            <span>{registerError.confirmPassword}</span>
+          )}
+        </div>
+        <div className={classes.authLabel}>
+          <label htmlFor="email">이메일</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={registerData.email}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            required
+          />
+          {registerError.email && focus.email && (
+            <span>{registerError.email}</span>
+          )}
+        </div>
+        <div className={classes.authLabel}>
+          <label htmlFor="nickName">별명</label>
+          <input
+            id="nickName"
+            name="nickName"
+            type="text"
+            value={registerData.nickName}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            required
+          />
+          {registerError.nickName && focus.nickName && (
+            <span>{registerError.nickName}</span>
+          )}
+        </div>
+        <div className={classes.authLabel}>
+          <label htmlFor="name">이름</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            value={registerData.name}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            required
+          />
+          {registerError.name && focus.name && (
+            <span>{registerError.name}</span>
+          )}
+        </div>
+        <div className={classes.authLabel}>
+          <label htmlFor="sex">성별</label>
+          <Select
+            id="sex"
+            name="sex"
+            value={registerData.sex}
+            autoWidth
+            size="small"
+            onChange={handleChange}
+            onFocus={handleFocus}
+          >
+            <MenuItem value="" disabled>
+              선택해주세요.
+            </MenuItem>
+            <MenuItem value="M">남자</MenuItem>
+            <MenuItem value="W">여자</MenuItem>
+          </Select>
+          {registerError.sex && focus.sex && <span>{registerError.sex}</span>}
+        </div>
+        <div className={classes.authLabel}>
+          <label htmlFor="birthDay">생년월일</label>
+          <input
+            id="birthDay"
+            name="birthDay"
+            type="date"
+            max="9999-12-31"
+            value={registerData.date}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            required
+          />
+          {registerError.birthDay && focus.birthDay && (
+            <span>{registerError.birthDay}</span>
+          )}
+        </div>
+        <div style={{ display: isCodeSent ? undefined : "none" }} className={classes.authLabel}>
+          <label htmlFor="authCode">확인 코드</label>
+          <input
+            id="authCode"
+            name="authCode"
+            type="authCode"
+            value={inputCode}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            disabled={!isCodeSent}
+            required
+          />
+          {registerError.authCode && focus.authCode && (
+            <span>{registerError.authCode}</span>
+          )}
+        </div>
+        <div className={classes.authLabel}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            sx={{ marginTop: "2rem" }}
+            disabled={isSubmitting}
+            onClick={handleSubmit}
+          >
+            {isSubmitting ? "회원가입 중" : "회원가입"}
+          </Button>
+        </div>
+      </Form>
     </div>
   );
 }

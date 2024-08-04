@@ -1,12 +1,16 @@
+import qs from "qs";
 import axios from 'axios';
 import { getCurrentToken, requestLogout } from './authProvider';
 
 const apiAddress = import.meta.env.VITE_API_SERVER;
 axios.defaults.withCredentials = true;
+axios.defaults.paramsSerializer = params => {
+  return qs.stringify(params, { arrayFormat: 'repeat' });
+}
 
 const apiInstance = axios.create({
   baseURL: apiAddress,
-  timeout: 1000,
+  timeout: 3000,
   headers: {
     post: {
       "Content-Type": "application/json"

@@ -1,7 +1,7 @@
 .portfolioThumbnail {
   overflow: hidden;
   position: relative;
-  border: 1px solid var(--color-gray-600);
+  border: 1px solid var(--color-gray-500);
 }
 .portfolioThumbnail img {
   aspect-ratio: 1 / 1;
@@ -13,7 +13,7 @@
 }
 
 .editThumbnail {
-  border: 1px solid var(--color-gray-600);
+  border: 1px solid var(--color-gray-500);
 }
 .editThumbnail img {
   aspect-ratio: 1 / 1;

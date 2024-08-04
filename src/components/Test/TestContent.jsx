@@ -14,8 +14,8 @@ export default function TestContent({
       {!isLoading && data.length === 0 && <p>{fallbackText}</p>}
       {!isLoading &&
         data.length > 0 &&
-        data.map((items) => (
-          <p id="test-content">{
+        data.map((items, index) => (
+          <p id="test-content" key={index}>{
             Object.values(items || {})[1]+" 안녕"
             // JSON.stringify(items)
           }

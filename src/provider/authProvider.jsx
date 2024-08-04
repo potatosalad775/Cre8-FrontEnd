@@ -90,6 +90,7 @@ export const AuthProvider = ({ children }) => {
       reissueToken,
       onLogin,
       logout,
+      isLoggedIn: !!token,
     }),
     [token]
   );
@@ -103,7 +104,7 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-// Exposed Feature sets for Axios
+// Exposed Feature sets
 export const getCurrentToken = () => currentToken;
 export const requestLogout = () => logoutFunction && logoutFunction();
 export const onLogin = ({ newToken, newUserID, newMemberCode }) =>
