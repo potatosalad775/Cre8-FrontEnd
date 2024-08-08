@@ -22,7 +22,7 @@ const apiInstance = axios.create({
 apiInstance.interceptors.request.use(
   (config) => {
     const token = getCurrentToken();
-    config.headers['Authorization'] = `Bearer ${token}`;
+    if(token != null) config.headers['Authorization'] = `Bearer ${token}`;
     return config;
   },
   (error) => {

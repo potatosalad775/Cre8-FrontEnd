@@ -91,7 +91,7 @@ export default function RecruitPage() {
   };
 
   return (
-    <div>
+    <>
       <TitleBar title="구인">
         {isLoggedIn && (
           <Button
@@ -148,7 +148,7 @@ export default function RecruitPage() {
           onChange={onPageChange}
         />
       </div>
-    </div>
+    </>
   );
 }
 

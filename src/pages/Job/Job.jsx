@@ -88,7 +88,7 @@ export default function JobPage() {
   };
 
   return (
-    <div>
+    <>
       <TitleBar title="구직">
         {isLoggedIn && (
           <Button
@@ -145,7 +145,7 @@ export default function JobPage() {
           onChange={onPageChange}
         />
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,0 +1,13 @@
+.chatPage {
+  display: flex;
+}
+
+.chatList {
+  flex-flow: 1;
+  border: 1px solid black
+}
+
+.chatContent {
+  flex-flow: 3;
+  border: 1px solid black
+}
