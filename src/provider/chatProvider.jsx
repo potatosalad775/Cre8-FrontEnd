@@ -1,7 +1,8 @@
 import { Client } from "@stomp/stompjs";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const wsAddress = import.meta.env.VITE_WS_SERVER;
+const CONNECTION_TIMEOUT = 3000;
 
 const chatClient = new Client();
 chatClient.configure({
@@ -13,7 +14,7 @@ chatClient.configure({
   heartbeatIncoming: 4000,
   heartbeatOutgoing: 4000,
   debug: (msg) => {
-    //console.log(new Date(), msg);
+    console.log(new Date(), msg);
   }
 });
 
@@ -34,33 +35,67 @@ export const deactivateChatClient = () => {
 }
 
 export function useChatConnection(roomId, onMessageReceived) {
+  const [connectionStatus, setConnectionStatus] = useState('disconnected');
+
   useEffect(() => {
+    let timeoutID;
+
+    const connectionWithTimeout = async () => {
+      setConnectionStatus('connecting');
+
+      try {
+        const connectPromise = activateChatClient();
+        timeoutID = setTimeout(() => {
+          setConnectionStatus('timeout');
+          throw new Error('Connection Timeout');
+        }, CONNECTION_TIMEOUT);
+        // Await Connection for Certain amount of time
+        await connectPromise;
+        clearTimeout(timeoutID);
+        setConnectionStatus('connected');
+      } catch (error) {
+        console.error('Failed to connect:', error);
+        setConnectionStatus('error');
+      }
+    }
+
     // Activate Chat Client on first run
-    activateChatClient();
+    connectionWithTimeout();
+
     // Deactivate after chat is over
     return () => {
-      deactivateChatClient()
+      clearTimeout(timeoutID);
+      deactivateChatClient();
+      setConnectionStatus('disconnected');
     };
   }, []);
 
   const subscribeToRoom = useCallback((roomId) => {
-    if(roomId == -1) return;
+    if(roomId == -1 || connectionStatus !== 'connected') return;
     // Subscribe if roomId is valid
-    const subscription = chatClient.subscribe(
-      `/sub/chat/room/${roomId}`,
-      (message) => {
-        //console.log(message)
-        if (message.body) {
-          const msg = JSON.parse(message.body);
-          onMessageReceived(msg);
+    let subscription;
+    try {
+      subscription = chatClient.subscribe(
+        `/sub/chat/room/${roomId}`,
+        (message) => {
+          //console.log(message)
+          if (message.body) {
+            const msg = JSON.parse(message.body);
+            onMessageReceived(msg);
+          }
         }
-      }
-    );
+      );
+    } catch {
+      console.error('CHAT Subscription Error:', error);
+      setConnectionStatus('error');
+    }
     // Unsubscribe when it's unmounted
     return () => {
-      subscription.unsubscribe();
-    }
-  }, [onMessageReceived]); // Memoizes and only changes when onMsgReceived is changed
+      if(subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  }, [connectionStatus, onMessageReceived]); // Memoizes and only changes when onMsgReceived is changed
 
   useEffect(() => {
     const unsubscribe = subscribeToRoom(roomId);
@@ -68,13 +103,18 @@ export function useChatConnection(roomId, onMessageReceived) {
   }, [roomId, subscribeToRoom]);
 
   const sendMessage = useCallback((message) => {
-    if(roomId == -1) return;
+    if(roomId == -1 || connectionStatus !== 'connected') return;
     // Send Message if roomId is valid
-    chatClient.publish({
-      destination: `/pub/message/${roomId}`,
-      body: JSON.stringify({ message }),
-    });
-  }, [roomId]);
+    try {
+      chatClient.publish({
+        destination: `/pub/message/${roomId}`,
+        body: JSON.stringify({ message }),
+      });
+    } catch (error) {
+      console.error("Send Message Error:", error);
+      setConnectionStatus('error');
+    }
+  }, [roomId, connectionStatus]);
 
-  return { sendMessage };
+  return { sendMessage, connectionStatus };
 }

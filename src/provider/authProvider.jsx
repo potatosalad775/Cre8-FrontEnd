@@ -28,17 +28,17 @@ export const AuthProvider = ({ children }) => {
         },
         credentials: "include",
       });
-      if (response.ok) {
+      if (response.status === 200) {
         const json = await response.json();
         setToken(json.data.accessToken);
         //console.log("Token reissued successfully");
       }
-      if (response && response.status == 400) {
+      else {
         // refreshToken deprecated
         //logout();
       }
     } catch (error) {
-      console.error("Error reissuing token:", error);
+      //console.error("Error reissuing token:", error);
       logout();
     }
   }, [token]);
@@ -72,7 +72,6 @@ export const AuthProvider = ({ children }) => {
     setToken("");
     setUserID("");
     setMemberCode("");
-    currentToken = "";
     localStorage.removeItem("token");
     localStorage.removeItem("userID");
     localStorage.removeItem("memberCode");

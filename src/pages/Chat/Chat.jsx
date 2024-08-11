@@ -50,7 +50,8 @@ export default function ChatPage() {
     });
     */
   }, []);
-  const { sendMessage } = useChatConnection(selectedRoom.roomId, onMsgReceived);
+  const { sendMessage, connectionStatus } = useChatConnection(selectedRoom.roomId, onMsgReceived);
+  console.log(connectionStatus);
 
   const handleStartChatClick = () => {
     setNewChatDialogOpen(true);
@@ -65,19 +66,43 @@ export default function ChatPage() {
     const formJSON = Object.fromEntries(formData.entries());
     const userID = formJSON.userID;
     // send
-    chatRequest(userID).then((res) => {
-      if (res != null) {
-        setSelectedRoom({ roomId: res, nickName: "TEMP" });
-      }
-    });
-    handleDialogClose();
+    if(connectionStatus === 'connected') {
+      chatRequest(userID).then((res) => {
+        if (res != null) {
+          setSelectedRoom({ roomId: res, nickName: "TEMP" });
+        }
+      });
+      handleDialogClose();
+    } else {
+      Toast.error("채팅 서버에 연결되지 않았습니다. 나중에 다시 시도해주세요.");
+    }
   };
   const handleListClick = (key, name) => {
-    setSelectedRoom({ roomId: key, nickName: name });
+    if(connectionStatus === 'connected') {
+      setSelectedRoom({ roomId: key, nickName: name });
+    } else {
+      Toast.error("채팅 서버에 연결되지 않았습니다. 나중에 다시 시도해주세요.");
+    }
   };
   const handleChatSend = (chatInput) => {
-    sendMessage(chatInput);
+    if(connectionStatus === 'connected') {
+      sendMessage(chatInput);
+    } else {
+      Toast.error("메시지를 보낼 수 없습니다. 네트워크 상태를 확인해주세요.");
+    }
   };
+
+  const RenderConnectionStatus = () => {
+    switch(connectionStatus) {
+      case 'connecting':
+        return <p>채팅 서버에 연결 중입니다...</p>;
+      case 'error':
+      case 'timeout':
+        return <p>채팅 서버에 연결할 수 없습니다. 나중에 다시 시도해주세요.</p>;
+      default:
+        return null;
+    }
+  }
 
   return (
     <>
@@ -132,7 +157,7 @@ export default function ChatPage() {
             ))}
         </div>
         <div className={classes.chatContent}>
-          {selectedRoom.roomId == -1 && <p>대화할 상대를 선택해보세요.</p>}
+          {selectedRoom.roomId == -1 && RenderConnectionStatus}
           {selectedRoom.roomId > -1 && (
             <>
               <ChatTopBar name={selectedRoom.nickName} />

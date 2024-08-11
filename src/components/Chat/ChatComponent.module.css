@@ -58,30 +58,30 @@
   height: 10rem;
   overflow-x: hidden;
   overflow-y: scroll;
+  position: relative;
 }
 
 .chatContent > div:last-child {
   margin-bottom: 0.6rem;
 }
 
-.chatMyBubble {
-  align-self: flex-end;
+.chatBubble {
   margin: 0.6rem;
   margin-bottom: 0;
   padding: 0.6rem 1rem;
   border-radius: 1.1rem;
-  min-width: 5rem;
-  max-width: 13rem;
+  min-width: 20%;
+  max-width: 60%;
+  text-wrap: wrap;
+  word-wrap: break-word;
+}
+
+.chatMyBubble {
+  align-self: flex-end;
   background-color: var(--color-primary-200);
 }
 
 .chatOthersBubble {
   align-self: flex-start;
-  margin: 0.6rem;
-  margin-bottom: 0;
-  padding: 0.6rem 1rem;
-  border-radius: 1.1rem;
-  min-width: 5rem;
-  max-width: 13rem;
   background-color: var(--color-gray-200);
 }
