@@ -67,6 +67,12 @@ const Routes = () => {
           loader: jobPostLoader,
           element: <JobPostPage />,
         },
+        {
+          path: ":jobPostID/:portfolioID",
+          id: "portfolio-in-jobPost",
+          loader: portfolioLoader,
+          element: <PortfolioPage isFromJobPost={true} />,
+        },
       ],
     },
     {

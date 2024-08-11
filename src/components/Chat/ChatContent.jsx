@@ -26,13 +26,13 @@ export default function ChatContent({ roomId, chatContent, setChatContent }) {
         chatContent.map((item, index) => {
           if (memberCode == item.senderId) {
             return (
-              <span key={index} className={classes.chatMyBubble}>
+              <span key={index} className={`${classes.chatBubble} ${classes.chatMyBubble}`}>
                 {item.contents}
               </span>
             );
           } else {
             return (
-              <span key={index} className={classes.chatOthersBubble}>
+              <span key={index} className={`${classes.chatBubble} ${classes.chatOthersBubble}`}>
                 {item.contents}
               </span>
             );
