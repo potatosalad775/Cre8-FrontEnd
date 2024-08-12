@@ -320,7 +320,7 @@ async function recPostEditAction(inputData, isCreation = true) {
   try {
     const response = await apiInstance({
       method: isCreation ? "post" : "put",
-      url: "/employer/posts",
+      url: "/api/v1/employer/posts",
       data: inputData,
     });
     if (response.status === 200) {

@@ -271,7 +271,7 @@ async function jobPostEditAction(inputData, isCreation = true) {
   try {
     const response = await apiInstance({
       method: isCreation ? "post" : "put",
-      url: "/employee/posts",
+      url: "/api/v1/employee/posts",
       data: inputData,
     });
     if (response.status === 200) {
