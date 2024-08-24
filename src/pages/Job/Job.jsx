@@ -11,6 +11,7 @@ import { tagElementLoader } from "../../components/Tag/TagLoader";
 import apiInstance from "../../provider/networkProvider";
 import { debounce } from "../../provider/utilityProvider";
 import { useAuth } from "../../provider/authProvider";
+import { isEmpty } from "../../provider/utilityProvider";
 import classes from "./Job.module.css";
 
 export default function JobPage() {
@@ -121,10 +122,12 @@ export default function JobPage() {
       </div>
       <JobListSortBar />
       <div className={classes.jobPostArea}>
-        {Object.keys(jobPostData).length === 0 && <p>불러오는 중</p>}
-        {Object.keys(jobPostData).length !== 0 &&
+        {isEmpty(jobPostData) && <p>불러오는 중</p>}
+        {!isEmpty(jobPostData) &&
+          jobPostData.error && <p>데이터를 불러오는 중 오류가 발생했습니다.</p>}
+        {!isEmpty(jobPostData) &&
           jobPostData.totalCount == 0 && <p>표시할 내용이 없습니다.</p>}
-        {Object.keys(jobPostData).length !== 0 &&
+        {!isEmpty(jobPostData) &&
           jobPostData.totalCount > 0 &&
           jobPostData.employeePostSearchResponseDtoList.map(
             (item, index) => (
@@ -160,17 +163,12 @@ async function searchJobPost(jobSearchObj, jobPageObj) {
     });
     if (response.status === 200) {
       // 조회 성공
-      if (response.data.data == "") {
-        // 데이터가 비어있으면 null 반환
-        return {};
-      } else {
-        //console.log(response.data.data)
-        return response.data.data;
-      }
+      //console.log(response.data.data)
+      return response.data.data;
     }
   } catch (error) {
     // 조회 실패
     console.error(error.message);
   }
-  return {};
+  return {error: true};
 }

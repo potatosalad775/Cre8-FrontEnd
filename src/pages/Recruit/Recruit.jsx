@@ -9,7 +9,7 @@ import JobListSortBar from "../../components/Joblist/JobListSortBar";
 import { RecruitListCard } from "../../components/Joblist/JobListCard";
 import { tagElementLoader } from "../../components/Tag/TagLoader";
 import apiInstance from "../../provider/networkProvider";
-import { debounce } from "../../provider/utilityProvider";
+import { debounce, isEmpty } from "../../provider/utilityProvider";
 import { useAuth } from "../../provider/authProvider";
 import classes from "./Recruit.module.css";
 
@@ -126,10 +126,12 @@ export default function RecruitPage() {
       </div>
       <JobListSortBar />
       <div className={classes.recruitPostArea}>
-        {Object.keys(recruitPostData).length === 0 && <p>불러오는 중</p>}
-        {Object.keys(recruitPostData).length !== 0 &&
+        {isEmpty(recruitPostData) && <p>불러오는 중</p>}
+        {!isEmpty(recruitPostData) &&
+          recruitPostData.error && <p>데이터를 불러오는 중 오류가 발생했습니다.</p>}
+        {!isEmpty(recruitPostData) &&
           recruitPostData.totalCount == 0 && <p>표시할 내용이 없습니다.</p>}
-        {Object.keys(recruitPostData).length !== 0 &&
+        {!isEmpty(recruitPostData) &&
           recruitPostData.totalCount > 0 &&
           recruitPostData.employerPostSearchResponseDtoList.map(
             (item, index) => (
@@ -180,5 +182,5 @@ async function searchRecruitPost(recruitSearchObj, recruitPageObj) {
     // 조회 실패
     console.error(error.message);
   }
-  return {};
+  return {error: true};
 }

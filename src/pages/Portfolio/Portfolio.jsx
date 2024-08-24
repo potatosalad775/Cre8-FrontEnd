@@ -23,7 +23,7 @@ export default function PortfolioPage({ isFromJobPost = false }) {
       ) : (
         <>
           <div className={classes.ptfDescArea}>
-            <ReadOnlyEditor content={JSON.parse(data.description)} />
+            <ReadOnlyEditor content={data.description} />
           </div>
           <div className={classes.ptfTagArea}>
             <TagList tagList={data.tagName} />

@@ -28,7 +28,7 @@ export default function ProfilePage() {
     uLinkYoutube: data.youtubeLink || "",
     uLinkTwitter: data.twitterLink || "",
     uLinkWebpage: data.personalLink || "",
-    uAbout: JSON.parse(data.personalStatement) || "",
+    uAbout: data.personalStatement || "",
     uMemberCode: data.memberCode,
   };
   // Tab Index

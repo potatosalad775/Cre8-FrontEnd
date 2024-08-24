@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
-import { useRouteLoaderData } from "react-router-dom";
-import { Divider, Chip, Fab, Grid } from "@mui/material";
+import { useRouteLoaderData, useNavigate } from "react-router-dom";
+import { Divider, Chip, Fab, Grid, Tooltip } from "@mui/material";
+import { RiChat1Fill } from "@remixicon/react";
 
 import PageContent from "../../components/PageContent";
 import TitleBar from "../../components/TitleBar";
 import TagList from "../../components/Tag/TagList";
 import apiInstance from "../../provider/networkProvider";
+import { useAuth } from "../../provider/authProvider";
 import { ReadOnlyEditor } from "../../components/Editor";
 import classes from "./Recruit.module.css";
 
 export default function RecruitPostPage() {
   const data = useRouteLoaderData("recruitPost-page");
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   // Tag List
   const [tagDataList, setTagDataList] = useState([]);
 
@@ -24,6 +28,13 @@ export default function RecruitPostPage() {
     setTagDataList(tempList);
   }, []);
 
+  const handleFABClick = (e) => {
+    navigate('/chat', { state: { chatQuery: {
+      targetCode: data.writerId,
+      targetNickName: data.writerNickName,
+    }}})
+  }
+
   return (
     <>
       <TitleBar backBtnTarget={"../"} title="구인 게시글" />
@@ -36,6 +47,7 @@ export default function RecruitPostPage() {
           <div className={classes.recPostTitleArea}>
             <h2>{data.title}</h2>
             <h3>{data.companyName}</h3>
+            <h4>{data.contact}</h4>
             <TagList tagList={tagDataList} />
           </div>
           <div className={classes.recPostInfoArea}>
@@ -53,7 +65,7 @@ export default function RecruitPostPage() {
                 <div className={classes.recPostInfoAreaRow}>
                   <p>급여</p>
                   <Chip label={data.paymentMethod} size="small" />
-                  <b>{data.paymentAmount}</b>
+                  <b>{data.paymentAmount}원</b>
                 </div>
                 {data.tagPostResponseDto.subCategoryWithChildTagResponseDtoList.map(
                   (item, itemIndex) => (
@@ -79,7 +91,7 @@ export default function RecruitPostPage() {
                 <h3>모집 조건</h3>
                 <div className={classes.recPostInfoAreaRow}>
                   <p>모집 인원</p>
-                  <b>{`${data.numberOfEmployee}명`}</b>
+                  <b>{data.numberOfEmployee}명</b>
                 </div>
                 <div className={classes.recPostInfoAreaRow}>
                   <p>모집 기간</p>
@@ -100,20 +112,22 @@ export default function RecruitPostPage() {
             </Grid>
           </div>
           <div className={classes.recPostDescArea}>
-            <ReadOnlyEditor content={JSON.parse(data.contents)} />
+            <ReadOnlyEditor content={data.contents} />
           </div>
-          <Fab
-            color="primary"
-            variant="extended"
-            sx={{
-              position: "fixed",
-              bottom: "1.3rem",
-              right: "1.3rem",
-              "&:hover": { color: "common.white" },
-            }}
-          >
-            채팅 시작하기
-          </Fab>
+          <Tooltip title={!isLoggedIn ? "채팅을 시작하려면 로그인하세요." : ""} placement="top" >
+            <div className={classes.recPostFAB}>
+              <Fab
+                color="primary"
+                variant="extended"
+                sx={{ gap: "0.5rem" }}
+                disabled={!isLoggedIn}
+                onClick={handleFABClick}
+              >
+                <RiChat1Fill/>
+                채팅 시작하기
+              </Fab>
+            </div>
+          </Tooltip>
         </>
       )}
     </>
