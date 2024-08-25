@@ -52,6 +52,8 @@ async function fetchHomeRecruitList() {
     const response = await apiInstance.get("/api/v1/employer-posts/search", {
       params: {
         size: 4,
+        direction: "desc",
+        sort: ["createdAt"],
       },
     });
     if (response.status === 200) {

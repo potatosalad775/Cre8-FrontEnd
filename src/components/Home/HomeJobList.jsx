@@ -51,6 +51,8 @@ async function fetchHomeJobList() {
     const response = await apiInstance.get("/api/v1/employee-posts/search", {
       params: {
         size: 4,
+        direction: "desc",
+        sort: ["createdAt"],
       },
     });
     if (response.status === 200) {
