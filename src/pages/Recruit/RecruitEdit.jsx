@@ -154,7 +154,6 @@ export default function RecruitEditPage() {
     e.preventDefault();
 
     if (
-      isEmpty(data.employerPostId) ||
       isEmpty(data.title) ||
       isEmpty(data.companyName) ||
       isEmpty(data.contact) ||
@@ -166,7 +165,9 @@ export default function RecruitEditPage() {
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append("employerPostId", data.employerPostId);
+    if(location.state?.isCreation) {
+      formData.append("employerPostId", data.employerPostId)
+    };
     formData.append("title", data.title);
     formData.append("workFieldId", selectedTag);
     selectedElement.forEach((element) => {
