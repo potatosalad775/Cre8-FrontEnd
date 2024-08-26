@@ -165,7 +165,7 @@ export default function RecruitEditPage() {
     setIsUploading(true);
 
     const formData = new FormData();
-    if(location.state?.isCreation) {
+    if(!location.state?.isCreation) {
       formData.append("employerPostId", data.employerPostId)
     };
     formData.append("title", data.title);

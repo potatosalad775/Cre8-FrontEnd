@@ -159,7 +159,7 @@ export default function JobEditPage() {
     setIsUploading(true);
 
     const formData = new FormData();
-    if(location.state?.isCreation) {
+    if(!location.state?.isCreation) {
       formData.append("employeePostId", data.employeePostId)
     };
     formData.append("title", data.title);
