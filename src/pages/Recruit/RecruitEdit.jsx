@@ -178,7 +178,9 @@ export default function RecruitEditPage() {
     formData.append("companyName", data.companyName);
     formData.append("numberOfEmployee", data.numberOfEmployee);
     formData.append("enrollDurationType", data.enrollDurationType);
-    formData.append("deadLine", data.deadLine);
+    if(!isEmpty(data.deadLine)) {
+      formData.append("deadLine", data.deadLine);
+    }
     formData.append("hopeCareerYear", isCareerNotRequired ? 0 : data.hopeCareerYear);
     formData.append("contents", JSON.stringify(postContent));
     formData.append("contact", data.contact);
@@ -469,24 +471,20 @@ const RecPostEditor = ({ postContent, setPostContent }) => {
 };
 
 const INITIAL_REC_VALUE = {
-  status: "",
-  message: "",
-  data: {
-    title: "",
-    companyName: "",
-    tagPostResponseDto: {
-      workFieldTagName: "",
-      subCategoryWithChildTagResponseDtoList: [],
-    },
-    paymentMethod: "",
-    paymentAmount: "",
-    numberOfEmployee: "",
-    enrollDurationType: "",
-    deadLine: "",
-    hopeCareerYear: "",
-    contents: "",
-    contact: "",
-    writerId: "",
-    writerAccessUrl: "",
+  title: "",
+  companyName: "",
+  tagPostResponseDto: {
+    workFieldTagName: "",
+    subCategoryWithChildTagResponseDtoList: [],
   },
+  paymentMethod: "",
+  paymentAmount: "",
+  numberOfEmployee: "",
+  enrollDurationType: "",
+  deadLine: "",
+  hopeCareerYear: "",
+  contents: "",
+  contact: "",
+  writerId: "",
+  writerAccessUrl: "",
 };
