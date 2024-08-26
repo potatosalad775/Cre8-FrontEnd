@@ -149,7 +149,6 @@ export default function JobEditPage() {
     e.preventDefault();
 
     if (
-      isEmpty(data.employeePostId) ||
       isEmpty(data.title) ||
       isEmpty(postContent) ||
       isEmpty(data.contact)
@@ -160,7 +159,9 @@ export default function JobEditPage() {
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append("employeePostId", data.employeePostId);
+    if(location.state?.isCreation) {
+      formData.append("employeePostId", data.employeePostId)
+    };
     formData.append("title", data.title);
     formData.append("workFieldId", selectedTag);
     selectedElement.forEach((element) => {
@@ -406,24 +407,17 @@ const RecPostEditor = ({ postContent, setPostContent }) => {
 };
 
 const INITIAL_JOB_VALUE = {
-  status: "",
-  message: "",
-  data: {
-    title: "",
-    name: "",
-    sex: "",
-    birthYear: "",
-    tagPostResponseDto: {
-      workFieldTagName: "",
-      subCategoryWithChildTagResponseDtoList: [],
-    },
-    portfolioSimpleResponseDtoList: [],
-    paymentMethod: "",
-    paymentAmount: "",
-    careerYear: "",
-    contents: "",
-    contact: "",
-    writerId: "",
-    writerAccessUrl: "",
+  title: "",
+  name: "",
+  sex: "",
+  birthYear: "",
+  tagPostResponseDto: {
+    workFieldTagName: "",
+    subCategoryWithChildTagResponseDtoList: [],
   },
+  paymentMethod: "",
+  paymentAmount: "",
+  careerYear: "",
+  contents: "",
+  contact: "",
 };
