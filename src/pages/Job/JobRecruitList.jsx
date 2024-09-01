@@ -1,9 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import {
-  useNavigate,
-  useRouteLoaderData,
-  useLocation,
-} from "react-router-dom";
+import { useNavigate, useRouteLoaderData, useLocation } from "react-router-dom";
 import {
   Tooltip,
   IconButton,
@@ -12,7 +8,6 @@ import {
   MenuItem,
   Divider,
   TextField,
-  Backdrop,
   CircularProgress,
 } from "@mui/material";
 import {
@@ -56,8 +51,7 @@ export default function JobRecruitListPage({ pageType }) {
   const [jobSearchObj, setJobSearchObj] = useState({});
   const [jobPageObj, setJobPageObj] = useState({
     size: 10,
-    direction: "desc",
-    sort: ["createdAt"],
+    sort: ["createdAt,desc"],
     page: 0,
   });
   // Menu Button
@@ -73,7 +67,6 @@ export default function JobRecruitListPage({ pageType }) {
   const debouncedSearchJobPost = useCallback(
     debounce((searchObj, pageObj) => {
       searchJobPost(pageType, searchObj, pageObj).then((data) => {
-        //console.log(data)
         setJobPostData(data);
         setIsLoading(false);
       });
@@ -96,6 +89,7 @@ export default function JobRecruitListPage({ pageType }) {
       ...jobSearchObj,
       workFieldId: selectedTag,
     });
+    setSelectedElement(new Set());
   }, [selectedTag]);
 
   // on Tag Child Change
@@ -121,10 +115,9 @@ export default function JobRecruitListPage({ pageType }) {
     setJobSearchObj({});
     setJobPageObj({
       size: 10,
-      direction: "desc",
-      sort: ["createdAt"],
+      sort: ["createdAt,desc"],
       page: 0,
-    })
+    });
   }, [pageType]);
 
   // Update Search Object on Page Change
@@ -132,8 +125,8 @@ export default function JobRecruitListPage({ pageType }) {
     setJobPageObj({
       ...jobPageObj,
       page: pageIndex - 1,
-    })
-    window.scrollTo({ top: 0, behavior: "smooth" })
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [location.search]);
 
   const onPageChange = (event, value) => {
@@ -149,10 +142,10 @@ export default function JobRecruitListPage({ pageType }) {
   };
   const handleMenuBookmark = () => {
     navigate(`/bookmark?tab=${pageType}`);
-  }
+  };
   const handleMenuMyPost = () => {
     navigate(`/my-post?tab=${pageType}`);
-  }
+  };
 
   const toggleSearchBar = () => {
     setIsSearchBarOpen(!isSearchBarOpen);
@@ -168,10 +161,14 @@ export default function JobRecruitListPage({ pageType }) {
     searchJobPostwithKeyword(pageType, searchData, jobPageObj).then((data) => {
       setJobPostData(() => {
         let totalCount;
-        if(pageType == 'job') {
-          totalCount = Object.keys(data.employeePostSearchResponseDtoList).length;
+        if (pageType == "job") {
+          totalCount = Object.keys(
+            data.employeePostSearchResponseDtoList
+          ).length;
         } else {
-          totalCount = Object.keys(data.employerPostSearchResponseDtoList).length;
+          totalCount = Object.keys(
+            data.employerPostSearchResponseDtoList
+          ).length;
         }
 
         return {
@@ -236,9 +233,16 @@ export default function JobRecruitListPage({ pageType }) {
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 disableScrollLock={true}
               >
-                <MenuItem sx={{minHeight: "32px"}} onClick={handleMenuBookmark}>내 북마크 조회</MenuItem>
+                <MenuItem
+                  sx={{ minHeight: "32px" }}
+                  onClick={handleMenuBookmark}
+                >
+                  내 북마크 조회
+                </MenuItem>
                 <Divider />
-                <MenuItem sx={{minHeight: "32px"}} onClick={handleMenuMyPost}>내 작성글 조회</MenuItem>
+                <MenuItem sx={{ minHeight: "32px" }} onClick={handleMenuMyPost}>
+                  내 작성글 조회
+                </MenuItem>
               </Menu>
             </>
           )}
@@ -251,7 +255,7 @@ export default function JobRecruitListPage({ pageType }) {
             value={searchData}
             fullWidth
             onKeyDown={(e) => {
-              if(e.key === "Enter") {
+              if (e.key === "Enter") {
                 handleSearchClick(e);
               }
             }}
@@ -285,17 +289,19 @@ export default function JobRecruitListPage({ pageType }) {
       )}
       <JobListSortBar setObj={setJobPageObj} />
       <div className={classes.jobPostArea}>
-        {isLoading && <Backdrop open={isLoading}>
-          <CircularProgress  sx={{ color: "#fff" }}/>  
-        </Backdrop>}
-        {isEmpty(jobPostData) && <p>불러오는 중</p>}
-        {!isEmpty(jobPostData) && jobPostData.error && (
+        {(isLoading || isEmpty(jobPostData)) && (
+          <center>
+            <CircularProgress sx={{ padding: "1rem" }} />
+          </center>
+        )}
+        {!isLoading && !isEmpty(jobPostData) && jobPostData.error && (
           <p>데이터를 불러오는 중 오류가 발생했습니다.</p>
         )}
-        {!isEmpty(jobPostData) && jobPostData.totalCount == 0 && (
+        {!isLoading && !isEmpty(jobPostData) && jobPostData.totalCount == 0 && (
           <p>표시할 내용이 없습니다.</p>
         )}
-        {!isEmpty(jobPostData) &&
+        {!isLoading &&
+          !isEmpty(jobPostData) &&
           jobPostData.totalCount > 0 &&
           pageType == "job" &&
           jobPostData?.employeePostSearchResponseDtoList?.map((item, index) => (
@@ -307,7 +313,8 @@ export default function JobRecruitListPage({ pageType }) {
               }}
             />
           ))}
-        {!isEmpty(jobPostData) &&
+        {!isLoading &&
+          !isEmpty(jobPostData) &&
           jobPostData.totalCount > 0 &&
           pageType == "recruit" &&
           jobPostData?.employerPostSearchResponseDtoList?.map((item, index) => (
@@ -364,7 +371,7 @@ async function searchJobPostwithKeyword(pageType, keywordData, jobPageObj) {
   let apiAddress;
   if (pageType == "job") {
     apiAddress = "/api/v1/employee-posts/search/keyword";
-  } else if (pageType = "recruit") {
+  } else if ((pageType = "recruit")) {
     apiAddress = "/api/v1/employer-posts/search/keyword";
   }
 

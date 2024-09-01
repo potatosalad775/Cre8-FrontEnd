@@ -26,7 +26,7 @@
   }
 }
 .jobListCard:hover {
-  background-color: var(--color-gray-200);
+  background-color: var(--color-gray-150);
 }
 
 .jobListCardText h3 {

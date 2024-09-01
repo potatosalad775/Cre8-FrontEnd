@@ -11,20 +11,16 @@ export default function JobListSortBar({ setObj }) {
   ];
   const sortObj = [
     {
-      sort: ["createdAt"],
-      direction: "desc",
+      sort: ["createdAt,desc"],
     },
     {
-      sort: ["deadline"],
-      direction: "asc",
+      sort: ["deadline,asc"],
     },
     {
-      sort: ["hopeCareer"],
-      direction: "asc",
+      sort: ["hopeCareer,asc"],
     },
     {
-      sort: ["createdAt"],
-      direction: "desc",
+      sort: ["createdAt,desc"],
     },
   ];
 
@@ -35,7 +31,7 @@ export default function JobListSortBar({ setObj }) {
     setObj((prevObj) => {
       return {
         ...prevObj,
-        ...sortObj[index]
+        ...sortObj[index],
       };
     });
   };
@@ -48,9 +44,10 @@ export default function JobListSortBar({ setObj }) {
             onClick={() => {
               handleBtnClick(index);
             }}
-            sx={selectedItemIndex == index 
-              ? {color: "#512DA8"} 
-              : {color: "#1f1d1b"}
+            sx={
+              selectedItemIndex == index
+                ? { color: "#512DA8" }
+                : { color: "#1f1d1b" }
             }
             disabled={false}
           >
