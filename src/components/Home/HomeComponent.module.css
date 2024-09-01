@@ -13,14 +13,14 @@
   }
 }
 
-.homePostCardArea {
+.homeCommunityCardArea {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-width: 0;
 }
 
-.homePostCard {
+.homeCommunityCard {
   display: flex;
   flex-direction: column;
   padding: 0.5rem;
@@ -29,28 +29,28 @@
   border: 1px solid var(--color-gray-200);
   font-size: 15px;
 }
-.homePostLink {
+.homeCommunityCardLink {
   padding: 0 0.3rem;
   border-radius: 0.3rem;
   display: flex;
 }
-.homePostLink:hover {
+.homeCommunityCardLink:hover {
   background-color: var(--color-gray-150) !important;
 }
-.homePostLink .titleCategory {
+.homeCommunityCardLink .titleCategory {
   color: #656360;
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
   margin-right: 4px;
 }
-.homePostLink .titleName {
+.homeCommunityCardLink .titleName {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
 }
-.homePostLink .titleComment {
+.homeCommunityCardLink .titleComment {
   color: #ef5350;
   font-weight: 500;
   white-space: nowrap;
@@ -92,15 +92,15 @@
 .homeJobPostCard {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 1.3rem 1rem 1rem 1rem;
+  padding: 1rem 1rem 0.7rem 1rem;
   border-radius: 1rem !important;
   background-color: var(--color-gray-100) !important;
   border: 1px solid var(--color-gray-200);
-  gap: 0.8rem;
+  position: relative;
 
   h3 {
-    margin: 0 !important;
+    margin: 1.1rem 0 !important;
+    margin-bottom: 1rem !important;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -109,20 +109,45 @@
     display: inline-block;
     overflow: hidden;
     white-space: nowrap;
-    position: relative;
-  }
-  ul::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 30%;
-    background: linear-gradient(to left, var(--color-gray-100) 0%, transparent 100%);
-    pointer-events: none;
   }
   li {
     display: inline-block;
     padding-right: 0.5rem;
+  }
+  img {
+    object-fit: cover;
+    aspect-ratio: 4/3;
+    border-radius: 0.8rem;
+  }
+}
+.homeJobPostCard:hover {
+  background-color: var(--color-gray-150) !important;
+}
+.homeJobPostCard::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 30%;
+  height: 6rem;
+  background: linear-gradient(to left, var(--color-gray-100) 30%, transparent 100%);
+  pointer-events: none;
+}
+.homeJobPostCard:hover::after {
+  background: linear-gradient(to left, var(--color-gray-150) 30%, transparent 100%);
+}
+
+@media (max-width: 600px) {
+  .homeJobPostCard {
+    flex-direction: row;
+
+    h3 {
+      margin-top: 0 !important;
+      margin-bottom: 0.8rem !important;
+    }
+    img {
+      height: 4.4rem;
+      margin-right: 1rem;
+    }
   }
 }
