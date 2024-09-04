@@ -63,6 +63,7 @@ export default function JobRecruitListPage({ pageType }) {
       };
     });
   }, []);
+  const open = Boolean(state.anchorEl);
 
   // Debounced Search Callback
   const debouncedSearchJobPost = useCallback(
