@@ -8,6 +8,7 @@ import {
   Divider,
   Button,
   Grid,
+  Card,
 } from "@mui/material";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { RiAddFill } from "@remixicon/react";
@@ -27,7 +28,6 @@ import { isEmpty } from "../../provider/utilityProvider";
 export default function RecruitEditPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { memberCode } = useAuth();
   const [data, setData] = useState(
     location.state?.isCreation == null || location.state?.isCreation
       ? INITIAL_REC_VALUE
@@ -50,7 +50,7 @@ export default function RecruitEditPage() {
   const durationType = ["채용 시 마감", "마감일 지정", "상시 채용"];
   // User selected tag
   const [selectedTag, setSelectedTag] = useState();
-  const [selectedElement, setSelectedElement] = useState(new Set());
+  const [selectedElement, setSelectedElement] = useState([]);
   const [isCareerNotRequired, setIsCareerNotRequired] = useState(
     data.hopeCareerYear == null || data.hopeCareerYear == 0
   );
@@ -88,7 +88,7 @@ export default function RecruitEditPage() {
         setTagElementData(res);
         //console.log(tagElementData);
       });
-      setSelectedElement(new Set());
+      setSelectedElement([]);
     }
   }, [selectedTag]);
   useEffect(() => {
@@ -104,20 +104,20 @@ export default function RecruitEditPage() {
           tempData = [...tempData, ...subItem.childTagName];
         }
       );
-      const tempElement = new Set();
+      const tempElement = [];
       //
       if (tagElementData && tempData) {
         tagElementData.map((elementItem) => {
           elementItem.workFieldChildTagResponseDtoList.map((childItem) => {
-            if (tempData.length == 0) {
-              setSelectedElement(new Set(tempElement));
-            }
             if (tempData[0] == childItem.name) {
-              tempElement.add(childItem.workFieldChildTagId);
+              tempElement.push(childItem.workFieldChildTagId);
               tempData.shift();
             }
           });
         });
+        if (tempData.length == 0) {
+          setSelectedElement(tempElement);
+        }
       }
     }
   }, [tagElementData]);
@@ -184,7 +184,9 @@ export default function RecruitEditPage() {
     formData.append("hopeCareerYear", isCareerNotRequired ? 0 : data.hopeCareerYear);
     formData.append("contents", JSON.stringify(postContent));
     formData.append("contact", data.contact);
-    formData.append("multipartFile", imageData.imgFile);
+    if(imageData.imgFile !== null) {
+      formData.append("multipartFile", imageData.imgFile);
+    }
 
     recPostEditAction(formData, location.state.isCreation)
       .then((res) => {
@@ -202,7 +204,7 @@ export default function RecruitEditPage() {
   };
 
   return (
-    <div className={classes.recEditPage}>
+    <Card sx={{ borderRadius: "0.7rem", margin: "1.3rem 0" }}>
       <Backdrop open={isUploading}>
         <CircularProgress />
       </Backdrop>
@@ -401,7 +403,7 @@ export default function RecruitEditPage() {
           저장
         </Button>
       </div>
-    </div>
+    </Card>
   );
 }
 
