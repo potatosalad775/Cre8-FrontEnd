@@ -46,8 +46,8 @@ export default function JobRecruitListPage({ pageType }) {
     jobPageObj: { size: 10, sort: ["createdAt,desc"], page: 0 },
     anchorEl: null,
     isSearchBarOpen: false,
-    searchData: "",
-    isLoading: false,
+    searchKeyword: "",
+    isLoading: true,
   });
   const updateState = useCallback((newState) => {
     setState((prevState) => ({ ...prevState, ...newState }));
@@ -77,6 +77,19 @@ export default function JobRecruitListPage({ pageType }) {
     }, 300),
     [pageType]
   );
+  
+  // Debounced Keyword Search Callback
+  const debouncedSearchJobPostwithKeyword = useCallback(
+    debounce((pageObj) => {
+      searchJobPostwithKeyword(pageType, pageObj).then((data) => {
+        updateState({
+          jobPostData: data,
+          isLoading: false,
+        });
+      });
+    }, 300),
+    [pageType]
+  );
 
   // Reset Search Objects on Page Change (Job / Recruit)
   useEffect(() => {
@@ -91,8 +104,11 @@ export default function JobRecruitListPage({ pageType }) {
 
   // on Search Key and Page Key Change
   useEffect(() => {
-    updateState({ isLoading: true });
-    debouncedSearchJobPost(state.jobSearchObj, state.jobPageObj);
+    if(state.isLoading && !state.isSearchBarOpen) {
+      debouncedSearchJobPost(state.jobSearchObj, state.jobPageObj);
+    } else if(state.isLoading && state.isSearchBarOpen) {
+      debouncedSearchJobPostwithKeyword(state.jobPageObj);
+    }
   }, [state.jobSearchObj, state.jobPageObj]);
 
   // Update Search Object on Page Change
@@ -102,6 +118,7 @@ export default function JobRecruitListPage({ pageType }) {
         ...state.jobPageObj,
         page: state.pageIndex - 1,
       },
+      isLoading: true,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [state.pageIndex]);
@@ -126,31 +143,23 @@ export default function JobRecruitListPage({ pageType }) {
   };
 
   const toggleSearchBar = () => {
-    updateState({ isSearchBarOpen: !state.isSearchBarOpen });
+    updateState({
+      isSearchBarOpen: !state.isSearchBarOpen,
+    });
   };
   const handleSearchFieldChange = (e) => {
-    updateState({ searchData: e.currentTarget.value });
+    updateState({ searchKeyword: e.currentTarget.value });
   };
   const handleSearchClick = (e) => {
     e.preventDefault();
-    updateState({ isLoading: true });
-    // reset Search Object
-    //setJobSearchObj({});
-    // send keyword search request
-    searchJobPostwithKeyword(pageType, state.searchData, state.jobPageObj).then(
-      (data) => {
-        updateState({
-          jobPostData: {
-            ...data,
-            totalCount:
-              pageType === "job"
-                ? Object.keys(data.employeePostSearchResponseDtoList).length
-                : Object.keys(data.employerPostSearchResponseDtoList).length,
-          },
-          isLoading: false,
-        });
-      }
-    );
+    updateState({
+      jobPageObj: {
+        ...state.jobPageObj,
+        keyword: state.searchKeyword,
+        page: 0,
+      },
+      isLoading: true,
+    });
   };
 
   const handleAddClick = () => {
@@ -168,6 +177,7 @@ export default function JobRecruitListPage({ pageType }) {
         ...state.jobSearchObj,
         workFieldId: state.selectedTag,
       },
+      isLoading: true,
     });
   }, [state.jobSearchObj, state.selectedTag, updateState, updateElement]);
 
@@ -177,6 +187,7 @@ export default function JobRecruitListPage({ pageType }) {
         ...state.jobSearchObj,
         workFieldChildTagId: state.selectedElement,
       },
+      isLoading: true,
     });
   }, [state.jobSearchObj, state.selectedElement, updateState]);
 
@@ -280,7 +291,7 @@ export default function JobRecruitListPage({ pageType }) {
         <div className={classes.jobSearchArea}>
           <TextField
             size="small"
-            value={state.searchData}
+            value={state.searchKeyword}
             fullWidth
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -304,10 +315,15 @@ export default function JobRecruitListPage({ pageType }) {
             onTagChange={handleTagChange}
             onElementChange={handleElementChange}
           />
-          <ExpTagSelector 
+          <ExpTagSelector
             selectedExp={state.selectedExpTag}
             setExpTag={updateState}
-            updateObj={(obj) => updateState({ jobSearchObj: { ...state.jobSearchObj, ...obj }})}
+            updateObj={(obj) =>
+              updateState({
+                jobSearchObj: { ...state.jobSearchObj, ...obj },
+                isLoading: true,
+              })
+            }
           />
         </div>
       )}
@@ -315,8 +331,7 @@ export default function JobRecruitListPage({ pageType }) {
         pageType={pageType}
         pageObj={state.jobPageObj}
         setObj={(obj) => {
-          console.log(obj.sort)
-          updateState({ jobPageObj: obj });
+          updateState({ jobPageObj: obj, isLoading: true });
         }}
       />
       <div className={classes.jobPostArea}>{renderJobCards}</div>
@@ -333,6 +348,9 @@ export default function JobRecruitListPage({ pageType }) {
 
 // 구직 게시글 검색 함수
 async function searchJobPost(pageType, jobSearchObj, jobPageObj) {
+  //console.log("NORMAL SEARCH");
+  //console.log(jobSearchObj);
+  //console.log(jobPageObj);
   let apiAddress;
   if (pageType == "job") {
     apiAddress = "/api/v1/employee-posts/search";
@@ -360,7 +378,9 @@ async function searchJobPost(pageType, jobSearchObj, jobPageObj) {
 }
 
 // 구직 게시글 검색 함수
-async function searchJobPostwithKeyword(pageType, keywordData, jobPageObj) {
+async function searchJobPostwithKeyword(pageType, jobPageObj) {
+  //console.log("Keyword SEARCH");
+  //console.log(jobPageObj);
   let apiAddress;
   if (pageType == "job") {
     apiAddress = "/api/v1/employee-posts/search/keyword";
@@ -370,10 +390,7 @@ async function searchJobPostwithKeyword(pageType, keywordData, jobPageObj) {
 
   try {
     const response = await apiInstance.get(apiAddress, {
-      params: {
-        keyword: keywordData,
-        ...jobPageObj,
-      },
+      params: jobPageObj,
     });
     if (response.status === 200) {
       // 조회 성공

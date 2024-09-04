@@ -28,11 +28,11 @@ export default function JobListSortBar({ pageType, pageObj, setObj }) {
     },
     {
       name: "경력 낮은 순",
-      sort: ["hopeCareer,asc"],
+      sort: ["careerYear,asc"],
     },
     {
       name: "경력 높은 순",
-      sort: ["hopeCareer,desc"],
+      sort: ["careerYear,desc"],
     },
   ]
   const sortObj = pageType === "recruit" ? recSortObj : jobSortObj;
