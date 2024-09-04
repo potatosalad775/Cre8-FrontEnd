@@ -2,43 +2,54 @@ import { useState } from "react";
 import { Button, Divider } from "@mui/material";
 import classes from "./JobList.module.css";
 
-export default function JobListSortBar({ setObj }) {
-  const sortMenu = [
-    "최신 등록 순",
-    "마감일 순",
-    "요구 경력 낮은 순",
-    "요구 경력 높은 순",
-  ];
-  const sortObj = [
+export default function JobListSortBar({ pageType, pageObj, setObj }) {
+  const recSortObj = [
     {
+      name: "최신 등록 순",
       sort: ["createdAt,desc"],
     },
     {
+      name: "마감일 순",
       sort: ["deadline,asc"],
     },
     {
+      name: "요구 경력 낮은 순",
       sort: ["hopeCareer,asc"],
     },
     {
-      sort: ["createdAt,desc"],
+      name: "요구 경력 높은 순",
+      sort: ["hopeCareer,desc"],
     },
   ];
+  const jobSortObj = [
+    {
+      name: "최신 등록 순",
+      sort: ["createdAt,desc"],
+    },
+    {
+      name: "경력 낮은 순",
+      sort: ["hopeCareer,asc"],
+    },
+    {
+      name: "경력 높은 순",
+      sort: ["hopeCareer,desc"],
+    },
+  ]
+  const sortObj = pageType === "recruit" ? recSortObj : jobSortObj;
 
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   const handleBtnClick = (index) => {
     setSelectedItemIndex(index);
-    setObj((prevObj) => {
-      return {
-        ...prevObj,
-        ...sortObj[index],
-      };
+    setObj({
+      ...pageObj,
+      sort: sortObj[index].sort,
     });
   };
 
   return (
     <ul className={classes.jobListSortBar}>
-      {sortMenu.map((menu, index) => (
+      {sortObj.map((menu, index) => (
         <li key={`btn${index}`}>
           <Button
             onClick={() => {
@@ -51,9 +62,9 @@ export default function JobListSortBar({ setObj }) {
             }
             disabled={false}
           >
-            {menu}
+            {menu.name}
           </Button>
-          {!(index == sortMenu.length - 1) && (
+          {!(index == sortObj.length - 1) && (
             <Divider
               orientation="vertical"
               variant="middle"
