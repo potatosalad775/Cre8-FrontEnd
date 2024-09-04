@@ -25,3 +25,7 @@
 .tagChildSelector {
   background-color: var(--color-gray-100);
 }
+
+.tagAccordion {
+  transition: all 0.5s ease;
+}

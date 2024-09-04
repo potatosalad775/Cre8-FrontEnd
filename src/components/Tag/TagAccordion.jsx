@@ -3,6 +3,7 @@ import TagSelector from "./TagSelector";
 import TagChildSelector from "./TagChildSelector";
 import { tagLoader, tagElementLoader } from "./TagLoader";
 import { isEmpty } from "../../provider/utilityProvider";
+import classes from "./Tag.module.css";
 
 function TagAccordion({
   selectedTag,
@@ -47,7 +48,7 @@ function TagAccordion({
     <>
       {isEmpty(tagData) && <></>}
       {!isEmpty(tagData) && (
-        <>
+        <div className={classes.tagAccordion}>
           <TagSelector
             title="작업 분야"
             tagList={tagData}
@@ -65,7 +66,7 @@ function TagAccordion({
                 setElement={setElement}
               />
             ))}
-        </>
+        </div>
       )}
     </>
   );
