@@ -45,9 +45,7 @@ export default function MainNavigation() {
     navigate('/bookmark');
   };
   const handleLogout = () => {
-    sendLogoutRequest(token).then(() => {
-      logout();
-    });
+    logout();
   };
 
   return (
