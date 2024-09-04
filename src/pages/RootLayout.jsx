@@ -1,4 +1,5 @@
-import { Outlet, useNavigation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import { Card } from "@mui/material";
 
 import MainNavigation from "../components/MainNavigation";
 

@@ -25,7 +25,7 @@ export default function HomeJobRecruitList({dataType = "job"}) {
     <div className={classes.homePostArea}>
       {dataType == "job" && <h3>새로운 크리에이터 구직 공고</h3>}
       {dataType == "recruit" && <h3>새로운 크리에이터 구인 공고</h3>}
-      <Grid container columns={{ xs: 2, sm: 4 }} spacing={{ xs: 2, sm: 2 }}>
+      <Grid container columns={{ xs: 2, sm: 6 }} spacing={{ xs: 2, sm: 2 }}>
         {!isEmpty(data) &&
           data?.map((item, index) => (
             <Grid item key={index} xs={2} sm={2}>
@@ -66,7 +66,7 @@ async function fetchHomeJobRecruitList(dataType) {
   try {
     const response = await apiInstance.get(address, {
       params: {
-        size: 4,
+        size: 6,
         sort: ["createdAt,desc"],
       },
     });
