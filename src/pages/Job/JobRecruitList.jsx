@@ -83,6 +83,7 @@ export default function JobRecruitListPage({ pageType }) {
     updateState({
       selectedTag: location?.state?.tagID ?? "",
       selectedElement: [],
+      selectedExpTag: null,
       jobSearchObj: { workFieldId: location?.state?.tagID ?? "" },
       jobPageObj: { size: 10, sort: ["createdAt,desc"], page: 0 },
     });

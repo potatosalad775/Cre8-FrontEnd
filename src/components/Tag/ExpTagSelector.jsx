@@ -1,6 +1,6 @@
 import { Chip } from "@mui/material";
 import classes from "./Tag.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ExpTagSelector({ selectedExp, setExpTag, updateObj }) {
   const expObjList = [
@@ -35,10 +35,21 @@ export default function ExpTagSelector({ selectedExp, setExpTag, updateObj }) {
   ]
   const [selectedExpTag, setSelectedExpTag] = useState(selectedExp);
 
+  // Reset Selected Experience Tag when outside data is changed
+  useEffect(() => {
+    setSelectedExpTag(selectedExp);
+  }, [selectedExp])
+
   const handleClick = (index) => {
-    setSelectedExpTag(index);
-    setExpTag({selectedExpTag: index});
-    updateObj(expObjList[index].searchObj);
+    if(selectedExpTag === index) {
+      setSelectedExpTag(null);
+      setExpTag({selectedExpTag: null});
+      updateObj({minCareer: null, maxCareer: null});
+    } else {
+      setSelectedExpTag(index);
+      setExpTag({selectedExpTag: index});
+      updateObj(expObjList[index].searchObj);
+    }
   };
 
   return (
