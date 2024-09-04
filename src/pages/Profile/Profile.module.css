@@ -1,5 +1,5 @@
 .content {
-  padding: 0 1.3rem;
+  padding: 1rem 1.3rem;
   padding-top: 1.3rem;
   text-align: start;
 }
@@ -34,7 +34,8 @@
   background-color: var(--color-gray-150);
 }
 .tabList {
-  border-bottom: 1px solid var(--color-gray-500);
+  border-top: 1px solid var(--color-gray-400);
+  border-bottom: 1px solid var(--color-gray-400);
 }
 
 .avatarButton,

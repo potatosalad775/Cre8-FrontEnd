@@ -7,6 +7,7 @@ import {
   Divider,
   Button,
   Grid,
+  Card,
 } from "@mui/material";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { RiAddFill } from "@remixicon/react";
@@ -26,7 +27,6 @@ import { isEmpty } from "../../provider/utilityProvider";
 export default function JobEditPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { memberCode } = useAuth();
   const [data, setData] = useState(
     location.state?.isCreation == null || location.state?.isCreation
       ? INITIAL_JOB_VALUE
@@ -48,7 +48,7 @@ export default function JobEditPage() {
   const payType = ["작업물 건 당 지급", "작업물 분 당 지급", "월급", "기타"];
   // User selected tag
   const [selectedTag, setSelectedTag] = useState();
-  const [selectedElement, setSelectedElement] = useState(new Set());
+  const [selectedElement, setSelectedElement] = useState([]);
   // Uploading Status
   const [isUploading, setIsUploading] = useState(false);
 
@@ -83,7 +83,7 @@ export default function JobEditPage() {
         setTagElementData(res);
         //console.log(tagElementData);
       });
-      setSelectedElement(new Set());
+      setSelectedElement([]);
     }
   }, [selectedTag]);
   useEffect(() => {
@@ -99,20 +99,20 @@ export default function JobEditPage() {
           tempData = [...tempData, ...subItem.childTagName];
         }
       );
-      const tempElement = new Set();
+      const tempElement = [];
       //
       if (tagElementData && tempData) {
         tagElementData.map((elementItem) => {
           elementItem.workFieldChildTagResponseDtoList.map((childItem) => {
-            if (tempData.length == 0) {
-              setSelectedElement(new Set(tempElement));
-            }
             if (tempData[0] == childItem.name) {
-              tempElement.add(childItem.workFieldChildTagId);
+              tempElement.push(childItem.workFieldChildTagId);
               tempData.shift();
             }
           });
         });
+        if (tempData.length == 0) {
+          setSelectedElement(tempElement);
+        }
       }
     }
   }, [tagElementData]);
@@ -174,7 +174,9 @@ export default function JobEditPage() {
     formData.append("careerYear", data.careerYear);
     formData.append("contents", JSON.stringify(postContent));
     formData.append("contact", data.contact);
-    formData.append("multipartFile", imageData.imgFile);
+    if(imageData.imgFile !== null) {
+      formData.append("multipartFile", imageData.imgFile);
+    }
 
     jobPostEditAction(formData, location.state.isCreation)
       .then((res) => {
@@ -192,7 +194,7 @@ export default function JobEditPage() {
   };
 
   return (
-    <div className={classes.jobEditPage}>
+    <Card sx={{ borderRadius: "0.7rem", margin: "1.3rem 0" }}>
       <Backdrop open={isUploading}>
         <CircularProgress />
       </Backdrop>
@@ -333,7 +335,7 @@ export default function JobEditPage() {
           저장
         </Button>
       </div>
-    </div>
+    </Card>
   );
 }
 
