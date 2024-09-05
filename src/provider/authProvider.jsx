@@ -2,8 +2,7 @@ import { createContext, useContext, useMemo, useEffect, useState, useCallback } 
 import apiInstance from "./networkProvider";
 import { Toast } from "../components/Toast";
 
-const apiAddress = import.meta.env.VITE_API_SERVER;
-const TOKEN_REISSUE_INTERVAL = 5 * 60 * 10 // 5 minutes
+const TOKEN_REISSUE_INTERVAL = 5 * 60 * 1000 // 5 minutes
 
 let logoutFunction = null;
 let onLoginFunction = null;
@@ -35,7 +34,7 @@ export const AuthProvider = ({ children }) => {
         logout();
       }
     } catch (error) {
-      console.error("Error reissuing token:", error);
+      //console.error("Error reissuing token:", error);
       logout();
     }
   }, [token]);

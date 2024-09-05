@@ -77,6 +77,7 @@ export default function ProfilePage() {
                   href={profileData.uLinkTwitter}
                   color="inherit"
                   rel="noopener noreferrer"
+                  sx={{marginBottom: "0.1rem"}}
                 >
                   {profileData.uLinkTwitter}
                 </Link>
@@ -93,6 +94,7 @@ export default function ProfilePage() {
                   href={profileData.uLinkYoutube}
                   color="inherit"
                   rel="noopener noreferrer"
+                  sx={{marginBottom: "0.1rem"}}
                 >
                   {profileData.uLinkYoutube}
                 </Link>
@@ -109,6 +111,7 @@ export default function ProfilePage() {
                   href={profileData.uLinkWebpage}
                   color="inherit"
                   rel="noopener noreferrer"
+                  sx={{marginBottom: "0.1rem"}}
                 >
                   {profileData.uLinkWebpage}
                 </Link>
