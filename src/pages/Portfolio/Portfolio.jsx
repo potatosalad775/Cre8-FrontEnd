@@ -56,15 +56,13 @@ export default function PortfolioPage({ isFromJobPost = false }) {
             sx={{ padding: "0 1.3rem 1.3rem 1.3rem" }}
           >
             {data.portfolioImageResponseDtoList.map((item, index) => (
-              <>
-                <ImageListItem key={`IMG_${index}`}>
-                  <img
-                    src={`${item.portfolioImageAccessUrl}`}
-                    alt={`IMG_${index}`}
-                    onClick={() => handleImgClick(item.portfolioImageAccessUrl)}
-                  />
-                </ImageListItem>
-              </>
+              <ImageListItem key={`IMG_${index}`}>
+                <img
+                  src={`${item.portfolioImageAccessUrl}`}
+                  alt={`IMG_${index}`}
+                  onClick={() => handleImgClick(item.portfolioImageAccessUrl)}
+                />
+              </ImageListItem>
             ))}
           </ImageList>
           {imgPopUpData !== null && (
@@ -72,12 +70,9 @@ export default function PortfolioPage({ isFromJobPost = false }) {
               open={imgPopUpData !== null}
               aria-hidden={false}
               className={classes.ptfImgPopup}
-              sx={{backgroundColor: "rgba(0,0,0,0.8)"}}
+              sx={{ backgroundColor: "rgba(0,0,0,0.8)" }}
             >
-              <img
-                src={imgPopUpData}
-                alt="IMG_POPUP"
-              />
+              <img src={imgPopUpData} alt="IMG_POPUP" />
               <Fab onClick={closeImgPopUp}>
                 <RiCloseLargeLine />
               </Fab>

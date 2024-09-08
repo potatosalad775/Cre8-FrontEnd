@@ -12,15 +12,12 @@ import {
 } from "@mui/material";
 import { RiArticleLine, RiBookmarkLine, RiChat4Line, RiLogoutBoxLine, RiNotification3Line, RiUserLine } from "@remixicon/react";
 
-import classes from "./MainNavigation.module.css";
-import { useAuth } from "../provider/authProvider";
-import { Toast } from "../components/Toast";
+import classes from "./MainNavBar.module.css";
+import { useAuth } from "../../provider/authProvider";
 
-const apiAddress = import.meta.env.VITE_API_SERVER;
-
-export default function MainNavigation() {
+export default function MainNavBar() {
   const navigate = useNavigate();
-  const { token, logout, userID, isLoggedIn } = useAuth();
+  const { logout, userID, isLoggedIn } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -31,22 +28,12 @@ export default function MainNavigation() {
     setAnchorEl(null);
   };
 
-  const handleChatClick = () => {
-    navigate("/chat");
-  }
-
-  const handleProfile = () => {
-    navigate(`/p/${userID}`);
-  };
-  const handleArticle = () => {
-    navigate('/my-post');
-  };
-  const handleBookmark = () => {
-    navigate('/bookmark');
-  };
-  const handleLogout = () => {
-    logout();
-  };
+  const navList = [
+    { name: "구인", link: "/recruit" },
+    { name: "구직", link: "/job" },
+    { name: "커뮤니티", link: "/community" },
+    { name: "테스트", link: "/test" },
+  ];
 
   return (
     <header className={classes.header}>
@@ -57,46 +44,18 @@ export default function MainNavigation() {
               Cre8
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="/recruit"
-              className={({ isActive }) =>
-                isActive ? classes.active : undefined
-              }
-            >
-              구인
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/job"
-              className={({ isActive }) =>
-                isActive ? classes.active : undefined
-              }
-            >
-              구직
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/community"
-              className={({ isActive }) =>
-                isActive ? classes.active : undefined
-              }
-            >
-              커뮤니티
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/test"
-              className={({ isActive }) =>
-                isActive ? classes.active : undefined
-              }
-            >
-              테스트
-            </NavLink>
-          </li>
+          {navList.map((item, index) => (
+            <li key={`NAV_LIST_${index}`}>
+              <NavLink
+                to={item.link}
+                className={({ isActive }) =>
+                  isActive ? classes.active : undefined
+                }
+              >
+                {item.name}
+              </NavLink>
+            </li>
+          ))}
         </ul>
         {!isLoggedIn ? (
           <ul className={classes.list}>
@@ -124,7 +83,7 @@ export default function MainNavigation() {
         ) : (
           <ul className={classes.buttonList}>
             <li>
-              <IconButton onClick={handleChatClick}>
+              <IconButton onClick={() => navigate("/chat")}>
                 <RiChat4Line size={20} className={classes.navIcon} />
               </IconButton>
             </li>
@@ -146,20 +105,20 @@ export default function MainNavigation() {
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 disableScrollLock={true}
               >
-                <MenuItem sx={{minHeight: "32px"}} onClick={handleProfile}>
+                <MenuItem sx={{minHeight: "32px"}} onClick={() => navigate(`/p/${userID}`)}>
                   <ListItemIcon><RiUserLine size={22}/></ListItemIcon>
                   <ListItemText>프로필</ListItemText>
                 </MenuItem>
-                <MenuItem sx={{minHeight: "32px"}} onClick={handleArticle}>
+                <MenuItem sx={{minHeight: "32px"}} onClick={() => navigate("/my-post")}>
                   <ListItemIcon><RiArticleLine size={22}/></ListItemIcon>
                   <ListItemText>My 게시글</ListItemText>
                 </MenuItem>
-                <MenuItem sx={{minHeight: "32px"}} onClick={handleBookmark}>
+                <MenuItem sx={{minHeight: "32px"}} onClick={() => navigate("/bookmark")}>
                   <ListItemIcon><RiBookmarkLine size={22}/></ListItemIcon>
                   <ListItemText>My 북마크</ListItemText>
                 </MenuItem>
                 <Divider />
-                <MenuItem sx={{minHeight: "32px"}} onClick={handleLogout}>
+                <MenuItem sx={{minHeight: "32px"}} onClick={logout}>
                   <ListItemIcon><RiLogoutBoxLine size={22}/></ListItemIcon>
                   <ListItemText>로그아웃</ListItemText>
                 </MenuItem>
@@ -170,31 +129,4 @@ export default function MainNavigation() {
       </Card>
     </header>
   );
-}
-
-// 로그아웃 요청
-async function sendLogoutRequest(token) {
-  let url = apiAddress + "/api/v1/auth/logout";
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      accessToken: token,
-    },
-    credentials: "include",
-  });
-
-  switch (response.status) {
-    case 200:
-      Toast.success("로그아웃되었습니다.");
-      break;
-    case 400:
-      Toast.error("로그아웃 중 오류가 발생했습니다.");
-      break;
-    default:
-      Toast.error("알 수 없는 오류가 발생했습니다.");
-      break;
-  }
-
-  return response;
 }

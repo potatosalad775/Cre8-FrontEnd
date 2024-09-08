@@ -48,7 +48,11 @@ export default function ProfilePage() {
         <Avatar
           alt={profileData.uNickName}
           src={profileData.uProfileImage}
-          sx={{ width: "7rem", height: "7rem" }}
+          sx={{ 
+            width: "20dvw", height: "20dvw",
+            minWidth: "4rem", minHeight: "4rem",
+            maxWidth: "7rem", maxHeight: "7rem" 
+          }}
         />
         <ul className={classes.contextButtonList}>
           <li>

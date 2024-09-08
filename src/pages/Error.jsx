@@ -1,7 +1,7 @@
 import { useRouteError } from 'react-router-dom';
 
 import PageContent from '../components/PageContent';
-import MainNavigation from '../components/MainNavigation';
+import MainNavBar from '../components/MainNavBar/MainNavBar';
 
 function ErrorPage() {
   const error = useRouteError();
@@ -20,7 +20,7 @@ function ErrorPage() {
 
   return (
     <>
-      <MainNavigation />
+      <MainNavBar />
       <PageContent title={title}>
         <p>{message}</p>
       </PageContent>
