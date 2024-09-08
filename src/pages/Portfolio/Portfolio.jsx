@@ -1,5 +1,15 @@
+import { useState } from "react";
 import { useRouteLoaderData } from "react-router-dom";
-import { ImageList, ImageListItem, useTheme, useMediaQuery, Card } from "@mui/material";
+import {
+  ImageList,
+  ImageListItem,
+  useTheme,
+  useMediaQuery,
+  Card,
+  Backdrop,
+  Fab,
+} from "@mui/material";
+import { RiCloseLargeLine } from "@remixicon/react";
 
 import PageContent from "../../components/PageContent";
 import TitleBar from "../../components/TitleBar";
@@ -13,8 +23,17 @@ export default function PortfolioPage({ isFromJobPost = false }) {
     ? useRouteLoaderData("portfolio-page")
     : useRouteLoaderData("portfolio-in-jobPost");
   const theme = useTheme();
-  const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
-    
+  const matchDownSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const [imgPopUpData, setImgPopUpData] = useState(null);
+
+  const handleImgClick = (imgURL) => {
+    setImgPopUpData(imgURL);
+  };
+  const closeImgPopUp = (e) => {
+    e.preventDefault();
+    setImgPopUpData(null);
+  };
+
   return (
     <Card sx={{ borderRadius: "0.7rem", margin: "1.3rem 0" }}>
       <TitleBar backBtnTarget={-1} title="포트폴리오" />
@@ -31,16 +50,39 @@ export default function PortfolioPage({ isFromJobPost = false }) {
             <TagList tagList={data.tagName} />
           </div>
           <ImageList
-            cols={matchDownMd ? 2 : 4}
-            gap={20}
+            cols={matchDownSm ? 1 : 2}
+            gap={10}
+            variant="mansory"
             sx={{ padding: "0 1.3rem 1.3rem 1.3rem" }}
           >
             {data.portfolioImageResponseDtoList.map((item, index) => (
-              <ImageListItem key={`IMG_${index}`}>
-                <img src={`${item.portfolioImageAccessUrl}`} alt={`IMG_${index}`} />
-              </ImageListItem>
+              <>
+                <ImageListItem key={`IMG_${index}`}>
+                  <img
+                    src={`${item.portfolioImageAccessUrl}`}
+                    alt={`IMG_${index}`}
+                    onClick={() => handleImgClick(item.portfolioImageAccessUrl)}
+                  />
+                </ImageListItem>
+              </>
             ))}
           </ImageList>
+          {imgPopUpData !== null && (
+            <Backdrop
+              open={imgPopUpData !== null}
+              aria-hidden={false}
+              className={classes.ptfImgPopup}
+              sx={{backgroundColor: "rgba(0,0,0,0.8)"}}
+            >
+              <img
+                src={imgPopUpData}
+                alt="IMG_POPUP"
+              />
+              <Fab onClick={closeImgPopUp}>
+                <RiCloseLargeLine />
+              </Fab>
+            </Backdrop>
+          )}
         </>
       )}
     </Card>
