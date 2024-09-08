@@ -81,7 +81,7 @@ export default function RecruitPostPage() {
               }}
               justifyContent="space-between"
             >
-              <Grid item xs={2} sm={15} sx={{paddingTop: "0.6rem !important"}}>
+              <Grid item xs={2} sm={15} className={classes.recPostInfoBox}>
                 <h3>모집 정보</h3>
                 <div className={classes.recPostInfoAreaRow}>
                   <p>급여</p>
@@ -108,7 +108,7 @@ export default function RecruitPostPage() {
                 flexItem
                 sx={{ mr: "-1px", paddingLeft: "16px" }}
               />
-              <Grid item xs={2} sm={15} sx={{paddingTop: "0.6rem !important"}}>
+              <Grid item xs={2} sm={15} className={classes.recPostInfoBox}>
                 <h3>모집 조건</h3>
                 <div className={classes.recPostInfoAreaRow}>
                   <p>모집 인원</p>

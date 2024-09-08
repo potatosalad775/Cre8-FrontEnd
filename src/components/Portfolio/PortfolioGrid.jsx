@@ -24,6 +24,7 @@ import classes from "./PortfolioGrid.module.css";
 export const PortfolioGrid = ({ memberCode, isEditing = false }) => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const matchDownSm = useMediaQuery(theme.breakpoints.down('sm'));
   const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
   const [ptfGridData, setPtfGridData] = useState(null);
   const [loadingData, setLoadingData] = useState(false);
@@ -104,7 +105,7 @@ export const PortfolioGrid = ({ memberCode, isEditing = false }) => {
       )}
       {!loadingData && (
         <>
-          <ImageList cols={matchDownMd ? 3 : 4} gap={10} >
+          <ImageList cols={matchDownSm ? 2 : (matchDownMd ? 3 : 4)} gap={10} >
             {ptfGridData &&
               ptfGridData.map((item) => (
                 <ImageListItem

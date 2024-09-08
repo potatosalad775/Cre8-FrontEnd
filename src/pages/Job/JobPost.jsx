@@ -123,7 +123,7 @@ export default function JobPostPage() {
               }}
               justifyContent="space-between"
             >
-              <Grid item xs={2} sm={15} sx={{paddingTop: "0.6rem !important"}}>
+              <Grid item xs={2} sm={15} className={classes.jobPostInfoBox}>
                 <h3>역량</h3>
                 {data.tagPostResponseDto.subCategoryWithChildTagResponseDtoList.map(
                   (item, itemIndex) => (
@@ -145,7 +145,7 @@ export default function JobPostPage() {
                 flexItem
                 sx={{ mr: "-1px", paddingLeft: "16px" }}
               />
-              <Grid item xs={2} sm={15} sx={{paddingTop: "0.6rem !important"}}>
+              <Grid item xs={2} sm={15} className={classes.jobPostInfoBox}>
                 <h3>작성자 정보</h3>
                 <div className={classes.jobPostInfoAreaRow}>
                   <p>희망 급여</p>
