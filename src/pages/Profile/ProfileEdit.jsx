@@ -21,7 +21,7 @@ export default function ProfileEditPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const { memberCode } = useAuth();
+  const { memberCode, setUserPFP } = useAuth();
   // Tab Index
   const tabIndex = searchParams.get("tab") || "1";
   // Profile Data
@@ -43,6 +43,11 @@ export default function ProfileEditPage() {
   const handleSaveClick = (e) => {
     e.preventDefault();
 
+    // Update ProFile Picture
+    setUserPFP(profileData.uProfileImage);
+    localStorage.setItem("userPFP", profileData.uProfileImage);
+
+    // Upload Edited Profile
     const formData = new FormData();
     if (uploadedPFP) {
       formData.append("multipartFile", uploadedPFP);

@@ -136,6 +136,7 @@ const sendLoginRequest = async (inputData) => {
         newToken: response.headers.authorization,
         newUserID: response.data.data.loginId,
         newMemberCode: response.data.data.memberId,
+        newUserPFP: response.data.data.memberAccessUrl,
       });
 
       Toast.loginSuccess(`${inputData.userID}님 환영합니다.`);
