@@ -50,7 +50,7 @@ export default function MainNavBar() {
   const navList = [
     { name: "구인", link: "/recruit" },
     { name: "구직", link: "/job" },
-    { name: "커뮤니티", link: "/community" },
+    { name: "커뮤니티", link: "/c" },
     { name: "테스트", link: "/test" },
   ];
 
@@ -69,7 +69,10 @@ export default function MainNavBar() {
             {navList.map((item, index) => (
               <ListItemButton
                 key={`NAV_DRAWER_LIST_${index}`}
-                onClick={() => navigate(item.link)}
+                onClick={() => {
+                  navigate(item.link)
+                  setDrawerOpen(false)
+                }}
               >
                 <ListItem disablePadding>
                   <ListItemText>{item.name}</ListItemText>

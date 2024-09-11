@@ -12,7 +12,9 @@ import JobPostPage, { jobPostLoader } from "../pages/Job/JobPost.jsx";
 import JobEditPage from "../pages/Job/JobEdit.jsx";
 import BookmarkPage from "../pages/Bookmark/Bookmark.jsx";
 import MyPostPage from "../pages/MyPost/MyPost.jsx";
-import CommunityPage from "../pages/Community/Community.jsx";
+import CommunityPage, { communityLoader } from "../pages/Community/Community.jsx";
+import CommunityEditPage from "../pages/Community/CommunityEdit.jsx";
+import CommunityPostPage, {communityPostLoader} from "../pages/Community/CommunityPost.jsx";
 import ChatPage, { chatListLoader } from "../pages/Chat/Chat.jsx";
 import LoginPage from "../pages/UserAuth/Login.jsx";
 import RegisterPage, { action as registerAction } from "../pages/UserAuth/Register.jsx";
@@ -77,9 +79,21 @@ const Routes = () => {
       ],
     },
     {
-      path: "community",
-      element: <CommunityPage />,
-      children: [{}],
+      path: "c",
+      id: "community-page",
+      loader: communityLoader,
+      children: [
+        {
+          index: true,
+          element: <CommunityPage />,
+        },
+        {
+          path: ":communityPostID",
+          id: "communityPost-page",
+          loader: communityPostLoader,
+          element: <CommunityPostPage />,
+        },
+      ],
     },
     {
       path: "p/:userID",
@@ -158,6 +172,21 @@ const Routes = () => {
               loader: jobPostLoader,
               element: <JobEditPage />,
             }
+          ]
+        },
+        {
+          path: "c/edit",
+          children: [
+            {
+              index: true,
+              element: <CommunityEditPage />,
+            },
+            {
+              path: ":communityPostID",
+              id: "community-page-edit",
+              //loader: communityPostLoader,
+              element: <CommunityEditPage />,
+            },
           ]
         },
         {
