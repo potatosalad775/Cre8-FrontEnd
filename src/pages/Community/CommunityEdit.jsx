@@ -38,7 +38,7 @@ export default function CommunityEditPage() {
   );
   const [imageData, setImageData] = useState({
     imgFile: null,
-    imgURL: null,
+    imgURL: data?.image || null,
   });
   const [isUploading, setIsUploading] = useState(false);
 
@@ -79,7 +79,11 @@ export default function CommunityEditPage() {
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append("communityBoardId", location.state.boardId);
+    if(location.state.isCreation) {
+      formData.append("communityBoardId", location.state.boardId);
+    } else {
+      formData.append("communityPostId", location.state.postId);
+    }
     formData.append("title", data.title);
     formData.append("contents", JSON.stringify(postContent));
     if (imageData.imgFile !== null) {
@@ -109,7 +113,7 @@ export default function CommunityEditPage() {
       <Backdrop open={isUploading}>
         <CircularProgress />
       </Backdrop>
-      <TitleBar title="게시글 작성" backBtnTarget="-1" />
+      <TitleBar title="게시글 작성" backBtnTarget={-1} />
       <div className={classes.communityEditTitleBar}>
         <TextField
           size="small"
@@ -227,10 +231,10 @@ const CommunityPostEditor = ({ postContent, setPostContent }) => {
 
 // 프로필 데이터 요청 함수
 export async function communityEditLoader({ request, params }) {
-  const postId = params.postId;
+  const cPID = params.communityPostID;
 
   try {
-    const response = await apiInstance.get(`/api/v1/community/posts/${postId}`);
+    const response = await apiInstance.get(`/api/v1/community/posts/${cPID}`);
     if (response.status === 200) {
       // 조회 성공
       //console.log(response.data.data)

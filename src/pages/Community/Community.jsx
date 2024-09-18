@@ -73,9 +73,10 @@ export default function CommunityPage() {
               className={classes.communityPostLink}
               onClick={() => handlePostClick(item.communityPostId)}
             >
-              <h4>
-                {item.title} {item.replyCount}
-              </h4>
+              <span>
+                <h4>{item.title}</h4>
+                <h4 style={{color: 'red'}}>[{item.replyCount}]</h4>
+              </span>
               <p>
                 {item.writerNickName} | {timeSince(item.createdAt)}
               </p>
@@ -102,8 +103,7 @@ export async function communityLoader({ boardType = 1, pageNum = 0 }) {
         params: {
           page: pageNum,
           size: 10,
-          sort: ["createdAt"],
-          direction: "desc",
+          sort: ["createdAt,desc"],
         },
       }
     );
