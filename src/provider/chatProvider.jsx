@@ -11,13 +11,13 @@ chatClient.configure({
     Authorization: localStorage.getItem("token"),
   },
   reconnectDelay: 5000,
-  heartbeatIncoming: 4000,
-  heartbeatOutgoing: 4000,
-  /*
+  heartbeatIncoming: 3000,
+  heartbeatOutgoing: 3000,
+  
   debug: (msg) => {
     console.log(new Date(), msg);
   }
-  */
+  
 });
 
 export default chatClient;
@@ -76,25 +76,40 @@ export function useChatConnection(roomId, onMessageReceived) {
     if(roomId == -1 || connectionStatus !== 'connected') return;
     // Subscribe if roomId is valid
     let subscription;
-    try {
-      subscription = chatClient.subscribe(
-        `/sub/chat/room/${roomId}`,
-        (message) => {
-          //console.log(message)
-          if (message.body) {
-            const msg = JSON.parse(message.body);
-            onMessageReceived(msg);
+    //
+    const subscribe = async (attempt) => {
+      try {
+        subscription = chatClient.subscribe(
+          `/sub/chat/room/${roomId}`,
+          (message) => {
+            //console.log(message)
+            if (message.body) {
+              const msg = JSON.parse(message.body);
+              onMessageReceived(msg);
+            }
           }
+        );
+      } catch (error) {
+        if (attempt <= 3) {
+          console.warn(`Attempt ${attempt} failed, retrying...`);
+          await subscribe(attempt + 1);
+        } else {
+          console.error("CHAT Subscription Error:", error);
+          setConnectionStatus('error');
         }
-      );
-    } catch (error) {
-      console.error('CHAT Subscription Error:', error);
-      setConnectionStatus('error');
+      }
     }
+    //
+    subscribe(1);
+    
     // Unsubscribe when it's unmounted
     return () => {
       if(subscription) {
-        subscription.unsubscribe();
+        try {
+          subscription.unsubscribe();
+        } catch (e) {
+          console.error(e.message);
+        }
       }
     };
   }, [connectionStatus, onMessageReceived]); // Memoizes and only changes when onMsgReceived is changed
@@ -107,15 +122,24 @@ export function useChatConnection(roomId, onMessageReceived) {
   const sendMessage = useCallback((message) => {
     if(roomId == -1 || connectionStatus !== 'connected') return;
     // Send Message if roomId is valid
-    try {
-      chatClient.publish({
-        destination: `/pub/message/${roomId}`,
-        body: JSON.stringify({ message }),
-      });
-    } catch (error) {
-      console.error("Send Message Error:", error);
-      setConnectionStatus('error');
-    }
+    const publishMessage = async (attempt) => {
+      try {
+        chatClient.publish({
+          destination: `/pub/message/${roomId}`,
+          body: JSON.stringify({ message }),
+        });
+      } catch (error) {
+        if (attempt <= 3) {
+          console.warn(`Attempt ${attempt} failed, retrying...`);
+          await publishMessage(attempt + 1);
+        } else {
+          console.error("Send Message Error:", error);
+          setConnectionStatus('error');
+        }
+      }
+    };
+    // Try Publishing Message
+    publishMessage(1);
   }, [roomId, connectionStatus]);
 
   return { sendMessage, connectionStatus };
