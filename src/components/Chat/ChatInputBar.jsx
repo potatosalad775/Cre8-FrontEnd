@@ -24,6 +24,7 @@ export default function ChatInputBar({ handleChatSend }) {
         name="chatInput"
         variant="outlined"
         size="small"
+        value={chatInput}
         multiline
         minRows={2}
         fullWidth

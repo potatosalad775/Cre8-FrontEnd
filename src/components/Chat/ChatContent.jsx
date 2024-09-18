@@ -21,9 +21,9 @@ export default function ChatContent({ roomId, chatContent, setChatContent }) {
 
   return (
     <div className={classes.chatContent}>
-      {chatContent.length == 0 && <p>Content is empty.</p>}
-      {chatContent.length != 0 &&
-        chatContent.map((item, index) => {
+      {chatContent?.messageResponseDtoList?.length == 0 && <p>표시할 내용이 없습니다.</p>}
+      {chatContent?.messageResponseDtoList?.length != 0 &&
+        chatContent?.messageResponseDtoList?.slice(0).reverse().map((item, index) => {
           if (memberCode == item.senderId) {
             return (
               <span key={index} className={`${classes.chatBubble} ${classes.chatMyBubble}`}>
@@ -56,5 +56,5 @@ async function chatContentLoader(roomId) {
     // 조회 실패
     console.error(error.message);
   }
-  return [];
+  return {};
 }
