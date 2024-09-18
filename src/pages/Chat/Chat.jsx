@@ -9,6 +9,8 @@ import {
   TextField,
   DialogActions,
   Card,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import TitleBar from "../../components/TitleBar";
 import ChatListCard from "../../components/Chat/ChatListCard";
@@ -24,6 +26,8 @@ import classes from "./Chat.module.css";
 
 export default function ChatPage() {
   const loadedData = useRouteLoaderData("chat-page");
+  const theme = useTheme();
+  const matchDownSm = useMediaQuery(theme.breakpoints.down("sm"));
   const [data, setData] = useState(loadedData);
   const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState({
@@ -36,18 +40,21 @@ export default function ChatPage() {
 
   useEffect(() => {
     // Immediately start chat upon request
-    if(!isEmpty(chatQuery)) {
+    if (!isEmpty(chatQuery)) {
       chatRequestWithUserCode(chatQuery.targetCode).then((res) => {
         if (res != null) {
           setSelectedRoom({ roomId: res, nickName: chatQuery.targetNickName });
         }
       });
     }
-  }, [])
+  }, []);
 
   const onMsgReceived = useCallback((msg) => {
     // update chat content
-    setChatContent((prevChat) => [...prevChat, msg]);
+    setChatContent((prevChat) => ({
+      ...prevChat,
+      messageResponseDtoList: [msg, ...prevChat.messageResponseDtoList],
+    }));
     // update chat list
     /*
     setData((prevData) => {
@@ -67,7 +74,10 @@ export default function ChatPage() {
     });
     */
   }, []);
-  const { sendMessage, connectionStatus } = useChatConnection(selectedRoom.roomId, onMsgReceived);
+  const { sendMessage, connectionStatus } = useChatConnection(
+    selectedRoom.roomId,
+    onMsgReceived
+  );
   //console.log(connectionStatus);
 
   // Start Chat Button
@@ -84,10 +94,13 @@ export default function ChatPage() {
     const formJSON = Object.fromEntries(formData.entries());
     const userID = formJSON.userID;
     // send
-    if(connectionStatus === 'connected') {
+    if (connectionStatus === "connected") {
       chatRequest(userID).then((res) => {
         if (res != null) {
-          setSelectedRoom({ roomId: res, nickName: "TEMP" });
+          setSelectedRoom({ roomId: res, nickName: userID });
+          chatListLoader().then((listRes) => {
+            setData(listRes);
+          });
         }
       });
       handleDialogClose();
@@ -96,14 +109,14 @@ export default function ChatPage() {
     }
   };
   const handleListClick = (key, name) => {
-    if(connectionStatus === 'connected') {
+    if (connectionStatus === "connected") {
       setSelectedRoom({ roomId: key, nickName: name });
     } else {
       Toast.error("채팅 서버에 연결되지 않았습니다. 나중에 다시 시도해주세요.");
     }
   };
   const handleChatSend = (chatInput) => {
-    if(connectionStatus === 'connected') {
+    if (connectionStatus === "connected") {
       sendMessage(chatInput);
     } else {
       Toast.error("메시지를 보낼 수 없습니다. 네트워크 상태를 확인해주세요.");
@@ -111,23 +124,24 @@ export default function ChatPage() {
   };
 
   const RenderConnectionStatus = () => {
-    switch(connectionStatus) {
-      case 'connecting':
+    switch (connectionStatus) {
+      case "connecting":
         return <p>채팅 서버에 연결 중입니다...</p>;
-      case 'error':
-      case 'timeout':
+      case "error":
+      case "timeout":
         return <p>채팅 서버에 연결할 수 없습니다. 나중에 다시 시도해주세요.</p>;
       default:
         return null;
     }
-  }
+  };
 
   return (
-    <Card className={classes.chatPage} >
+    <Card className={classes.chatPage}>
       <TitleBar title="채팅">
         <Button
           variant="contained"
           color="secondary"
+          aria-hidden={false}
           onClick={handleStartChatClick}
         >
           채팅 시작하기
@@ -161,33 +175,43 @@ export default function ChatPage() {
         </Dialog>
       </TitleBar>
       <div className={classes.chatMain}>
-        <div className={classes.chatList}>
-          {data != null &&
-            data.map((item, index) => (
-              <ChatListCard
-                key={index}
-                name={item.nickName}
-                message={item.latestMessage}
-                onClick={() => {
-                  handleListClick(item.roomId, item.nickName);
-                }}
-              />
-            ))}
-        </div>
-        <div className={classes.chatContent}>
-          {selectedRoom.roomId == -1 && <RenderConnectionStatus />}
-          {selectedRoom.roomId > -1 && 
-            <>
-              <ChatTopBar name={selectedRoom.nickName} />
-              <ChatContent
-                roomId={selectedRoom.roomId}
-                chatContent={chatContent}
-                setChatContent={setChatContent}
-              />
-              <ChatInputBar handleChatSend={handleChatSend} />
-            </>
-          }
-        </div>
+        {(!matchDownSm || selectedRoom.roomId == -1) && (
+          <div className={!matchDownSm ? classes.chatList : classes.chatListSm}>
+            {data != null &&
+              data.map((item, index) => (
+                <ChatListCard
+                  key={index}
+                  name={item.nickName}
+                  message={item.latestMessage}
+                  onClick={() => {
+                    handleListClick(item.roomId, item.nickName);
+                  }}
+                />
+              ))}
+          </div>
+        )}
+        {(!matchDownSm || selectedRoom.roomId != -1) && (
+          <div className={classes.chatContent}>
+            {selectedRoom.roomId == -1 && <RenderConnectionStatus />}
+            {selectedRoom.roomId > -1 && (
+              <>
+                <ChatTopBar
+                  name={selectedRoom.nickName}
+                  backBtn={matchDownSm}
+                  onBackClick={() => {
+                    setSelectedRoom({roomId: -1, nickName: ""});
+                  }}
+                />
+                <ChatContent
+                  roomId={selectedRoom.roomId}
+                  chatContent={chatContent}
+                  setChatContent={setChatContent}
+                />
+                <ChatInputBar handleChatSend={handleChatSend} />
+              </>
+            )}
+          </div>
+        )}
       </div>
     </Card>
   );
@@ -226,9 +250,7 @@ async function chatRequest(uID) {
 async function chatRequestWithUserCode(uCode) {
   //console.log(uCode);
   try {
-    const chatResponse = await apiInstance.get(
-      `/api/v1/chats/user/${uCode}`
-    );
+    const chatResponse = await apiInstance.get(`/api/v1/chats/user/${uCode}`);
     if (chatResponse.status === 200) {
       return chatResponse.data.data;
     }

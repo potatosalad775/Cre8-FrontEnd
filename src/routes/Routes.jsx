@@ -13,8 +13,8 @@ import JobEditPage from "../pages/Job/JobEdit.jsx";
 import BookmarkPage from "../pages/Bookmark/Bookmark.jsx";
 import MyPostPage from "../pages/MyPost/MyPost.jsx";
 import CommunityPage, { communityLoader } from "../pages/Community/Community.jsx";
-import CommunityEditPage from "../pages/Community/CommunityEdit.jsx";
-import CommunityPostPage, {communityPostLoader} from "../pages/Community/CommunityPost.jsx";
+import CommunityEditPage, { communityEditLoader } from "../pages/Community/CommunityEdit.jsx";
+import CommunityPostPage, { communityPostLoader } from "../pages/Community/CommunityPost.jsx";
 import ChatPage, { chatListLoader } from "../pages/Chat/Chat.jsx";
 import LoginPage from "../pages/UserAuth/Login.jsx";
 import RegisterPage, { action as registerAction } from "../pages/UserAuth/Register.jsx";
@@ -184,7 +184,7 @@ const Routes = () => {
             {
               path: ":communityPostID",
               id: "community-page-edit",
-              //loader: communityPostLoader,
+              loader: communityEditLoader,
               element: <CommunityEditPage />,
             },
           ]
