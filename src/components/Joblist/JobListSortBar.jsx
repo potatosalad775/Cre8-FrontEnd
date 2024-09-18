@@ -21,15 +21,15 @@ export default function JobListSortBar({ pageType, pageObj, setObj }) {
     },
     {
       name: "마감일 순",
-      sort: ["deadline,asc"],
+      sort: ["deadLine,asc"],
     },
     {
       name: "요구 경력 낮은 순",
-      sort: ["hopeCareer,asc"],
+      sort: ["hopeCareerYear,asc"],
     },
     {
       name: "요구 경력 높은 순",
-      sort: ["hopeCareer,desc"],
+      sort: ["hopeCareerYear,desc"],
     },
   ];
   const jobSortObj = [
