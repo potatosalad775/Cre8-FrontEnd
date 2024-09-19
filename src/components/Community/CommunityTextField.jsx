@@ -18,7 +18,7 @@ export default function CommunityTextField({
     e.preventDefault();
     setIsUpdating("true");
     // Upload Comment
-    communityPostCommentRequest({
+    CommunityPostCommentRequest({
       ...(communityPostId && { communityPostId }),
       ...(parentReplyId && { parentReplyId }),
       contents: commentData,
@@ -52,7 +52,7 @@ export default function CommunityTextField({
 }
 
 // 커뮤니티 게시글 댓글 등록 함수
-export async function communityPostCommentRequest(input) {
+async function CommunityPostCommentRequest(input) {
   try {
     const response = await apiInstance.post(
       "/api/v1/community/posts/reply",

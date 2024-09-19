@@ -67,7 +67,7 @@ export default function JobPostPage() {
   }
   const handleBookmarkClick = () => {
     setBookmarkBtnState(!bookmarkBtnState);
-    jobAddBookmarkRequest(match.params.lastPart).then((status) => {
+    JobAddBookmarkRequest(match.params.lastPart).then((status) => {
       if(status != 200) {
         Toast.error("북마크에 추가하는 과정에서 오류가 발생했습니다.");
         setBookmarkBtnState(!bookmarkBtnState);
@@ -222,7 +222,7 @@ export default function JobPostPage() {
 }
 
 // 구직 게시글 데이터 요청 함수
-export async function jobPostLoader({ request, params }) {
+export async function JobPostLoader({ request, params }) {
   const rpID = params.jobPostID;
   try {
     const response = await apiInstance.get(`/api/v1/employee/posts/${rpID}`);
@@ -238,7 +238,7 @@ export async function jobPostLoader({ request, params }) {
 }
 
 // 구직 게시글 북마크 추가 요청 함수
-export async function jobAddBookmarkRequest(postId) {
+async function JobAddBookmarkRequest(postId) {
   try {
     const response = await apiInstance.post(`/api/v1/bookmark/employee-post/${postId}`);
     // 추가 성공

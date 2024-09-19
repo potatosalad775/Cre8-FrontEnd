@@ -16,7 +16,7 @@ import TitleBar from "../../components/TitleBar";
 import TagSelector from "../../components/Tag/TagSelector";
 import SubTagSelector from "../../components/Tag/SubTagSelector";
 import TagChildSelector from "../../components/Tag/TagChildSelector";
-import { tagElementLoader, tagLoader } from "../../components/Tag/TagLoader";
+import { TagElementLoader, TagLoader } from "../../components/Tag/TagLoader";
 import apiInstance from "../../provider/networkProvider";
 import { Toast } from "../../components/Toast";
 import { EditorMenuBar, editorExtensions } from "../../components/Editor";
@@ -58,7 +58,7 @@ export default function JobEditPage() {
     // Load Main Tag
     if (!tagData) {
       //console.log("Loading Main Tag");
-      tagLoader().then((res) => {
+      TagLoader().then((res) => {
         setTagData(res);
       });
     }
@@ -79,7 +79,7 @@ export default function JobEditPage() {
     // Load Tag Child
     if (selectedTag) {
       //console.log("Loading Tag Child");
-      tagElementLoader(selectedTag).then((res) => {
+      TagElementLoader(selectedTag).then((res) => {
         setTagElementData(res);
         //console.log(tagElementData);
       });

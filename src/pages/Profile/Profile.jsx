@@ -144,7 +144,7 @@ export default function ProfilePage() {
 }
 
 // 프로필 데이터 요청 함수
-export async function profileLoader({ request, params }) {
+export async function ProfileLoader({ request, params }) {
   const uID = params.userID;
 
   try {

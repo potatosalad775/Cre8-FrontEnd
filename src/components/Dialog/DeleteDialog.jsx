@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 export default function DeleteDialog({ isOpen, onClose, onCancel, deleteAPIURL }) {
   const navigate = useNavigate();
   const onProceed = () => {
-    deleteRequest(deleteAPIURL).then((res) => {
+    DeleteRequest(deleteAPIURL).then((res) => {
       if(res == 200) {
         Toast.success("게시글을 삭제했습니다.")
         navigate(-1);
@@ -48,7 +48,7 @@ export default function DeleteDialog({ isOpen, onClose, onCancel, deleteAPIURL }
 }
 
 // 삭제 요청 함수
-export async function deleteRequest(url) {
+async function DeleteRequest(url) {
   try {
     const response = await apiInstance.delete(url);
     // 추가 성공

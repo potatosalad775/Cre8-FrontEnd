@@ -98,7 +98,7 @@ export default function ChatPage() {
       chatRequest(userID).then((res) => {
         if (res != null) {
           setSelectedRoom({ roomId: res, nickName: userID });
-          chatListLoader().then((listRes) => {
+          ChatListLoader().then((listRes) => {
             setData(listRes);
           });
         }
@@ -262,7 +262,7 @@ async function chatRequestWithUserCode(uCode) {
 }
 
 // 채팅 목록 데이터 요청 함수
-export async function chatListLoader({ request, params }) {
+export async function ChatListLoader({ request, params }) {
   try {
     const response = await apiInstance.get("/api/v1/chats/room");
     if (response.status === 200) {

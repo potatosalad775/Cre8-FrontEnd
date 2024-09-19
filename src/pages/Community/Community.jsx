@@ -35,7 +35,7 @@ export default function CommunityPage() {
   const fetchPage = useCallback(
     throttle(() => {
       //console.log("FETCHING!");
-      communityLoader(boardId, pageObj).then((res) => {
+      CommunityLoader(boardId, pageObj).then((res) => {
         //console.log(data);
         // Update Data
         setData({
@@ -136,7 +136,7 @@ export default function CommunityPage() {
 }
 
 // 커뮤니티 게시글 목록 데이터 요청 함수
-export async function communityLoader({
+export async function CommunityLoader({
   boardType = 1,
   pageObj = {
     page: 0,

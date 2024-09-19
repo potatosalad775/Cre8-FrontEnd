@@ -55,7 +55,7 @@ export default function RecruitPostPage() {
   }
   const handleBookmarkClick = () => {
     setBookmarkBtnState(!bookmarkBtnState);
-    recruitAddBookmarkRequest(match.params.lastPart).then((status) => {
+    RecruitAddBookmarkRequest(match.params.lastPart).then((status) => {
       if(status != 200) {
         Toast.error("북마크에 추가하는 과정에서 오류가 발생했습니다.");
         setBookmarkBtnState(!bookmarkBtnState);
@@ -201,7 +201,7 @@ export default function RecruitPostPage() {
 }
 
 // 구인 게시글 데이터 요청 함수
-export async function recruitPostLoader({ request, params }) {
+export async function RecruitPostLoader({ request, params }) {
   const rpID = params.recruitPostID;
   try {
     const response = await apiInstance.get(`/api/v1/employer/posts/${rpID}`);
@@ -217,7 +217,7 @@ export async function recruitPostLoader({ request, params }) {
 }
 
 // 구인 게시글 북마크 추가 요청 함수
-export async function recruitAddBookmarkRequest(postId) {
+async function RecruitAddBookmarkRequest(postId) {
   try {
     const response = await apiInstance.post(`/api/v1/bookmark/employer-post/${postId}`);
     // 추가 성공

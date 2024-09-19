@@ -224,7 +224,7 @@ const CommunityPostEditor = ({ postContent, setPostContent }) => {
 };
 
 // 프로필 데이터 요청 함수
-export async function communityEditLoader({ request, params }) {
+export async function CommunityEditLoader({ request, params }) {
   const cPID = params.communityPostID;
 
   try {

@@ -75,7 +75,7 @@ export const PortfolioGrid = ({ memberCode, isEditing = false }) => {
     navigate(`./${portfolioID}`, { state: { isCreation: false }});
   };
   const handleRemove = (e, portfolioID) => {
-    removePortfolioPost(portfolioID).then(() => {
+    RemovePortfolioPost(portfolioID).then(() => {
       reloadGridData();
     });
   };
@@ -231,7 +231,7 @@ async function createPortfolioPost() {
 }
 
 // 포트폴리오 삭제 함수
-export async function removePortfolioPost(portfolioID) {
+export async function RemovePortfolioPost(portfolioID) {
   try {
     const response = await apiInstance.delete(`/api/v1/portfolios/${portfolioID}`);
     if (response.status === 200) {

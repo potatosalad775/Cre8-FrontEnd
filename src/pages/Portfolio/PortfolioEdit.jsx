@@ -21,8 +21,8 @@ import TitleBar from "../../components/TitleBar";
 import TagAccordion from "../../components/Tag/TagAccordion";
 import TagSelector from "../../components/Tag/TagSelector";
 import TagChildSelector from "../../components/Tag/TagChildSelector";
-import { tagElementLoader, tagLoader } from "../../components/Tag/TagLoader";
-import { removePortfolioPost } from "../../components/Portfolio/PortfolioGrid";
+import { TagElementLoader, TagLoader } from "../../components/Tag/TagLoader";
+import { RemovePortfolioPost } from "../../components/Portfolio/PortfolioGrid";
 import { EditorMenuBar, editorExtensions } from "../../components/Editor";
 import { Toast } from "../../components/Toast";
 import { useAuth } from "../../provider/authProvider";
@@ -55,7 +55,7 @@ export default function PortfolioEditPage() {
     // on Initial Load...
     // Load Main Tag
     if (!tagData) {
-      tagLoader().then((res) => {
+      TagLoader().then((res) => {
         setTagData(res);
       });
     }
@@ -76,7 +76,7 @@ export default function PortfolioEditPage() {
     // on Main Tag Change...
     // Load Tag Child
     if (selectedTag) {
-      tagElementLoader(selectedTag).then((res) => {
+      TagElementLoader(selectedTag).then((res) => {
         setTagElementData(res);
       });
     }
@@ -158,7 +158,7 @@ export default function PortfolioEditPage() {
 
   const handleCancelEdit = () => {
     if (location.state?.isCreation) {
-      removePortfolioPost(params.portfolioID);
+      RemovePortfolioPost(params.portfolioID);
     }
     navigate("../");
   };
