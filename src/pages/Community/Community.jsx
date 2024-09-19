@@ -19,8 +19,9 @@ export default function CommunityPage() {
   const { isLoggedIn } = useAuth();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
+  const boardId = searchParams.get("b") || 1;
+  const boardName = location.state?.boardName || '자유게시판'
   // Tab Index
-  const boardId = searchParams.get("board") || 1;
   const initData = useRouteLoaderData("community-page");
   const [data, setData] = useState({
     postList: initData.communityPostSearchResponseDtoList,
@@ -49,7 +50,7 @@ export default function CommunityPage() {
   return (
     <div className={classes.communityContent}>
       <Card sx={{ borderRadius: "0.7rem", margin: "1.3rem 0", flexGrow: "3" }}>
-        <TitleBar title="커뮤니티">
+        <TitleBar title={boardName}>
           {isLoggedIn && (
             <Button
               variant="contained"
