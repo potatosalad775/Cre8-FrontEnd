@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import { isEmpty } from "../../provider/utilityProvider";
 import apiInstance from "../../provider/networkProvider";
+import { Toast } from "../Toast";
 import classes from "./CommComponent.module.css";
 
 export default function CommunityNavBar() {
@@ -45,7 +46,7 @@ async function communityListLoader() {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    Toast.error("데이터를 불러오는 중 오류가 발생했습니다.");
   }
   return [];
 }

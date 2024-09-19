@@ -32,7 +32,6 @@ export default function BookmarkPage() {
 
   const fetchPage = useCallback(
     throttle(() => {
-      console.log("FETCHING!");
       searchBookmarkwithKeyword(tabType, pageSearchObj).then((data) => {
         //console.log(data);
         // Update Data
@@ -166,7 +165,7 @@ async function searchBookmarkwithKeyword(
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return { error: true };
 }

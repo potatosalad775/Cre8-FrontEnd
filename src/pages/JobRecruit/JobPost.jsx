@@ -232,7 +232,7 @@ export async function jobPostLoader({ request, params }) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return null;
 }
@@ -245,7 +245,7 @@ export async function jobAddBookmarkRequest(postId) {
     return response.status;
   } catch (error) {
     // 추가 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return 0;
 }

@@ -65,7 +65,6 @@ export async function communityPostCommentRequest(input) {
     }
   } catch (error) {
     // 추가 실패
-    //console.error(error.message);
     Toast.error("댓글 등록 중 오류가 발생했습니다.");
   }
   return 0;

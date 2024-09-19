@@ -10,7 +10,7 @@ export async function tagLoader() {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return null;
 }
@@ -25,7 +25,7 @@ export async function tagCategoryLoader(workFieldTagID) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return null;
 }
@@ -40,7 +40,7 @@ export async function tagElementLoader(workFieldTagID) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return null;
 }

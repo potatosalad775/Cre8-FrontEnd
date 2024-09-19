@@ -28,7 +28,7 @@ export default function RedisTestSection() {
     try {
       await addRedisTestData(inputValue);
     } catch (e) {
-      console.log(e);
+      //console.log(e);
     }
     requestRedisData();
   }

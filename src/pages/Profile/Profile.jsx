@@ -171,12 +171,12 @@ export async function profileLoader({ request, params }) {
           return profileData;
         }
       } catch (error) {
-        console.log(error.message);
+        //console.log(error.message);
         return null;
       }
     }
   } catch (error) {
-    console.log(error.message);
+    //console.log(error.message);
     return null;
   }
 }

@@ -372,7 +372,7 @@ async function searchJobPost(pageType, jobSearchObj, jobPageObj) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return { error: true };
 }
@@ -399,7 +399,7 @@ async function searchJobPostwithKeyword(pageType, jobPageObj) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return { error: true };
 }

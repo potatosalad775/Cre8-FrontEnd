@@ -28,7 +28,7 @@ export default function TestSection() {
     try {
       await addTestData(inputValue);
     } catch (e) {
-      console.log(e);
+      //console.log(e);
     }
     requestTestData();
   }

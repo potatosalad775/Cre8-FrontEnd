@@ -101,7 +101,6 @@ async function communityListLoader() {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
   }
   return [];
 }

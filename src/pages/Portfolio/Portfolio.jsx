@@ -95,7 +95,7 @@ export async function portfolioLoader({ request, params }) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return null;
 }

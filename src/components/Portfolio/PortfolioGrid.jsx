@@ -47,7 +47,6 @@ export const PortfolioGrid = ({ memberCode, isEditing = false }) => {
     fetchPortfolioGrid(memberCode)
       .then((data) => {
         // Load Portfolio(PTF) Grid Data
-        //console.log(data);
         setPtfGridData(data);
       })
       .catch((e) => {
@@ -211,7 +210,7 @@ async function fetchPortfolioGrid(memberCode) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return null;
 }
@@ -226,7 +225,7 @@ async function createPortfolioPost() {
     }
   } catch (error) {
     // 조회 실패
-    console.log(error.message);
+    //console.log(error.message);
   }
   return null;
 }
@@ -241,7 +240,7 @@ export async function removePortfolioPost(portfolioID) {
     }
   } catch (error) {
     // 조회 실패
-    console.log(error.message);
+    //console.log(error.message);
   }
   return null;
 }

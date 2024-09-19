@@ -55,7 +55,6 @@ export async function deleteRequest(url) {
     return response.status;
   } catch (error) {
     // 추가 실패
-    console.error(error.message);
   }
   return 0;
 }

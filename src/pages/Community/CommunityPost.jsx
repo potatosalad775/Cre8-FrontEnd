@@ -222,11 +222,11 @@ export async function communityPostLikeRequest(postId) {
     const response = await apiInstance.post(
       `/api/v1/like/community/posts/${postId}`
     );
-    // 추가 성공
+    // 성공
     return response.status;
   } catch (error) {
-    // 추가 실패
-    console.error(error.message);
+    // 실패
+    //console.error(error.message);
   }
   return 0;
 }
@@ -237,11 +237,11 @@ export async function communityPostDeleteRequest(postId) {
     const response = await apiInstance.delete(
       `/api/v1/community/posts/${postId}`
     );
-    // 추가 성공
+    // 성공
     return response.status;
   } catch (error) {
-    // 추가 실패
-    console.error(error.message);
+    // 실패
+    //console.error(error.message);
   }
   return 0;
 }

@@ -166,7 +166,7 @@ async function searchMyPostwithKeyword(
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return { error: true };
 }

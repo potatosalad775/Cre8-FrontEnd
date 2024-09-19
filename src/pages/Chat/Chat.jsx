@@ -234,7 +234,7 @@ async function chatRequest(uID) {
           return chatResponse.data.data;
         }
       } catch (error) {
-        console.error(error.message);
+        //console.error(error.message);
       }
       return null;
     }
@@ -271,7 +271,7 @@ export async function chatListLoader({ request, params }) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return null;
 }
