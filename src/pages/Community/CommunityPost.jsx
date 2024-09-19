@@ -38,9 +38,6 @@ import classes from "./Community.module.css";
 import CommunityComment from "../../components/Community/CommunityComment";
 import CommunityTextField from "../../components/Community/CommunityTextField";
 
-// TODO:
-// 좋아요 버튼 기능 구현
-
 export default function CommunityPostPage() {
   const initData = useRouteLoaderData("communityPost-page");
   const match = useMatch("/c/:postID");
