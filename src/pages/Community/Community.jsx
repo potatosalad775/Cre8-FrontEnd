@@ -1,16 +1,13 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useRouteLoaderData, useLocation } from "react-router-dom";
 import { useTheme, useMediaQuery, Card, Button, Divider } from "@mui/material";
 
 import TitleBar from "../../components/TitleBar";
 import CommunityNavBar from "../../components/Community/CommunityNavBar";
-import { isEmpty, timeSince } from "../../provider/utilityProvider";
+import { isEmpty, timeSince, throttle } from "../../provider/utilityProvider";
 import apiInstance from "../../provider/networkProvider";
 import classes from "./Community.module.css";
 import { useAuth } from "../../provider/authProvider";
-
-// TODO:
-// 무한 스크롤 로직 추가
 
 export default function CommunityPage() {
   const theme = useTheme();
@@ -20,8 +17,8 @@ export default function CommunityPage() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const boardId = searchParams.get("b") || 1;
-  const boardName = location.state?.boardName || '자유게시판'
-  // Tab Index
+  const boardName = location.state?.boardName || "자유게시판";
+  // Community Post List Data
   const initData = useRouteLoaderData("community-page");
   const [data, setData] = useState({
     postList: initData.communityPostSearchResponseDtoList,
@@ -31,10 +28,48 @@ export default function CommunityPage() {
   const [pageObj, setPageObj] = useState({
     page: 0,
     size: 10,
-    sort: ["createdAt"],
-    direction: "desc",
+    sort: ["createdAt,desc"],
   });
   const [isFetching, setIsFetching] = useState(false);
+
+  const fetchPage = useCallback(
+    throttle(() => {
+      //console.log("FETCHING!");
+      communityLoader(boardId, pageObj).then((res) => {
+        //console.log(data);
+        // Update Data
+        setData({
+          postList: data.postList.concat(res.communityPostSearchResponseDtoList),
+          hasNextPage: res.hasNextPage,
+        })
+        setPageObj({
+          ...pageObj,
+          page: pageObj.page + 1,
+        });
+        setIsFetching(false);
+      });
+    }, 500),
+    [boardId, pageObj]
+  );
+
+  // Add Scroll Event Listener
+  useEffect(() => {
+    const handleScroll = () => {
+      const { scrollTop, offsetHeight } = document.documentElement;
+      if (window.innerHeight + scrollTop >= offsetHeight) {
+        setIsFetching(true);
+      }
+    };
+    setIsFetching(true);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Fetch Data when Needed
+  useEffect(() => {
+    if (isFetching && data.hasNextPage) fetchPage();
+    else if (!data.hasNextPage) setIsFetching(false);
+  }, [isFetching]);
 
   const handleWriteBtnClick = (e) => {
     e.preventDefault();
@@ -76,7 +111,7 @@ export default function CommunityPage() {
             >
               <span>
                 <h4>{item.title}</h4>
-                <h4 style={{color: 'red'}}>[{item.replyCount}]</h4>
+                <h4 style={{ color: "red" }}>[{item.replyCount}]</h4>
               </span>
               <p>
                 {item.writerNickName} | {timeSince(item.createdAt)}
@@ -86,7 +121,12 @@ export default function CommunityPage() {
       </Card>
       {!matchDownSm && (
         <Card
-          sx={{ borderRadius: "0.7rem", margin: "1.3rem 0", flexGrow: "1" }}
+          sx={{
+            borderRadius: "0.7rem",
+            margin: "1.3rem 0",
+            flexGrow: "1",
+            height: "100%",
+          }}
         >
           <CommunityNavBar />
         </Card>
@@ -96,17 +136,18 @@ export default function CommunityPage() {
 }
 
 // 커뮤니티 게시글 목록 데이터 요청 함수
-export async function communityLoader({ boardType = 1, pageNum = 0 }) {
+export async function communityLoader({
+  boardType = 1,
+  pageObj = {
+    page: 0,
+    size: 10,
+    sort: ["createdAt,desc"],
+  },
+}) {
   try {
     const response = await apiInstance.get(
       `/api/v1/community/posts/search/${boardType}`,
-      {
-        params: {
-          page: pageNum,
-          size: 10,
-          sort: ["createdAt,desc"],
-        },
-      }
+      { params: pageObj }
     );
     if (response.status === 200) {
       // 조회 성공
