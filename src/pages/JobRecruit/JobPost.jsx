@@ -12,16 +12,17 @@ import {
   useTheme,
   Card,
 } from "@mui/material";
-import { RiChat1Fill, RiStarFill, RiStarLine, RiPencilLine } from "@remixicon/react";
+import { RiChat1Fill, RiStarFill, RiStarLine, RiPencilLine, RiDeleteBinLine } from "@remixicon/react";
 
 import PageContent from "../../components/PageContent";
 import TitleBar from "../../components/TitleBar";
 import TagList from "../../components/Tag/TagList";
-import apiInstance from "../../provider/networkProvider";
-import { useAuth } from "../../provider/authProvider";
+import DeleteDialog from "../../components/Dialog/DeleteDialog";
 import { Toast } from "../../components/Toast";
 import { ReadOnlyEditor } from "../../components/Editor";
+import apiInstance from "../../provider/networkProvider";
 import { isEmpty } from "../../provider/utilityProvider";
+import { useAuth } from "../../provider/authProvider";
 import classes from "./Job.module.css";
 
 export default function JobPostPage() {
@@ -36,6 +37,8 @@ export default function JobPostPage() {
   const [tagDataList, setTagDataList] = useState([]);
   // Bookmark Button State
   const [bookmarkBtnState, setBookmarkBtnState] = useState(!isEmpty(data.bookMarked) ? data.bookMarked : false);
+  // Delete Post Dialog State
+  const [isDelDialogOpen, setIsDelDialogOpen] = useState(false);
 
   useEffect(() => {
     let tempList = [data.tagPostResponseDto.workFieldTagName];
@@ -161,41 +164,59 @@ export default function JobPostPage() {
           </div>
           <div className={classes.jobPostDescArea}>
             <ReadOnlyEditor content={data.contents} />
+            <Tooltip title={!isLoggedIn ? "해당 기능들을 사용하려면 로그인하세요." : ""} placement="top">
+              <div className={classes.jobPostFABParent}>
+                <div className={classes.jobPostFAB}>
+                  {data.writerId == memberCode && <>
+                    <Fab
+                      color="secondary"
+                      variant="extended"
+                      sx={{ gap: "0.5rem" }}
+                      disabled={!isLoggedIn}
+                      onClick={handleEditClick}
+                    >
+                      <RiPencilLine/>
+                      게시글 수정
+                    </Fab>
+                    <Fab
+                      size="medium"
+                      sx={{ gap: "0.5rem" }}
+                      disabled={!isLoggedIn}
+                      onClick={handleBookmarkClick}
+                    >
+                      <RiDeleteBinLine />
+                    </Fab>
+                  </>}
+                  {data.writerId != memberCode && <Fab
+                    color="primary"
+                    variant="extended"
+                    sx={{ gap: "0.5rem" }}
+                    disabled={!isLoggedIn}
+                    onClick={handleChatClick}
+                  >
+                    <RiChat1Fill/>
+                    채팅 시작하기
+                  </Fab>}
+                  <Fab
+                    size="medium"
+                    sx={{ gap: "0.5rem" }}
+                    disabled={!isLoggedIn}
+                    onClick={handleBookmarkClick}
+                  >
+                    {bookmarkBtnState ? <RiStarFill color="#F9A602"/> : <RiStarLine />}
+                  </Fab>
+                </div>
+              </div>
+            </Tooltip>
           </div>
-          <Tooltip title={!isLoggedIn ? "해당 기능들을 사용하려면 로그인하세요." : ""} placement="top">
-            <div className={classes.jobPostFAB}>
-              {data.writerId == memberCode && <Fab
-                color="secondary"
-                variant="extended"
-                sx={{ gap: "0.5rem" }}
-                disabled={!isLoggedIn}
-                onClick={handleEditClick}
-              >
-                <RiPencilLine/>
-                게시글 수정
-              </Fab>}
-              {data.writerId != memberCode && <Fab
-                color="primary"
-                variant="extended"
-                sx={{ gap: "0.5rem" }}
-                disabled={!isLoggedIn}
-                onClick={handleChatClick}
-              >
-                <RiChat1Fill/>
-                채팅 시작하기
-              </Fab>}
-              <Fab
-                size="medium"
-                sx={{ gap: "0.5rem" }}
-                disabled={!isLoggedIn}
-                onClick={handleBookmarkClick}
-              >
-                {bookmarkBtnState ? <RiStarFill /> : <RiStarLine />}
-              </Fab>
-            </div>
-          </Tooltip>
         </>
       )}
+      <DeleteDialog 
+        isOpen={isDelDialogOpen} 
+        onClose={handleDeleteDialogClose} 
+        onCancel={handleDeleteDialogClose} 
+        deleteAPIURL={`/api/v1/employee/posts/${match.params.lastPart}`} 
+      />
     </Card>
   );
 }

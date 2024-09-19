@@ -5,11 +5,11 @@ import { ProtectedRoute } from "./ProtectedRoute";
 
 import RootLayout from "../pages/RootLayout.jsx";
 import HomePage from "../pages/Home/Home.jsx";
-import RecruitPostPage, { recruitPostLoader } from "../pages/Recruit/RecruitPost.jsx";
-import RecruitEditPage from "../pages/Recruit/RecruitEdit.jsx";
-import JobRecruitListPage from "../pages/Job/JobRecruitList.jsx";
-import JobPostPage, { jobPostLoader } from "../pages/Job/JobPost.jsx";
-import JobEditPage from "../pages/Job/JobEdit.jsx";
+import RecruitPostPage, { recruitPostLoader } from "../pages/JobRecruit/RecruitPost.jsx";
+import RecruitEditPage from "../pages/JobRecruit/RecruitEdit.jsx";
+import JobRecruitListPage from "../pages/JobRecruit/JobRecruitList.jsx";
+import JobPostPage, { jobPostLoader } from "../pages/JobRecruit/JobPost.jsx";
+import JobEditPage from "../pages/JobRecruit/JobEdit.jsx";
 import BookmarkPage from "../pages/Bookmark/Bookmark.jsx";
 import MyPostPage from "../pages/MyPost/MyPost.jsx";
 import CommunityPage, { communityLoader } from "../pages/Community/Community.jsx";
