@@ -13,7 +13,6 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import { RiAddFill } from "@remixicon/react";
 
 import TitleBar from "../../components/TitleBar";
-import CommunityNavBar from "../../components/Community/CommunityNavBar";
 import { EditorMenuBar, editorExtensions } from "../../components/Editor";
 import { isEmpty } from "../../provider/utilityProvider";
 import { Toast } from "../../components/Toast";
@@ -24,7 +23,6 @@ export default function CommunityEditPage() {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const matchDownSm = useMediaQuery(theme.breakpoints.down("sm"));
   const [data, setData] = useState(
     location.state?.isCreation == null || location.state?.isCreation
       ? INITIAL_POST_EDIT_VALUE
@@ -162,11 +160,6 @@ export default function CommunityEditPage() {
 
 // 포트폴리오 데이터 수정 요청 함수
 async function communityPostEditAction(formData, isCreation = true) {
-  /*
-  for (let [key, value] of formData.entries()) {
-    console.log(key, value);
-  }
-  */
   try {
     const response = await apiInstance({
       method: isCreation ? "post" : "put",
@@ -187,11 +180,12 @@ async function communityPostEditAction(formData, isCreation = true) {
     }
   } catch (error) {
     // 로그인 실패
-    console.log(error.message);
     if (error.response && error.response.status === 400) {
       Toast.error("게시물 수정 도중 오류가 발생했습니다.");
     } else if (error.response && error.response.status === 404) {
       Toast.error("잘못된 데이터가 입력되었습니다.");
+    } else if (error.response && error.response.status === 413) {
+      Toast.error("이미지의 용량이 너무 큽니다.");
     } else {
       Toast.error("알 수 없는 오류가 발생했습니다.");
     }
@@ -245,7 +239,7 @@ export async function communityEditLoader({ request, params }) {
       };
     }
   } catch (error) {
-    console.log(error.message);
+    //console.log(error.message);
   }
   return [];
 }
