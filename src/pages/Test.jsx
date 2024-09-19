@@ -2,8 +2,6 @@ import { useState } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 
 import PageContent from "../components/PageContent";
-import TestSection from "../components/Test/TestSection";
-import RedisTestSection from "../components/Test/RedisTestSection";
 import LoginTest from "../components/Test/LoginTest";
 import { EditorMenuBar, editorExtensions } from "../components/Editor";
 
@@ -21,8 +19,6 @@ export default function TestPage() {
       <h3>Editor Test Section</h3>
       <TestEditor />
       <LoginTest />
-      <TestSection />
-      <RedisTestSection />
     </PageContent>
   );
 }
