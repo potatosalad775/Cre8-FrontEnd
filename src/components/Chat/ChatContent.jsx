@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import apiInstance from "../../provider/networkProvider";
 import { useAuth } from "../../provider/authProvider";
+import { Toast } from "../Toast";
 import classes from "./ChatComponent.module.css";
 
 export default function ChatContent({ roomId, chatContent, setChatContent }) {
@@ -54,7 +55,7 @@ async function chatContentLoader(roomId) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    Toast.error("데이터를 불러오는 중 오류가 발생했습니다.");
   }
   return {};
 }

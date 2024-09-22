@@ -358,7 +358,7 @@ async function checkVerifyCode(inputData) {
 }
 
 // 회원가입 요청 전송 함수
-export async function action({ request }) {
+export async function RegisterAction({ request }) {
   const data = await request.formData();
 
   const registerData = {

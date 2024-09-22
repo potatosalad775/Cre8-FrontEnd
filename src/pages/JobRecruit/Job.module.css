@@ -1,4 +1,29 @@
-.recPostTitleArea {
+.jobSearchArea {
+  display: flex;
+  flex-direction: row;
+  gap: 0.4rem;
+  padding: 0.8rem 1.2rem;
+  border-top: 1px solid var(--color-gray-400);
+  border-bottom: 1px solid var(--color-gray-400);
+}
+
+.jobTagArea {
+  border-top: 1px solid var(--color-gray-400);
+}
+
+.jobPostArea p {
+  margin: 0;
+  padding: 1.3rem;
+  border-bottom: 1px solid var(--color-gray-400);
+}
+
+.jobPageArea {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.jobPostTitleArea {
   padding: 1.3rem;
   padding-bottom: 1rem;
 
@@ -11,13 +36,37 @@
   }
 }
 
-.recTagListArea {
+.jobTagListArea {
   padding: 1.3rem;
   padding-top: 0;
   border-bottom: 1px solid var(--color-gray-400);
 }
 
-.recPostInfoArea {
+.jobPostPtfArea {
+  padding: 1.3rem;
+  border-bottom: 1px solid var(--color-gray-400);
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1.3rem;
+  }
+}
+
+.jobPortfolioThumbnail {
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--color-gray-400);
+}
+.jobPortfolioThumbnail img {
+  aspect-ratio: 1 / 1;
+  transform: scale(1);
+  transition: all 0.25s ease;
+}
+.jobPortfolioThumbnail:hover img {
+  transform: scale(1.02);
+}
+
+.jobPostInfoArea {
   padding: 0 1.3rem;
 
   p {
@@ -32,14 +81,14 @@
     margin-bottom: 0.2rem;
   }
 }
-.recPostInfoBox {
+.jobPostInfoBox {
   display: flex;
   flex-direction: column !important;
   gap: 0.7rem;
   padding-top: 0.6rem !important;
   margin-bottom: 0.6rem !important;
 }
-.recPostInfoAreaRow {
+.jobPostInfoAreaRow {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -57,35 +106,41 @@
   }
 }
 
-.recPostDescArea {
+.jobPostDescArea {
   padding: 0.3rem 1.3rem;
-  min-height: 10rem;
-  flex-grow: 1;
   margin-top: 0.7rem;
   margin-bottom: 4rem;
+  min-height: 10rem;
+  flex-grow: 1;
   border-top: 1px solid var(--color-gray-400);
+  position: relative;
 }
-
-.recPostBtnArea {
+.jobPostFABParent {
   display: flex;
-  justify-content: center;
-  padding: 1rem;
-  position: fixed;
-  bottom: 0;
-  border-bottom: 1px solid var(--color-gray-400);
+  flex-direction: row;
+  justify-content: flex-end;
+  position: absolute;
+  top: 0;
+  right: 2rem;
 }
-
-.recPostFAB {
+.jobPostFAB {
   position: fixed;
-  bottom: 1.3rem;
-  right: 1.3rem;
+  bottom: 2rem;
 
   button {
     margin-left: 0.5rem;
   }
 }
-.recPostFAB:hover {
+.jobPostFAB:hover {
   color: var(--color-gray-100);
+}
+
+.jobPostBtnArea {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  position: fixed;
+  border-bottom: 1px solid var(--color-gray-400);
 }
 
 .editTitleArea {

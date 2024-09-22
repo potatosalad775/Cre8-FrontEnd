@@ -45,3 +45,11 @@
   padding-left: 2.4rem;
   background-color: var(--color-gray-150);
 }
+
+.cmNavBtnList {
+  margin: 0.7rem;
+}
+.cmNavBtnList button {
+  border-radius: 0.4rem;
+  justify-content: flex-start;
+}

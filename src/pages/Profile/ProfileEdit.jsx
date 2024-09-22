@@ -233,11 +233,6 @@ const ProfileEditor = ({ profileAbout, setProfileAbout }) => {
 
 // 프로필 데이터 수정 요청 함수
 async function profileEditAction(formData) {
-  /*
-  for (let [key, value] of formData.entries()) {
-    console.log(key, value);
-  }
-  */
   try {
     const response = await apiInstance({
       method: "put",
@@ -254,14 +249,13 @@ async function profileEditAction(formData) {
     }
   } catch (error) {
     // 로그인 실패
-    console.log(error.message);
     if (error.response && error.response.status === 400) {
       Toast.error("이미 사용 중인 닉네임입니다.");
-    }
-    else if (error.response && error.response.status === 401) {
+    } else if (error.response && error.response.status === 401) {
       Toast.error("인증과정에서 오류가 발생했습니다.");
-    } 
-    else {
+    } else if (error.response && error.response.status === 413) {
+      Toast.error("이미지의 용량이 너무 큽니다.");
+    } else {
       Toast.error("알 수 없는 오류가 발생했습니다.");
     }
   } 

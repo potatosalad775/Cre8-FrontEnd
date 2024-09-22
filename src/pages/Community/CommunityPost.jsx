@@ -38,9 +38,6 @@ import classes from "./Community.module.css";
 import CommunityComment from "../../components/Community/CommunityComment";
 import CommunityTextField from "../../components/Community/CommunityTextField";
 
-// TODO:
-// 좋아요 버튼 기능 구현
-
 export default function CommunityPostPage() {
   const initData = useRouteLoaderData("communityPost-page");
   const match = useMatch("/c/:postID");
@@ -64,7 +61,7 @@ export default function CommunityPostPage() {
     // Load new data if new comment is uploaded
     if (isUpdating === "done") {
       // Load new post data
-      communityPostLoader({
+      CommunityPostLoader({
         params: { communityPostID: match.params.postID },
       }).then((newData) => {
         setData(newData);
@@ -85,7 +82,7 @@ export default function CommunityPostPage() {
   */
   const handleLikeClick = () => {
     setIsLikeClicked(!isLikeClicked);
-    communityPostLikeRequest(data.communityPostId).then((status) => {
+    CommunityPostLikeRequest(data.communityPostId).then((status) => {
       if (status != 200) {
         Toast.error("북마크에 추가하는 과정에서 오류가 발생했습니다.");
         setIsLikeClicked(!isLikeClicked);
@@ -104,7 +101,7 @@ export default function CommunityPostPage() {
     });
   };
   const handleDelete = () => {
-    communityPostDeleteRequest(data.communityPostId).then((status) => {
+    CommunityPostDeleteRequest(data.communityPostId).then((status) => {
       if (status == 200) {
         Toast.success("게시글을 삭제했습니다.");
         navigate(-1, {replace: true});
@@ -203,7 +200,7 @@ export default function CommunityPostPage() {
 }
 
 // 커뮤니티 게시글 데이터 요청 함수
-export async function communityPostLoader({ request, params }) {
+export async function CommunityPostLoader({ request, params }) {
   const cpID = params.communityPostID;
 
   try {
@@ -220,31 +217,31 @@ export async function communityPostLoader({ request, params }) {
 }
 
 // 커뮤니티 게시글 좋아요 요청 함수
-export async function communityPostLikeRequest(postId) {
+async function CommunityPostLikeRequest(postId) {
   try {
     const response = await apiInstance.post(
       `/api/v1/like/community/posts/${postId}`
     );
-    // 추가 성공
+    // 성공
     return response.status;
   } catch (error) {
-    // 추가 실패
-    console.error(error.message);
+    // 실패
+    //console.error(error.message);
   }
   return 0;
 }
 
 // 커뮤니티 게시글 삭제 요청 함수
-export async function communityPostDeleteRequest(postId) {
+async function CommunityPostDeleteRequest(postId) {
   try {
     const response = await apiInstance.delete(
       `/api/v1/community/posts/${postId}`
     );
-    // 추가 성공
+    // 성공
     return response.status;
   } catch (error) {
-    // 추가 실패
-    console.error(error.message);
+    // 실패
+    //console.error(error.message);
   }
   return 0;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Divider, Tab } from "@mui/material";
+import { Divider, Tab, Card } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 import TitleBar from "../../components/TitleBar";
@@ -32,7 +32,6 @@ export default function BookmarkPage() {
 
   const fetchPage = useCallback(
     throttle(() => {
-      console.log("FETCHING!");
       searchBookmarkwithKeyword(tabType, pageSearchObj).then((data) => {
         //console.log(data);
         // Update Data
@@ -93,7 +92,7 @@ export default function BookmarkPage() {
   }, [location.search]);
 
   return (
-    <>
+    <Card sx={{ borderRadius: "0.7rem", margin: "1.3rem 0" }}>
       <TitleBar backBtnTarget={-1} title="My 북마크" />
       <div className={classes.bookmarkTab}>
         <TabContext value={tabType}>
@@ -129,7 +128,7 @@ export default function BookmarkPage() {
           </TabPanel>
         </TabContext>
       </div>
-    </>
+    </Card>
   );
 }
 
@@ -166,7 +165,7 @@ async function searchBookmarkwithKeyword(
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return { error: true };
 }

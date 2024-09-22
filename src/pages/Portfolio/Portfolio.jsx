@@ -85,7 +85,7 @@ export default function PortfolioPage({ isFromJobPost = false }) {
 }
 
 // 포트폴리오 데이터 요청 함수
-export async function portfolioLoader({ request, params }) {
+export async function PortfolioLoader({ request, params }) {
   const pID = params.portfolioID;
   try {
     const response = await apiInstance.get(`/api/v1/portfolios/${pID}`);
@@ -95,7 +95,7 @@ export async function portfolioLoader({ request, params }) {
     }
   } catch (error) {
     // 조회 실패
-    console.error(error.message);
+    //console.error(error.message);
   }
   return null;
 }

@@ -73,24 +73,3 @@ export default function CommunityComment({
     </>
   );
 }
-
-// 커뮤니티 게시글 대댓글 등록 함수
-export async function communityPostCommentRequest(postId, commentData) {
-  console.log(postId);
-  console.log(commentData);
-  try {
-    const response = await apiInstance.post("/api/v1/community/posts/reply", {
-      communityPostId: postId,
-      contents: commentData,
-    });
-    // 추가 성공
-    if (response.status === 201) {
-      // 조회 성공
-      return response.status;
-    }
-  } catch (error) {
-    // 추가 실패
-    console.error(error.message);
-  }
-  return 0;
-}

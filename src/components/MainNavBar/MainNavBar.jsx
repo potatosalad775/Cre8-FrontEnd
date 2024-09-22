@@ -9,12 +9,8 @@ import {
   MenuItem,
   Avatar,
   Divider,
-  List,
-  ListItem,
-  ListItemButton,
   ListItemText,
   ListItemIcon,
-  Drawer,
 } from "@mui/material";
 import {
   RiArticleLine,
@@ -24,9 +20,9 @@ import {
   RiMenu2Line,
   RiNotification3Line,
   RiUserLine,
-  RiCloseLine,
 } from "@remixicon/react";
 
+import MainNavBarDrawer from "./MainNavBarDrawer";
 import classes from "./MainNavBar.module.css";
 import { useAuth } from "../../provider/authProvider";
 
@@ -57,31 +53,10 @@ export default function MainNavBar() {
   return (
     <>
       {matchDownSm && (
-        <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-          <List sx={{ width: "13rem" }}>
-            <div className={classes.navSmMenuTitle}>
-              <h3>메뉴</h3>
-              <IconButton onClick={() => setDrawerOpen(false)}>
-                <RiCloseLine />
-              </IconButton>
-            </div>
-            <Divider sx={{ margin: "0.6rem 0" }} />
-            {navList.map((item, index) => (
-              <ListItemButton
-                key={`NAV_DRAWER_LIST_${index}`}
-                onClick={() => {
-                  navigate(item.link)
-                  setDrawerOpen(false)
-                }}
-              >
-                <ListItem disablePadding>
-                  <ListItemText>{item.name}</ListItemText>
-                </ListItem>
-              </ListItemButton>
-            ))}
-            <Divider sx={{ margin: "0.6rem 0" }} />
-          </List>
-        </Drawer>
+        <MainNavBarDrawer 
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        />
       )}
       <header className={classes.header}>
         <Card
