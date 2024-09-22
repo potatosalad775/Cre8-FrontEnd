@@ -173,7 +173,7 @@ export default function MainNavBar() {
                     <ListItemIcon>
                       <RiBookmarkLine size={22} />
                     </ListItemIcon>
-                    <ListItemText>My 북마크</ListItemText>
+                    <ListItemText>My 북마크 & 좋아요</ListItemText>
                   </MenuItem>
                   <Divider />
                   <MenuItem sx={{ minHeight: "32px" }} onClick={logout}>

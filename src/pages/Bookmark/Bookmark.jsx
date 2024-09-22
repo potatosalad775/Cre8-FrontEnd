@@ -11,6 +11,7 @@ import {
 import { isEmpty, throttle } from "../../provider/utilityProvider";
 import apiInstance from "../../provider/networkProvider";
 import classes from "./Bookmark.module.css";
+import CommunityPostCard from "../../components/Community/CommunityPostCard";
 
 export default function BookmarkPage() {
   const navigate = useNavigate();
@@ -25,15 +26,13 @@ export default function BookmarkPage() {
   const [pageSearchObj, setPageSearchObj] = useState({
     page: 0,
     size: 10,
-    sort: ["createdAt"],
-    direction: "desc",
+    sort: ["createdAt,desc"],
   });
   const [hasNextPage, setHasNextPage] = useState(true);
 
   const fetchPage = useCallback(
     throttle(() => {
       searchBookmarkwithKeyword(tabType, pageSearchObj).then((data) => {
-        //console.log(data);
         // Update Data
         if (tabType == "recruit") {
           setBookmarkedPostData(
@@ -42,6 +41,10 @@ export default function BookmarkPage() {
         } else if (tabType == "job") {
           setBookmarkedPostData(
             bookmarkedPostData.concat(data.employeePostSearchResponseDtoList)
+          );
+        } else if (tabType == "community") {
+          setBookmarkedPostData(
+            bookmarkedPostData.concat(data.communityPostSearchResponseDtoList)
           );
         }
         setPageSearchObj({
@@ -52,16 +55,21 @@ export default function BookmarkPage() {
         setIsFetching(false);
       });
     }, 500),
-    [pageSearchObj]
+    [pageSearchObj, tabType]
   );
 
   const handleTabChange = (e, newValue) => {
     searchParams.set("tab", newValue);
+    setBookmarkedPostData([]);
     navigate(`?${searchParams.toString()}`);
   };
 
   const handleCardClick = (postID) => {
-    navigate(`/${tabType}/${postID}`);
+    if(tabType != "community") {
+      navigate(`/${tabType}/${postID}`);
+    } else {
+      navigate(`/c/${postID}`);
+    }
   };
 
   // Add Scroll Event Listener
@@ -91,43 +99,65 @@ export default function BookmarkPage() {
     setIsFetching(true);
   }, [location.search]);
 
+  const TabDivider = () => {
+    return (
+      <Tab 
+        label="" 
+        icon={<Divider orientation="vertical"/>} 
+        sx={{ maxWidth: "1px", minWidth: "1px", padding: "0.8rem 0" }} 
+        disabled 
+      />
+    );
+  };
+
   return (
     <Card sx={{ borderRadius: "0.7rem", margin: "1.3rem 0" }}>
-      <TitleBar backBtnTarget={-1} title="My 북마크" />
-      <div className={classes.bookmarkTab}>
-        <TabContext value={tabType}>
-          <TabList
-            onChange={handleTabChange}
-            className={classes.bookmarkTabList}
-          >
-            <Tab value="recruit" label="구인" />
-            <Tab label="" icon={<Divider orientation="vertical"/>} sx={{ maxWidth: "1px", minWidth: "1px", padding: "0.8rem 0" }} disabled />
-            <Tab value="job" label="구직" />
-          </TabList>
-          <TabPanel value="recruit" sx={{padding: "0"}}>
-            {isEmpty(bookmarkedPostData) && <p>표시할 내용이 없습니다.</p>}
-            {!isEmpty(bookmarkedPostData) &&
-              bookmarkedPostData.map((item, index) => (
-                <RecruitListCard
-                  key={index}
-                  itemData={item}
-                  onClick={() => { handleCardClick(item.employerPostId) }}
-                />
-              ))}
-          </TabPanel>
-          <TabPanel value="job" sx={{padding: "0"}}>
-            {isEmpty(bookmarkedPostData) && <p>표시할 내용이 없습니다.</p>}
-            {!isEmpty(bookmarkedPostData) &&
-              bookmarkedPostData.map((item, index) => (
-                <JobListCard
-                  key={index}
-                  itemData={item}
-                  onClick={() => { handleCardClick(item.employeePostId) }}
-                />
-              ))}
-          </TabPanel>
-        </TabContext>
-      </div>
+      <TitleBar backBtnTarget={-1} title="My 북마크 & 좋아요" />
+      <TabContext value={tabType}>
+        <TabList
+          onChange={handleTabChange}
+          className={classes.bookmarkTabList}
+        >
+          <Tab value="recruit" label="구인" />
+          <TabDivider />
+          <Tab value="job" label="구직" />
+          <TabDivider />
+          <Tab value="community" label="커뮤니티" />
+        </TabList>
+        <TabPanel value="recruit" sx={{padding: "0"}}>
+          {(isFetching || isEmpty(bookmarkedPostData)) && <p>표시할 내용이 없습니다.</p>}
+          {!isFetching && !isEmpty(bookmarkedPostData) &&
+            bookmarkedPostData?.map((item, index) => (
+              <RecruitListCard
+                key={index}
+                itemData={item}
+                onClick={() => { handleCardClick(item.employerPostId) }}
+              />
+            ))}
+        </TabPanel>
+        <TabPanel value="job" sx={{padding: "0"}}>
+          {(isFetching || isEmpty(bookmarkedPostData)) && <p>표시할 내용이 없습니다.</p>}
+          {!isFetching && !isEmpty(bookmarkedPostData) &&
+            bookmarkedPostData?.map((item, index) => (
+              <JobListCard
+                key={index}
+                itemData={item}
+                onClick={() => { handleCardClick(item.employeePostId) }}
+              />
+            ))}
+        </TabPanel>
+        <TabPanel value="community" sx={{padding: "0"}}>
+          {(isFetching || isEmpty(bookmarkedPostData)) && <p>표시할 내용이 없습니다.</p>}
+          {!isFetching && !isEmpty(bookmarkedPostData) &&
+            bookmarkedPostData?.map((item, index) => (
+              <CommunityPostCard 
+                key={index} 
+                item={item}
+                onClick={() => { handleCardClick(item.communityPostId) }}
+              />
+            ))}
+        </TabPanel>
+      </TabContext>
     </Card>
   );
 }
@@ -141,8 +171,10 @@ async function searchBookmarkwithKeyword(
   let apiAddress;
   if (tabType == "job") {
     apiAddress = "/api/v1/employee-posts/search/my-bookmark";
-  } else if ((tabType = "recruit")) {
+  } else if (tabType == "recruit") {
     apiAddress = "/api/v1/employer-posts/search/my-bookmark";
+  } else if (tabType == "community") {
+    apiAddress = "/api/v1/community/posts/search/like/my-Post";
   }
 
   // Append Keyword if it exists
