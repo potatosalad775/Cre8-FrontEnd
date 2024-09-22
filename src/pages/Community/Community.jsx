@@ -8,6 +8,7 @@ import { isEmpty, timeSince, throttle } from "../../provider/utilityProvider";
 import apiInstance from "../../provider/networkProvider";
 import classes from "./Community.module.css";
 import { useAuth } from "../../provider/authProvider";
+import CommunityPostCard from "../../components/Community/CommunityPostCard";
 
 export default function CommunityPage() {
   const theme = useTheme();
@@ -39,9 +40,11 @@ export default function CommunityPage() {
         //console.log(data);
         // Update Data
         setData({
-          postList: data.postList.concat(res.communityPostSearchResponseDtoList),
+          postList: data.postList.concat(
+            res.communityPostSearchResponseDtoList
+          ),
           hasNextPage: res.hasNextPage,
-        })
+        });
         setPageObj({
           ...pageObj,
           page: pageObj.page + 1,
@@ -104,19 +107,11 @@ export default function CommunityPage() {
         {!isFetching &&
           !isEmpty(data.postList) &&
           data.postList?.map((item, index) => (
-            <div
+            <CommunityPostCard
               key={`POST_${index}`}
-              className={classes.communityPostLink}
-              onClick={() => handlePostClick(item.communityPostId)}
-            >
-              <span>
-                <h4>{item.title}</h4>
-                <h4 style={{ color: "red" }}>[{item.replyCount}]</h4>
-              </span>
-              <p>
-                {item.writerNickName} | {timeSince(item.createdAt)}
-              </p>
-            </div>
+              item={item}
+              handleClick={() => handlePostClick(item.communityPostId)}
+            />
           ))}
       </Card>
       {!matchDownSm && (

@@ -10,7 +10,6 @@ export default function HomeCommunityCard({ title, boardID }) {
 
   useEffect(() => {
     HomeCommunityListRequest(boardID).then((res) => {
-      console.log(res);
       setData(res);
     });
   }, []);
@@ -41,7 +40,6 @@ export default function HomeCommunityCard({ title, boardID }) {
 }
 
 async function HomeCommunityListRequest(boardID) {
-  console.log(boardID)
   try {
     const response = await apiInstance.get(
       `/api/v1/community/posts/search/${boardID}`,
