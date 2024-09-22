@@ -65,6 +65,12 @@ export default function JobPostPage() {
       state: { isCreation: false }
     })
   }
+  const handleDeleteClick = (e) => {
+    setIsDelDialogOpen(true);
+  }
+  const handleDeleteDialogClose = () => {
+    setIsDelDialogOpen(false);
+  }
   const handleBookmarkClick = () => {
     setBookmarkBtnState(!bookmarkBtnState);
     JobAddBookmarkRequest(match.params.lastPart).then((status) => {
@@ -182,7 +188,7 @@ export default function JobPostPage() {
                       size="medium"
                       sx={{ gap: "0.5rem" }}
                       disabled={!isLoggedIn}
-                      onClick={handleBookmarkClick}
+                      onClick={handleDeleteClick}
                     >
                       <RiDeleteBinLine />
                     </Fab>
