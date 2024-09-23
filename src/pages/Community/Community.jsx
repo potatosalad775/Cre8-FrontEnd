@@ -110,7 +110,7 @@ export default function CommunityPage() {
             <CommunityPostCard
               key={`POST_${index}`}
               item={item}
-              handleClick={() => handlePostClick(item.communityPostId)}
+              onClick={() => handlePostClick(item.communityPostId)}
             />
           ))}
       </Card>
