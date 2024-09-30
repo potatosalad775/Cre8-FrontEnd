@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Avatar, Link, IconButton } from "@mui/material";
+import { Avatar, Link, IconButton, Menu, MenuItem, Divider } from "@mui/material";
 import { RiMore2Line } from "@remixicon/react";
 
 import CommunityTextField from "./CommunityTextField";
+import CommunityCommentBox from "./CommunityCommentBox";
 import { isEmpty } from "../../provider/utilityProvider";
 import { useAuth } from "../../provider/authProvider";
 import classes from "./CommComponent.module.css";
@@ -24,48 +25,29 @@ export default function CommunityComment({
     }
   }, [isUpdating])
 
-  const CommentBox = ({ item, isReply = false }) => {
-    return (
-      <div className={!isReply ? classes.communityComment : `${classes.communityComment} ${classes.communityReply}`}>
-        <Avatar src={item.memberAccessUrl} sx={{ marginTop: "0.1rem" }} />
-        <span className={classes.communityCommentContent}>
-          <h4>{item.memberNickName}</h4>
-          <p>{item.contents}</p>
-          {isLoggedIn && !isReply && (
-            <Link
-              component="button"
-              style={{ fontSize: "14px" }}
-              onClick={() => setReplyTextFieldTarget(item.replyId)}
-            >
-              답글 달기
-            </Link>
-          )}
-        </span>
-        <IconButton className={classes.communityCommentMoreButton}>
-          <RiMore2Line/>
-        </IconButton>
-      </div>
-    );
-  };
-
   return (
     <>
       {!isEmpty(commentData) &&
         commentData.map((item, index) => (
           <div key={`COMMENT_${index}`}>
-            <CommentBox item={item.parentReplyResponseDto} />
+            <CommunityCommentBox item={item.parentReplyResponseDto} />
             {replyTextFieldTarget == item?.parentReplyResponseDto?.replyId &&
               isLoggedIn && (
                 <CommunityTextField
                   communityPostId={communityPostId}
                   parentReplyId={item.parentReplyResponseDto.replyId}
+                  isUpdating={isUpdating}
                   setIsUpdating={setIsUpdating}
                 />
               )}
             {!isEmpty(item.childReplyResponseDto) &&
               item.childReplyResponseDto.map((reply, index) => (
                 <div key={`REPLY_${index}`}>
-                  <CommentBox item={reply} isReply={true} />
+                  <CommunityCommentBox 
+                    item={reply} 
+                    isReply={true} 
+                    setIsUpdating={setIsUpdating}
+                  />
                 </div>
               ))}
           </div>
