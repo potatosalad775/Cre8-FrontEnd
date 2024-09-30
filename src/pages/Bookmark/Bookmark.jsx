@@ -82,7 +82,6 @@ export default function BookmarkPage() {
     const handleScroll = () => {
       const { scrollTop, offsetHeight } = document.documentElement;
       if (window.innerHeight + scrollTop >= offsetHeight) {
-        console.log("SET FETCHING TRUE")
         setIsFetching(hasNextPage);
       }
     };
@@ -93,23 +92,12 @@ export default function BookmarkPage() {
 
   // Fetch Data when Needed
   useEffect(() => {
-    console.log("FETCHING CHANGED")
     if (isFetching && hasNextPage) {
-      console.log("CONCAT DATA")
       fetchPage();
     } else if (!hasNextPage) {
-      console.log("nah")
       setIsFetching(false);
     }
   }, [isFetching]);
-
-  // Reset Data on Tab Change
-  useEffect(() => {
-    //setBookmarkedPostData([]);
-    //setHasNextPage(true);
-    //setPageSearchObj({ ...pageSearchObj, page: 0 });
-    //setIsFetching(true);
-  }, [location.search]);
 
   const TabDivider = () => {
     return (
@@ -137,7 +125,7 @@ export default function BookmarkPage() {
           <Tab value="community" label="커뮤니티" />
         </TabList>
         <TabPanel value="recruit" sx={{padding: "0"}}>
-          {isFetching && isEmpty(bookmarkedPostData) && <p>표시할 내용이 없습니다.</p>}
+          {!isFetching && isEmpty(bookmarkedPostData) && <p>표시할 내용이 없습니다.</p>}
           {!isEmpty(bookmarkedPostData) &&
             bookmarkedPostData?.map((item, index) => (
               <RecruitListCard
@@ -159,7 +147,7 @@ export default function BookmarkPage() {
             ))}
         </TabPanel>
         <TabPanel value="community" sx={{padding: "0"}}>
-          {isFetching && isEmpty(bookmarkedPostData) && <p>표시할 내용이 없습니다.</p>}
+          {!isFetching && isEmpty(bookmarkedPostData) && <p>표시할 내용이 없습니다.</p>}
           {!isEmpty(bookmarkedPostData) &&
             bookmarkedPostData?.map((item, index) => (
               <CommunityPostCard 
