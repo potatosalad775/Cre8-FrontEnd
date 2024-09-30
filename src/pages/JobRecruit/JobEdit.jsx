@@ -12,14 +12,14 @@ import {
 import { useEditor, EditorContent } from "@tiptap/react";
 import { RiAddFill } from "@remixicon/react";
 
-import TitleBar from "../../components/TitleBar";
+import TitleBar from "../../components/Common/TitleBar";
 import TagSelector from "../../components/Tag/TagSelector";
 import SubTagSelector from "../../components/Tag/SubTagSelector";
 import TagChildSelector from "../../components/Tag/TagChildSelector";
 import { TagElementLoader, TagLoader } from "../../components/Tag/TagLoader";
 import apiInstance from "../../provider/networkProvider";
-import { Toast } from "../../components/Toast";
-import { EditorMenuBar, editorExtensions } from "../../components/Editor";
+import { Toast } from "../../components/Common/Toast";
+import { EditorMenuBar, editorExtensions } from "../../components/Common/Editor";
 import classes from "./Job.module.css";
 import { useAuth } from "../../provider/authProvider";
 import { isEmpty } from "../../provider/utilityProvider";

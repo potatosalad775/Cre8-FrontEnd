@@ -24,9 +24,8 @@
 .communityPostContentArea {
   padding: 0.5rem 1.3rem;
   img {
-    width: 100%;
     max-height: 40dvh;
-    object-fit: scale-down;
+    object-fit: contain;
     margin: 0.8rem 0 0.3rem 0;
   }
 }

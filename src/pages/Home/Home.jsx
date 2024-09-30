@@ -1,4 +1,4 @@
-import PageContent from "../../components/PageContent";
+import PageContent from "../../components/Common/PageContent";
 import HomeBanner from "../../components/Home/HomeBanner";
 import HomeCommunityCard from "../../components/Home/HomeCommunityCard";
 import classes from "./Home.module.css";

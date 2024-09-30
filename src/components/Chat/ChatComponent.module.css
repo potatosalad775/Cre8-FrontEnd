@@ -70,7 +70,7 @@
   position: relative;
 }
 
-.chatContent > div:last-child {
+.chatContent > span:last-child {
   margin-bottom: 0.6rem;
 }
 

@@ -39,6 +39,14 @@
   height: 2rem;
 }
 
+.communityCommentButtonArea {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  width: 100%;
+  gap: 0.4rem;
+}
+
 .communityCommentContent {
   display: flex;
   flex-direction: column;
@@ -67,7 +75,7 @@
 
 .communityReply {
   padding-left: 2.4rem;
-  background-color: var(--color-gray-150);
+  background-color: var(--color-gray-100);
 }
 
 .cmNavBtnList {

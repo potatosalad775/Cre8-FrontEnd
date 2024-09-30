@@ -12,10 +12,10 @@ import {
 import { useEditor, EditorContent } from "@tiptap/react";
 import { RiAddFill } from "@remixicon/react";
 
-import TitleBar from "../../components/TitleBar";
-import { EditorMenuBar, editorExtensions } from "../../components/Editor";
+import TitleBar from "../../components/Common/TitleBar";
+import { EditorMenuBar, editorExtensions } from "../../components/Common/Editor";
 import { isEmpty } from "../../provider/utilityProvider";
-import { Toast } from "../../components/Toast";
+import { Toast } from "../../components/Common/Toast";
 import apiInstance from "../../provider/networkProvider";
 import classes from "./Community.module.css";
 

@@ -6,7 +6,7 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import { Toast } from "../Toast";
+import { Toast } from "../Common/Toast";
 import apiInstance from "../../provider/networkProvider";
 import { useNavigate } from "react-router-dom";
 

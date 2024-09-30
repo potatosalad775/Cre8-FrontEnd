@@ -8,15 +8,6 @@
 .ptfTagArea {
   padding: 0rem 1.2rem 1.3rem 1.2rem;
 }
-.ptfImgPopup {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-.ptfImgPopup img {
-  width: 90%;
-  box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2),0px 6px 10px 0px rgba(0,0,0,0.14),0px 1px 18px 0px rgba(0,0,0,0.12);
-}
 
 .editTagArea h3 {
   margin: 0.3rem 1.3rem 1rem 1.3rem;

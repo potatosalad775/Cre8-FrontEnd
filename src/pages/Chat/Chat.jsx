@@ -12,11 +12,11 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import TitleBar from "../../components/TitleBar";
+import TitleBar from "../../components/Common/TitleBar";
 import ChatListCard from "../../components/Chat/ChatListCard";
 import ChatTopBar from "../../components/Chat/ChatTopBar";
 import ChatInputBar from "../../components/Chat/ChatInputBar";
-import { Toast } from "../../components/Toast";
+import { Toast } from "../../components/Common/Toast";
 import ChatContent from "../../components/Chat/ChatContent";
 import { useChatConnection } from "../../provider/chatProvider";
 import { isEmpty } from "../../provider/utilityProvider";
