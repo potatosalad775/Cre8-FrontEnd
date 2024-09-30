@@ -11,12 +11,14 @@ chatClient.configure({
     Authorization: localStorage.getItem("token"),
   },
   reconnectDelay: 5000,
-  heartbeatIncoming: 3000,
-  heartbeatOutgoing: 3000,
+  heartbeatIncoming: 4000,
+  heartbeatOutgoing: 4000,
   
   debug: (msg) => {
     console.log(new Date(), msg);
   }
+
+  
   
 });
 
@@ -38,6 +40,7 @@ export const deactivateChatClient = () => {
 
 export function useChatConnection(roomId, onMessageReceived) {
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const [subscription, setSubscription] = useState(null);
 
   useEffect(() => {
     let timeoutID;
@@ -64,6 +67,17 @@ export function useChatConnection(roomId, onMessageReceived) {
     // Activate Chat Client on first run
     connectionWithTimeout();
 
+    // Set up reconnection listener
+    const handleReconnect = () => {
+      console.log("STOMP connection re-established");
+      setConnectionStatus("connected");
+      if (roomId !== -1) {
+        subscribeToRoom(roomId);
+      }
+    };
+
+    chatClient.onConnect = handleReconnect;
+
     // Deactivate after chat is over
     return () => {
       clearTimeout(timeoutID);
@@ -74,12 +88,16 @@ export function useChatConnection(roomId, onMessageReceived) {
 
   const subscribeToRoom = useCallback((roomId) => {
     if(roomId == -1 || connectionStatus !== 'connected') return;
-    // Subscribe if roomId is valid
-    let subscription;
-    //
+
+    // Unsubscribe from previous subscription if exists
+    if (subscription) {
+      subscription.unsubscribe();
+    }
+
+    // Subscribe to Room
     const subscribe = async (attempt) => {
       try {
-        subscription = chatClient.subscribe(
+        const newSubscription = chatClient.subscribe(
           `/sub/chat/room/${roomId}`,
           (message) => {
             //console.log(message)
@@ -87,11 +105,14 @@ export function useChatConnection(roomId, onMessageReceived) {
               const msg = JSON.parse(message.body);
               onMessageReceived(msg);
             }
-          }
+          },
+          { id: roomId.toString() }
         );
+        setSubscription(newSubscription);
       } catch (error) {
         if (attempt <= 3) {
           console.warn(`Attempt ${attempt} failed, retrying...`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
           await subscribe(attempt + 1);
         } else {
           console.error("CHAT Subscription Error:", error);
@@ -99,30 +120,33 @@ export function useChatConnection(roomId, onMessageReceived) {
         }
       }
     }
-    //
+    // Subscribe to Room
     subscribe(1);
-    
-    // Unsubscribe when it's unmounted
-    return () => {
-      if(subscription) {
-        try {
-          subscription.unsubscribe();
-        } catch (e) {
-          console.error(e.message);
-        }
-      }
-    };
   }, [connectionStatus, onMessageReceived]); // Memoizes and only changes when onMsgReceived is changed
 
   useEffect(() => {
-    const unsubscribe = subscribeToRoom(roomId);
-    return unsubscribe;
-  }, [roomId, subscribeToRoom]);
+    if (connectionStatus === "connected" && roomId !== -1) {
+      subscribeToRoom(roomId);
+    }
+  }, [roomId, connectionStatus, subscribeToRoom]);
 
   const sendMessage = useCallback((message) => {
     if(roomId == -1 || connectionStatus !== 'connected') return;
     // Send Message if roomId is valid
     const publishMessage = async (attempt) => {
+      if (!chatClient.connected) {
+        console.warn(
+          "STOMP connection not established. Attempting to reconnect..."
+        );
+        try {
+          await activateChatClient();
+        } catch (error) {
+          console.error("Failed to reconnect:", error);
+          setConnectionStatus("error");
+          return;
+        }
+      }
+
       try {
         chatClient.publish({
           destination: `/pub/message/${roomId}`,
