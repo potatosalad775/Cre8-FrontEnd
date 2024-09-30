@@ -13,7 +13,7 @@ import { RiMore2Line } from "@remixicon/react";
 
 import apiInstance from "../../provider/networkProvider";
 import { useAuth } from "../../provider/authProvider";
-import { Toast } from "../Toast";
+import { Toast } from "../Common/Toast";
 import classes from "./CommComponent.module.css";
 
 export default function CommunityCommentBox({

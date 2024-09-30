@@ -18,7 +18,7 @@ import {
   RiSearchFill,
 } from "@remixicon/react";
 
-import TitleBar from "../../components/TitleBar";
+import TitleBar from "../../components/Common/TitleBar";
 import TagAccordion from "../../components/Tag/TagAccordion";
 import ExpTagSelector from "../../components/Tag/ExpTagSelector";
 import JobListSortBar from "../../components/Joblist/JobListSortBar";

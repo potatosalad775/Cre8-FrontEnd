@@ -4,7 +4,7 @@ import { Link, Button } from "@mui/material";
 
 import { onLogin } from "../../provider/authProvider";
 import UserValidate from "../../provider/UserValidate";
-import { Toast } from "../../components/Toast";
+import { Toast } from "../../components/Common/Toast";
 import apiInstance from "../../provider/networkProvider";
 import classes from "./UserAuth.module.css";
 

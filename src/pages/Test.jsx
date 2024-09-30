@@ -2,9 +2,9 @@ import { useState } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { Button } from "@mui/material";
 
-import PageContent from "../components/PageContent";
+import PageContent from "../components/Common/PageContent";
 import LoginTest from "../components/Test/LoginTest";
-import { EditorMenuBar, editorExtensions } from "../components/Editor";
+import { EditorMenuBar, editorExtensions } from "../components/Common/Editor";
 
 export default function TestPage() {
   const [count, setCount] = useState(0);

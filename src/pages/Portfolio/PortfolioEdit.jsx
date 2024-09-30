@@ -17,14 +17,14 @@ import {
 import { RiAddFill, RiDeleteBinLine } from "@remixicon/react";
 import { useEditor, EditorContent } from "@tiptap/react";
 
-import TitleBar from "../../components/TitleBar";
+import TitleBar from "../../components/Common/TitleBar";
 import TagAccordion from "../../components/Tag/TagAccordion";
 import TagSelector from "../../components/Tag/TagSelector";
 import TagChildSelector from "../../components/Tag/TagChildSelector";
 import { TagElementLoader, TagLoader } from "../../components/Tag/TagLoader";
 import { RemovePortfolioPost } from "../../components/Portfolio/PortfolioGrid";
-import { EditorMenuBar, editorExtensions } from "../../components/Editor";
-import { Toast } from "../../components/Toast";
+import { EditorMenuBar, editorExtensions } from "../../components/Common/Editor";
+import { Toast } from "../../components/Common/Toast";
 import { useAuth } from "../../provider/authProvider";
 import apiInstance from "../../provider/networkProvider";
 import classes from "./Portfolio.module.css";

@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useRouteLoaderData, useLocation } from "react-router-dom";
 import { useTheme, useMediaQuery, Card, Button, Divider } from "@mui/material";
 
-import TitleBar from "../../components/TitleBar";
+import TitleBar from "../../components/Common/TitleBar";
 import CommunityNavBar from "../../components/Community/CommunityNavBar";
 import { isEmpty, timeSince, throttle } from "../../provider/utilityProvider";
 import apiInstance from "../../provider/networkProvider";

@@ -31,13 +31,13 @@ import {
   RiMoreLine,
 } from "@remixicon/react";
 
-import PageContent from "../../components/PageContent";
-import TitleBar from "../../components/TitleBar";
+import PageContent from "../../components/Common/PageContent";
+import TitleBar from "../../components/Common/TitleBar";
 import TagList from "../../components/Tag/TagList";
 import apiInstance from "../../provider/networkProvider";
 import { useAuth } from "../../provider/authProvider";
-import { Toast } from "../../components/Toast";
-import { ReadOnlyEditor } from "../../components/Editor";
+import { Toast } from "../../components/Common/Toast";
+import { ReadOnlyEditor } from "../../components/Common/Editor";
 import { dateTimeExtractor, isEmpty } from "../../provider/utilityProvider";
 import classes from "./Community.module.css";
 import CommunityComment from "../../components/Community/CommunityComment";

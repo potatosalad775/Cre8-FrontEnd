@@ -14,12 +14,12 @@ import {
 } from "@mui/material";
 import { RiChat1Fill, RiStarFill, RiStarLine, RiPencilLine, RiDeleteBinLine } from "@remixicon/react";
 
-import PageContent from "../../components/PageContent";
-import TitleBar from "../../components/TitleBar";
+import PageContent from "../../components/Common/PageContent";
+import TitleBar from "../../components/Common/TitleBar";
 import TagList from "../../components/Tag/TagList";
 import DeleteDialog from "../../components/Dialog/DeleteDialog";
-import { Toast } from "../../components/Toast";
-import { ReadOnlyEditor } from "../../components/Editor";
+import { Toast } from "../../components/Common/Toast";
+import { ReadOnlyEditor } from "../../components/Common/Editor";
 import apiInstance from "../../provider/networkProvider";
 import { isEmpty } from "../../provider/utilityProvider";
 import { useAuth } from "../../provider/authProvider";

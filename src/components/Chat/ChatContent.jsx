@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import apiInstance from "../../provider/networkProvider";
 import { useAuth } from "../../provider/authProvider";
-import { Toast } from "../Toast";
+import { Toast } from "../Common/Toast";
 import classes from "./ChatComponent.module.css";
 
 export default function ChatContent({ roomId, chatContent, setChatContent }) {

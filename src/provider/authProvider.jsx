@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useEffect, useState, useCallback } from "react";
 import apiInstance from "./networkProvider";
-import { Toast } from "../components/Toast";
+import { Toast } from "../components/Common/Toast";
 
 const TOKEN_REISSUE_INTERVAL = 5 * 60 * 1000 // 5 minutes
 

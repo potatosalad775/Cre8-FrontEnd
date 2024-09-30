@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import { isEmpty } from "../../provider/utilityProvider";
 import apiInstance from "../../provider/networkProvider";
-import { Toast } from "../Toast";
+import { Toast } from "../Common/Toast";
 import classes from "./CommComponent.module.css";
 
 export default function CommunityNavBar() {

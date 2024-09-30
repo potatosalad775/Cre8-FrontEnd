@@ -11,9 +11,9 @@ import { RiGlobalLine, RiTwitterXLine, RiYoutubeLine } from "@remixicon/react";
 
 import { useAuth } from "../../provider/authProvider";
 import apiInstance from "../../provider/networkProvider"
-import { EditorMenuBar, editorExtensions } from "../../components/Editor";
+import { EditorMenuBar, editorExtensions } from "../../components/Common/Editor";
 import { PortfolioGrid } from "../../components/Portfolio/PortfolioGrid";
-import { Toast } from "../../components/Toast";
+import { Toast } from "../../components/Common/Toast";
 import classes from "./Profile.module.css";
 
 export default function ProfileEditPage() {

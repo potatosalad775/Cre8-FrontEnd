@@ -11,11 +11,11 @@ import {
 } from "@mui/material";
 import { RiCloseLargeLine } from "@remixicon/react";
 
-import PageContent from "../../components/PageContent";
-import TitleBar from "../../components/TitleBar";
+import PageContent from "../../components/Common/PageContent";
+import TitleBar from "../../components/Common/TitleBar";
 import TagList from "../../components/Tag/TagList";
 import apiInstance from "../../provider/networkProvider";
-import { ReadOnlyEditor } from "../../components/Editor";
+import { ReadOnlyEditor } from "../../components/Common/Editor";
 import classes from "./Portfolio.module.css";
 
 export default function PortfolioPage({ isFromJobPost = false }) {
