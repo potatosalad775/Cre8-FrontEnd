@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useMatch, useRouteLoaderData, redirect } from "react-router-dom";
+import {
+  useNavigate,
+  useMatch,
+  useRouteLoaderData,
+  redirect,
+} from "react-router-dom";
 import {
   Divider,
   ImageList,
@@ -104,7 +109,7 @@ export default function CommunityPostPage() {
     CommunityPostDeleteRequest(data.communityPostId).then((status) => {
       if (status == 200) {
         Toast.success("게시글을 삭제했습니다.");
-        navigate(-1, {replace: true});
+        navigate(-1, { replace: true });
       } else {
         Toast.error("게시글을 삭제하는 과정에서 오류가 발생했습니다.");
       }
@@ -171,7 +176,16 @@ export default function CommunityPostPage() {
                 >
                   좋아요
                 </Button>
-                <h5>+{data.likeCounts + (isLikeClicked ? 1 : 0)}</h5>
+                <h5>
+                  +
+                  {data.likeCounts +
+                    (initData.like === isLikeClicked
+                      ? 0 // If initData.like is same as isLikeClicked, do nothing (Value is not changed)
+                      : initData.like === true
+                      ? -1 // If initData.like is true, subtract 1 (User unliked the post)
+                      : 1) // If initData.like is false, add 1 (User liked the post)
+                  }
+                </h5>
               </div>
             </Tooltip>
           </div>
