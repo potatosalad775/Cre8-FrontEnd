@@ -51,29 +51,32 @@ export default function ChatPage() {
 
   const onMsgReceived = useCallback((msg) => {
     // update chat content
-    setChatContent((prevChat) => ({
-      ...prevChat,
-      messageResponseDtoList: [msg, ...prevChat.messageResponseDtoList],
-    }));
+    setChatContent((prevChat) => {
+      const updatedMessageList = [msg, ...(prevChat.messageResponseDtoList || [])];
+      return {
+        ...prevChat,
+        messageResponseDtoList: updatedMessageList,
+      };
+    });
     // update chat list
-    /*
     setData((prevData) => {
       const listIndex = prevData.findIndex(
         (item) => item.roomId == selectedRoom.roomId
       );
+      if (listIndex === -1) return prevData;
       const updatedObj = {
         ...prevData[listIndex],
         latestMessage: msg.contents,
       };
 
       return [
-        ...prevData.slice(0, listIndex),
         updatedObj,
+        ...prevData.slice(0, listIndex),
         ...prevData.slice(listIndex + 1),
       ];
     });
-    */
-  }, []);
+  }, [selectedRoom.roomId]);
+  
   const { sendMessage, connectionStatus } = useChatConnection(
     selectedRoom.roomId,
     onMsgReceived
@@ -273,5 +276,5 @@ export async function ChatListLoader({ request, params }) {
     // 조회 실패
     //console.error(error.message);
   }
-  return null;
+  return [];
 }
