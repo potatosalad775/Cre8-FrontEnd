@@ -6,14 +6,12 @@ import {
   useTheme,
   useMediaQuery,
   Card,
-  Backdrop,
-  Fab,
 } from "@mui/material";
-import { RiCloseLargeLine } from "@remixicon/react";
 
 import PageContent from "../../components/Common/PageContent";
 import TitleBar from "../../components/Common/TitleBar";
 import TagList from "../../components/Tag/TagList";
+import ImagePopUp from "../../components/Common/ImagePopUp";
 import apiInstance from "../../provider/networkProvider";
 import { ReadOnlyEditor } from "../../components/Common/Editor";
 import classes from "./Portfolio.module.css";
@@ -66,17 +64,10 @@ export default function PortfolioPage({ isFromJobPost = false }) {
             ))}
           </ImageList>
           {imgPopUpData !== null && (
-            <Backdrop
-              open={imgPopUpData !== null}
-              aria-hidden={false}
-              className={classes.ptfImgPopup}
-              sx={{ backgroundColor: "rgba(0,0,0,0.8)" }}
-            >
-              <img src={imgPopUpData} alt="IMG_POPUP" />
-              <Fab onClick={closeImgPopUp}>
-                <RiCloseLargeLine />
-              </Fab>
-            </Backdrop>
+            <ImagePopUp
+              imgPopUpData={imgPopUpData}
+              closeImgPopUp={closeImgPopUp}
+            />
           )}
         </>
       )}

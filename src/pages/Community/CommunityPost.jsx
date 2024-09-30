@@ -1,39 +1,19 @@
 import { useState, useEffect } from "react";
-import {
-  useNavigate,
-  useMatch,
-  useRouteLoaderData,
-  redirect,
-} from "react-router-dom";
+import { useNavigate, useMatch, useRouteLoaderData } from "react-router-dom";
 import {
   Divider,
-  ImageList,
-  ImageListItem,
-  Chip,
-  Fab,
-  Grid,
   Menu,
   MenuItem,
   Tooltip,
-  useMediaQuery,
-  useTheme,
   Card,
   Button,
-  TextField,
   IconButton,
 } from "@mui/material";
-import {
-  RiChat1Fill,
-  RiStarFill,
-  RiStarLine,
-  RiPencilLine,
-  RiHeartFill,
-  RiMoreLine,
-} from "@remixicon/react";
+import { RiHeartFill, RiMoreLine } from "@remixicon/react";
 
 import PageContent from "../../components/Common/PageContent";
 import TitleBar from "../../components/Common/TitleBar";
-import TagList from "../../components/Tag/TagList";
+import ImagePopUp from "../../components/Common/ImagePopUp";
 import apiInstance from "../../provider/networkProvider";
 import { useAuth } from "../../provider/authProvider";
 import { Toast } from "../../components/Common/Toast";
@@ -48,19 +28,12 @@ export default function CommunityPostPage() {
   const match = useMatch("/c/:postID");
   const navigate = useNavigate();
   const { isLoggedIn, memberCode } = useAuth();
-  const theme = useTheme();
-  const matchDownMd = useMediaQuery(theme.breakpoints.down("md"));
   const [data, setData] = useState(initData);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isLikeClicked, setIsLikeClicked] = useState(initData.like || false);
+  const [imgPopUpData, setImgPopUpData] = useState(null);
   const [isUpdating, setIsUpdating] = useState("false");
   const open = Boolean(anchorEl);
-  // Bookmark Button State
-  /*
-  const [bookmarkBtnState, setBookmarkBtnState] = useState(
-    !isEmpty(data.bookMarked) ? data.bookMarked : false
-  );
-  */
 
   useEffect(() => {
     // Load new data if new comment is uploaded
@@ -75,16 +48,14 @@ export default function CommunityPostPage() {
     }
   }, [isUpdating]);
 
-  /*
-  const handleImgClick = (e, portfolioID) => {
-    navigate(`./${portfolioID}`);
+  const handleImgClick = (imgURL) => {
+    setImgPopUpData(imgURL);
   };
-  const handleEditClick = (e) => {
-    navigate(`/job/edit/${match.params.lastPart}`, {
-      state: { isCreation: false },
-    });
+  const closeImgPopUp = (e) => {
+    e.preventDefault();
+    setImgPopUpData(null);
   };
-  */
+
   const handleLikeClick = () => {
     setIsLikeClicked(!isLikeClicked);
     CommunityPostLikeRequest(data.communityPostId).then((status) => {
@@ -158,7 +129,12 @@ export default function CommunityPostPage() {
             <p>{dateTimeExtractor(data.createdAt).fullString}</p>
           </div>
           <div className={classes.communityPostContentArea}>
-            {!isEmpty(data.accessUrl) && <img src={data.accessUrl} />}
+            {!isEmpty(data.accessUrl) && (
+              <img
+                src={data.accessUrl}
+                onClick={() => handleImgClick(data.accessUrl)}
+              />
+            )}
             <ReadOnlyEditor content={data.contents} />
           </div>
           <div className={classes.communityPostButtonArea}>
@@ -178,12 +154,13 @@ export default function CommunityPostPage() {
                 </Button>
                 <h5>
                   +
-                  {data.likeCounts +
-                    (initData.like === isLikeClicked
-                      ? 0 // If initData.like is same as isLikeClicked, do nothing (Value is not changed)
-                      : initData.like === true
-                      ? -1 // If initData.like is true, subtract 1 (User unliked the post)
-                      : 1) // If initData.like is false, add 1 (User liked the post)
+                  {
+                    data.likeCounts +
+                      (initData.like === isLikeClicked
+                        ? 0 // If initData.like is same as isLikeClicked, do nothing (Value is not changed)
+                        : initData.like === true
+                        ? -1 // If initData.like is true, subtract 1 (User unliked the post)
+                        : 1) // If initData.like is false, add 1 (User liked the post)
                   }
                 </h5>
               </div>
@@ -208,6 +185,9 @@ export default function CommunityPostPage() {
             />
           )}
         </>
+      )}
+      {imgPopUpData !== null && (
+        <ImagePopUp imgPopUpData={imgPopUpData} closeImgPopUp={closeImgPopUp} />
       )}
     </Card>
   );
