@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CircularProgress } from "@mui/material";
 import { throttle } from "../../provider/utilityProvider";
 import apiInstance from "../../provider/networkProvider";
@@ -40,11 +40,17 @@ export default function ChatContent({ roomId, chatContent, setChatContent }) {
     });
   }, [roomId]);
 
-  // Move scroll to bottom at initial render
+  // Move scroll to bottom at initial render and when new messages are received
   useEffect(() => {
-    if (isInitialLoad.current && chatContentRef.current) {
-      chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
-      isInitialLoad.current = false;
+    if (chatContentRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = chatContentRef.current;
+      // 100px from bottom
+      const isNearBottom = scrollHeight - scrollTop - clientHeight <= 100;
+
+      if (isInitialLoad.current || isNearBottom) {
+        chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+        isInitialLoad.current = false;
+      }
     }
   }, [chatContent]);
 
@@ -98,46 +104,36 @@ export default function ChatContent({ roomId, chatContent, setChatContent }) {
     const chatContentElement = chatContentRef.current;
     chatContentElement.addEventListener("scroll", handleScroll);
     return () => chatContentElement.removeEventListener("scroll", handleScroll);
-  }, [hasNextPage, isFetching, fetchPage]);
+  }, [hasNextPage, isFetching]);
 
   // Chat Bubble Renderer
   const renderChatBubble = useCallback(
     (item, index) => {
-      if (memberCode == item.senderId) {
-        return (
-          <span
-            key={item.id || index}
-            className={`${classes.chatBubble} ${classes.chatMyBubble}`}
-          >
-            {item.contents}
-          </span>
-        );
-      } else {
-        return (
-          <span
-            key={item.id || index}
-            className={`${classes.chatBubble} ${classes.chatOthersBubble}`}
-          >
-            {item.contents}
-          </span>
-        );
-      }
-    },
-    [memberCode]
+      const bubbleClass = memberCode == item.senderId ? classes.chatMyBubble : classes.chatOthersBubble;
+      return (
+        <span
+          key={item.id || index}
+          className={`${classes.chatBubble} ${bubbleClass}`}
+        >
+          {item.contents}
+        </span>
+      );
+    }, [memberCode]
   );
+
+  const reversedMessages = useMemo(() => {
+    return chatContent?.messageResponseDtoList?.slice(0).reverse() || [];
+  }, [chatContent]);
 
   return (
     <div className={classes.chatContent} ref={chatContentRef}>
       {isFetching && <CircularProgress />}
-      {!isFetching && chatContent?.messageResponseDtoList?.length == 0 && (
+      {!isFetching && reversedMessages.length === 0 && (
         <p>표시할 내용이 없습니다.</p>
       )}
-      {chatContent?.messageResponseDtoList?.length > 0 && (
+      {reversedMessages.length > 0 && (
         <>
-          {chatContent.messageResponseDtoList
-            .slice(0)
-            .reverse()
-            .map(renderChatBubble)}
+          {reversedMessages.map(renderChatBubble)}
         </>
       )}
     </div>
