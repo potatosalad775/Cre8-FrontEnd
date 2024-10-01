@@ -79,10 +79,11 @@
   margin-bottom: 0;
   padding: 0.6rem 1rem;
   border-radius: 1.1rem;
-  min-width: 20%;
-  max-width: 60%;
+  min-width: 5dvw;
+  max-width: 40dvw;
+  overflow-wrap: break-word;
+  word-wrap: break-word; /* For older browsers */
   text-wrap: wrap;
-  word-wrap: break-word;
   font-size: 14px;
 }
 
