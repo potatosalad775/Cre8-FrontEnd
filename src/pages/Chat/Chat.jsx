@@ -29,7 +29,7 @@ export default function ChatPage() {
   const loadedData = useRouteLoaderData("chat-page");
   const theme = useTheme();
   const matchDownSm = useMediaQuery(theme.breakpoints.down("sm"));
-  const { memberCode } = useAuth(); 
+  const { memberCode } = useAuth();
   const [data, setData] = useState(loadedData);
   const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState({
@@ -52,53 +52,67 @@ export default function ChatPage() {
     }
   }, []);
 
-  const onMsgReceived = useCallback((msg) => {
-    if(msg.messageType == "ENTER") {
-      // update read count to 0 in chatContent
-      setChatContent((prevChat) => {
-        const updatedMessageList = [...(prevChat.messageResponseDtoList || [])];
-        for (let i = updatedMessageList.length - 1; i >= 0; i--) {
-          if (updatedMessageList[i].senderId === memberCode && updatedMessageList[i].readCount === 1) {
-            updatedMessageList[i] = { ...updatedMessageList[i], readCount: 0 };
-          } else if (updatedMessageList[i].readCount === 0) {
-            break;
+  const onMsgReceived = useCallback(
+    (msg) => {
+      if (msg.messageType == "ENTER") {
+        // update read count to 0 in chatContent
+        setChatContent((prevChat) => {
+          const updatedMessageList = [
+            ...(prevChat.messageResponseDtoList || []),
+          ];
+          for (let i = 0; i < updatedMessageList.length; i++) {
+            if (
+              updatedMessageList[i].senderId === memberCode &&
+              updatedMessageList[i].readCount === 1
+            ) {
+              updatedMessageList[i] = {
+                ...updatedMessageList[i],
+                readCount: 0,
+              };
+            } else {
+              break;
+            }
           }
-        }
-        return {  
-          ...prevChat,
-          messageResponseDtoList: updatedMessageList,
-        };
-      });
-    }
-    else if(msg.messageType == "MESSAGE") {
-      // update chat content
-      setChatContent((prevChat) => {
-        const updatedMessageList = [msg, ...(prevChat.messageResponseDtoList || [])];
-        return {
-          ...prevChat,
-          messageResponseDtoList: updatedMessageList,
-        };
-      });
-      // update chat list
-      setData((prevData) => {
-        const listIndex = prevData.findIndex(
-          (item) => item.roomId == selectedRoom.roomId
-        );
-        if (listIndex === -1) return prevData;
-        const updatedObj = {
-          ...prevData[listIndex],
-          latestMessage: msg.contents,
-        };
+          return {
+            ...prevChat,
+            messageResponseDtoList: updatedMessageList,
+          };
+        });
+        //console.log(chatContent);
+      } else if (msg.messageType == "MESSAGE") {
+        // update chat content
+        setChatContent((prevChat) => {
+          const updatedMessageList = [
+            msg,
+            ...(prevChat.messageResponseDtoList || []),
+          ];
+          return {
+            ...prevChat,
+            messageResponseDtoList: updatedMessageList,
+          };
+        });
+        // update chat list
+        setData((prevData) => {
+          const listIndex = prevData.findIndex(
+            (item) => item.roomId == selectedRoom.roomId
+          );
+          if (listIndex === -1) return prevData;
+          const updatedObj = {
+            ...prevData[listIndex],
+            latestMessage: msg.contents,
+          };
 
-        return [
-          updatedObj,
-          ...prevData.slice(0, listIndex),
-          ...prevData.slice(listIndex + 1),
-        ];
-      });
-    }
-  }, [selectedRoom.roomId]);
-  
+          return [
+            updatedObj,
+            ...prevData.slice(0, listIndex),
+            ...prevData.slice(listIndex + 1),
+          ];
+        });
+      }
+    },
+    [selectedRoom.roomId]
+  );
+
   const { sendMessage, connectionStatus } = useChatConnection(
     selectedRoom.roomId,
     onMsgReceived
@@ -226,7 +240,7 @@ export default function ChatPage() {
                   accessUrl={selectedRoom.accessUrl}
                   backBtn={matchDownSm}
                   onBackClick={() => {
-                    setSelectedRoom({roomId: -1, nickName: ""});
+                    setSelectedRoom({ roomId: -1, nickName: "" });
                   }}
                 />
                 <ChatContent
