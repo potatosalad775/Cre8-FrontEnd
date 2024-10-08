@@ -6,7 +6,12 @@ import { useAuth } from "../../provider/authProvider";
 import { Toast } from "../Common/Toast";
 import classes from "./ChatComponent.module.css";
 
-export default function ChatContent({ roomId, chatContent, setChatContent, updateAvatar = () => {}  }) {
+export default function ChatContent({
+  roomId,
+  chatContent,
+  setChatContent,
+  updateAvatar = () => {},
+}) {
   const { memberCode } = useAuth();
   const [isFetching, setIsFetching] = useState(false);
   // Page Info
@@ -111,24 +116,26 @@ export default function ChatContent({ roomId, chatContent, setChatContent, updat
   // Chat Bubble Renderer
   const renderChatBubble = useCallback(
     (item, index) => {
-      const bubbleClass = memberCode == item.senderId ? classes.chatMyBubble : classes.chatOthersBubble;
+      const bubbleClass =
+        memberCode == item.senderId
+          ? classes.chatMyBubble
+          : classes.chatOthersBubble;
       return (
-        <div className={`${classes.chatBubbleContainer} ${bubbleClass}`}>
+        <div
+          className={`${classes.chatBubbleContainer} ${bubbleClass}`}
+          key={item.id || index}
+        >
           <div className={classes.chatReadCount}>
             {item.senderId == memberCode && <p>{item.readCount}</p>}
             <p>{getAMPMTime(item.createdAt)}</p>
           </div>
-          <span
-            key={item.id || index}
-            className={classes.chatBubble}
-          >
-            {item.contents}
-          </span>
+          <span className={classes.chatBubble}>{item.contents}</span>
         </div>
       );
-    }, [memberCode]
+    },
+    [memberCode]
   );
-
+  
   const reversedMessages = useMemo(() => {
     return chatContent?.messageResponseDtoList?.slice(0).reverse() || [];
   }, [chatContent]);
@@ -140,9 +147,7 @@ export default function ChatContent({ roomId, chatContent, setChatContent, updat
         <p>표시할 내용이 없습니다.</p>
       )}
       {reversedMessages.length > 0 && (
-        <>
-          {reversedMessages.map(renderChatBubble)}
-        </>
+        <>{reversedMessages.map(renderChatBubble)}</>
       )}
     </div>
   );
