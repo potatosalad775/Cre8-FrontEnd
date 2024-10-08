@@ -62,8 +62,8 @@ export default function ChatPage() {
           ];
           for (let i = 0; i < updatedMessageList.length; i++) {
             if (
-              updatedMessageList[i].senderId === memberCode &&
-              updatedMessageList[i].readCount === 1
+              updatedMessageList[i].senderId == memberCode &&
+              updatedMessageList[i].readCount == 1
             ) {
               updatedMessageList[i] = {
                 ...updatedMessageList[i],
@@ -225,6 +225,17 @@ export default function ChatPage() {
                   unReadCount={item.unReadMessage}
                   onClick={() => {
                     handleListClick(item.roomId, item.nickName);
+                    setData((prev) => {
+                      const updatedObj = {
+                        ...prev[index],
+                        unReadMessage: 0,
+                      };
+                      return [
+                        updatedObj,
+                        ...prev.slice(0, index),
+                        ...prev.slice(index + 1),
+                      ];
+                    });
                   }}
                 />
               ))}

@@ -126,7 +126,7 @@ export default function ChatContent({
           key={item.id || index}
         >
           <div className={classes.chatReadCount}>
-            {item.senderId == memberCode && <p>{item.readCount}</p>}
+            {item.senderId == memberCode && item.readCount != 0 && <p>{item.readCount}</p>}
             <p>{getAMPMTime(item.createdAt)}</p>
           </div>
           <span className={classes.chatBubble}>{item.contents}</span>
