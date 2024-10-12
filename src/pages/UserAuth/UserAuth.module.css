@@ -38,6 +38,11 @@
     margin-top: 0.5rem;
     font-weight: 600;
   }
+  p {
+    font-weight: bold; 
+    font-size: 14px;
+    margin: 1rem 0 1.3rem 0;
+  }
 }
 
 .rightUL {

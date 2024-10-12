@@ -19,6 +19,7 @@ import ChatPage, { ChatListLoader } from "../pages/Chat/Chat.jsx";
 import LoginPage from "../pages/UserAuth/Login.jsx";
 import RegisterPage, { RegisterAction } from "../pages/UserAuth/Register.jsx";
 import RecoverPasswordPage from "../pages/UserAuth/RecoverPassword.jsx";
+import ChangePasswordPage from "../pages/UserAuth/ChangePassword.jsx";
 import ProfilePage, { ProfileLoader } from "../pages/Profile/Profile.jsx";
 import ProfileEditPage from "../pages/Profile/ProfileEdit.jsx";
 import PortfolioPage, { PortfolioLoader } from "../pages/Portfolio/Portfolio.jsx";
@@ -208,6 +209,7 @@ const Routes = () => {
             }
           ]
         },
+        { path: "changePassword", element: <ChangePasswordPage /> },
       ],
     },
   ];
