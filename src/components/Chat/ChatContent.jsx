@@ -10,7 +10,6 @@ export default function ChatContent({
   roomId,
   chatContent,
   setChatContent,
-  updateAvatar = () => {},
 }) {
   const { memberCode } = useAuth();
   const [isFetching, setIsFetching] = useState(false);
@@ -40,7 +39,6 @@ export default function ChatContent({
     chatContentLoader(roomId).then((res) => {
       isInitialLoad.current = true;
       setChatContent(res);
-      updateAvatar(res.opponentAccessUrl);
       setHasNextPage(res.hasNextPage);
       setIsFetching(false);
     });
@@ -79,7 +77,6 @@ export default function ChatContent({
           ...prev,
           page: prev.page + 1,
         }));
-        updateAvatar(data.opponentAccessUrl);
         setHasNextPage(data.hasNextPage);
         setIsFetching(false);
         // Adjust scroll position after new content is rendered

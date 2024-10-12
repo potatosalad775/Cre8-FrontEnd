@@ -147,9 +147,9 @@ export default function ChatPage() {
       Toast.error("채팅 서버에 연결되지 않았습니다. 나중에 다시 시도해주세요.");
     }
   };
-  const handleListClick = (key, name) => {
+  const handleListClick = (key, name, accessUrl) => {
     if (connectionStatus === "connected") {
-      setSelectedRoom({ roomId: key, nickName: name });
+      setSelectedRoom({ roomId: key, nickName: name, accessUrl: accessUrl });
     } else {
       Toast.error("채팅 서버에 연결되지 않았습니다. 나중에 다시 시도해주세요.");
     }
@@ -220,22 +220,25 @@ export default function ChatPage() {
               data.map((item, index) => (
                 <ChatListCard
                   key={index}
+                  accessUrl={item.accessUrl}
                   name={item.nickName}
                   message={item.latestMessage}
                   unReadCount={item.unReadMessage}
                   onClick={() => {
-                    handleListClick(item.roomId, item.nickName);
-                    setData((prev) => {
-                      const updatedObj = {
-                        ...prev[index],
-                        unReadMessage: 0,
-                      };
-                      return [
-                        updatedObj,
-                        ...prev.slice(0, index),
-                        ...prev.slice(index + 1),
-                      ];
-                    });
+                    handleListClick(item.roomId, item.nickName, item.accessUrl);
+                    if (item.unReadMessage > 0) {
+                      setData((prev) => {
+                        const updatedObj = {
+                          ...prev[index],
+                          unReadMessage: 0,
+                        };
+                        return [
+                          updatedObj,
+                          ...prev.slice(0, index),
+                          ...prev.slice(index + 1),
+                        ];
+                      });
+                    }
                   }}
                 />
               ))}
@@ -258,9 +261,6 @@ export default function ChatPage() {
                   roomId={selectedRoom.roomId}
                   chatContent={chatContent}
                   setChatContent={setChatContent}
-                  updateAvatar={(url) => {
-                    setSelectedRoom((prev) => ({ ...prev, accessUrl: url }));
-                  }}
                 />
                 <ChatInputBar handleChatSend={handleChatSend} />
               </>
