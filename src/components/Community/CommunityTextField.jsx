@@ -25,6 +25,7 @@ export default function CommunityTextField({
       contents: commentData,
     }).then((res) => {
       if (res == "201") {
+        setCommentData("");
         setIsUpdating("done");
       }
     });
