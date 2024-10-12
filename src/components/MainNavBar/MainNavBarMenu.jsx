@@ -11,6 +11,7 @@ import {
   RiBookmarkLine,
   RiLogoutBoxLine,
   RiUserLine,
+  RiKey2Line,
 } from "@remixicon/react";
 
 import { useAuth } from "../../provider/authProvider";
@@ -58,6 +59,12 @@ export default function MainNavBarMenu({
         <ListItemText>My 북마크 & 좋아요</ListItemText>
       </MenuItem>
       <Divider />
+      <MenuItem sx={{ minHeight: "32px" }} onClick={() => navigate("/changePassword")}>
+        <ListItemIcon>
+          <RiKey2Line size={22} />
+        </ListItemIcon>
+        <ListItemText>비밀번호 변경</ListItemText>
+      </MenuItem>
       <MenuItem sx={{ minHeight: "32px" }} onClick={logout}>
         <ListItemIcon>
           <RiLogoutBoxLine size={22} />

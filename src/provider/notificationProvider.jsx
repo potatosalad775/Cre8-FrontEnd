@@ -12,7 +12,6 @@ export default function NotificationProvider({ children }) {
   const checkForNotifications = async () => {
     if (!isLoggedIn) return;
 
-    console.log("checkForNotifications");
     try {
       const response = await apiInstance.get("/api/v1/notify/check");
       if (response.status === 200) {
