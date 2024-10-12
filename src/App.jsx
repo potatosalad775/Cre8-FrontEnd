@@ -2,7 +2,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import AuthProvider from "./provider/authProvider";
-import { useAuth } from "./provider/authProvider";
+import NotificationProvider from "./provider/notificationProvider";
 import { createTheme, ThemeProvider } from "@mui/material";
 import Routes from "./routes/Routes";
 
@@ -10,8 +10,10 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
-        <Routes />
-        <ToastContainer pauseOnFocusLoss={false}/>
+        <NotificationProvider>
+          <Routes />
+          <ToastContainer pauseOnFocusLoss={false}/>
+        </NotificationProvider>
       </AuthProvider>
     </ThemeProvider>
   )
