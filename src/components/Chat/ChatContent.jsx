@@ -1,16 +1,12 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { CircularProgress } from "@mui/material";
-import { throttle, getAMPMTime } from "../../provider/utilityProvider";
+import { throttle, getAMPMTime, getDateString } from "../../provider/utilityProvider";
 import apiInstance from "../../provider/networkProvider";
 import { useAuth } from "../../provider/authProvider";
 import { Toast } from "../Common/Toast";
 import classes from "./ChatComponent.module.css";
 
-export default function ChatContent({
-  roomId,
-  chatContent,
-  setChatContent,
-}) {
+export default function ChatContent({ roomId, chatContent, setChatContent }) {
   const { memberCode } = useAuth();
   const [isFetching, setIsFetching] = useState(false);
   // Page Info
@@ -110,6 +106,10 @@ export default function ChatContent({
     return () => chatContentElement.removeEventListener("scroll", handleScroll);
   }, [hasNextPage, isFetching]);
 
+  const reversedMessages = useMemo(() => {
+    return chatContent?.messageResponseDtoList?.slice(0).reverse() || [];
+  }, [chatContent]);
+
   // Chat Bubble Renderer
   const renderChatBubble = useCallback(
     (item, index) => {
@@ -117,25 +117,32 @@ export default function ChatContent({
         memberCode == item.senderId
           ? classes.chatMyBubble
           : classes.chatOthersBubble;
+
+      const previousItem = reversedMessages[index - 1];
+      const showDateIndicator = !previousItem ||
+        getDateString(item.createdAt) !== getDateString(previousItem.createdAt);
+
       return (
-        <div
-          className={`${classes.chatBubbleContainer} ${bubbleClass}`}
-          key={item.id || index}
-        >
-          <div className={classes.chatReadCount}>
-            {item.senderId == memberCode && item.readCount != 0 && <p>{item.readCount}</p>}
+        <div key={item.id || index}>
+          {showDateIndicator && (
+            <div className={classes.chatDateIndicator}>
+              <p>{getDateString(item.createdAt)}</p>
+            </div>
+          )}
+          <div className={`${classes.chatBubbleContainer} ${bubbleClass}`}>
+            <div className={classes.chatReadCount}>
+            {item.senderId == memberCode && item.readCount != 0 && (
+              <p>{item.readCount}</p>
+            )}
             <p>{getAMPMTime(item.createdAt)}</p>
+            </div>
+            <span className={classes.chatBubble}>{item.contents}</span>
           </div>
-          <span className={classes.chatBubble}>{item.contents}</span>
         </div>
       );
     },
-    [memberCode]
+    [memberCode, reversedMessages]
   );
-  
-  const reversedMessages = useMemo(() => {
-    return chatContent?.messageResponseDtoList?.slice(0).reverse() || [];
-  }, [chatContent]);
 
   return (
     <div className={classes.chatContent} ref={chatContentRef}>
