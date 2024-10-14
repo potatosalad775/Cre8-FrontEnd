@@ -24,6 +24,8 @@ import ProfilePage, { ProfileLoader } from "../pages/Profile/Profile.jsx";
 import ProfileEditPage from "../pages/Profile/ProfileEdit.jsx";
 import PortfolioPage, { PortfolioLoader } from "../pages/Portfolio/Portfolio.jsx";
 import PortfolioEditPage from "../pages/Portfolio/PortfolioEdit.jsx";
+import SettingsPage from "../pages/Settings/Settings.jsx";
+import DeleteAccountPage from "../pages/UserAuth/DeleteAccount.jsx";
 import ErrorPage from "../pages/Error.jsx";
 import TestPage from "../pages/Test.jsx";
 import { TagLoader } from "../components/Tag/TagLoader.jsx";
@@ -209,7 +211,9 @@ const Routes = () => {
             }
           ]
         },
+        { path: "settings", element: <SettingsPage /> },
         { path: "changePassword", element: <ChangePasswordPage /> },
+        { path: "deleteAcc", element: <DeleteAccountPage /> },
       ],
     },
   ];
