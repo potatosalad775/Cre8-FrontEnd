@@ -62,6 +62,11 @@ export const getAMPMTime = (dateTimeString) => {
   return `${ampm} ${formattedHours}:${minutes.toString().padStart(2, '0')}`;
 }
 
+export const getDateString = (dateTimeString) => {
+  const dateTime = dateTimeExtractor(dateTimeString);
+  return `${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일`;
+}
+
 export const timeSince = (timestamp) => {
   return formatDistanceToNow(
     new Date(timestamp), 

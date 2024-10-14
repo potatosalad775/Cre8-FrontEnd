@@ -135,3 +135,18 @@
     background-color: var(--color-gray-200);
   }
 }
+
+.chatDateIndicator {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.6rem;
+
+  p {
+    margin: 0;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 0.3rem;
+    background-color: var(--color-gray-200);
+  }
+}
