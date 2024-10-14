@@ -18,6 +18,7 @@ import PageContent from "../../components/Common/PageContent";
 import TitleBar from "../../components/Common/TitleBar";
 import TagList from "../../components/Tag/TagList";
 import DeleteDialog from "../../components/Dialog/DeleteDialog";
+import PortfolioAccordion from "../../components/Portfolio/PortfolioAccordion";
 import { Toast } from "../../components/Common/Toast";
 import { ReadOnlyEditor } from "../../components/Common/Editor";
 import apiInstance from "../../provider/networkProvider";
@@ -49,10 +50,6 @@ export default function JobPostPage() {
     );
     setTagDataList(tempList);
   }, []);
-
-  const handleImgClick = (e, portfolioID) => {
-    navigate(`./${portfolioID}`);
-  };
 
   const handleChatClick = () => {
     navigate('/chat', { state: { chatQuery: {
@@ -101,27 +98,11 @@ export default function JobPostPage() {
           <div className={classes.jobTagListArea}>
             <TagList tagList={tagDataList} />
           </div>
-          <div className={classes.jobPostPtfArea}>
-            <h3>작성자 포트폴리오</h3>
-            <ImageList cols={matchDownMd ? 3 : 5 } gap={10}>
-              {data.portfolioSimpleResponseDtoList.length > 0 &&
-                data.portfolioSimpleResponseDtoList.map((item) => (
-                  <ImageListItem
-                    key={item.id}
-                    className={classes.jobPortfolioThumbnail}
-                  >
-                    <img
-                      src={`${item.accessUrl}`}
-                      alt={item.id}
-                      onClick={(e) => {
-                        handleImgClick(e, item.id);
-                      }}
-                    />
-                  </ImageListItem>
-                ))}
-              {data.portfolioSimpleResponseDtoList.length == 0 && "표시할 내용이 없습니다."}
-            </ImageList>
-          </div>
+          <PortfolioAccordion 
+            memberCode={data.writerId} 
+            memberNickname={data.writerNickName}
+            portfolioData={data.portfolioSimpleResponseDtoList} 
+          />
           <div className={classes.jobPostInfoArea}>
             <Grid
               container

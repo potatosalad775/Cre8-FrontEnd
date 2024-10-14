@@ -8,6 +8,7 @@ export default function NotificationProvider({ children }) {
   const { isLoggedIn } = useAuth();
   const [hasUnreadChat, setHasUnreadChat] = useState(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+  const [notificationContent, setNotificationContent] = useState([]);
 
   const checkForNotifications = async () => {
     if (!isLoggedIn) return;
@@ -18,6 +19,7 @@ export default function NotificationProvider({ children }) {
         // 조회 성공
         setHasUnreadChat(response.data.data.unReadChat);
         setHasUnreadNotifications(response.data.data.unreadNotify);
+        getNotificationContent();
       }
     } catch (error) {
       // 조회 실패
@@ -25,6 +27,21 @@ export default function NotificationProvider({ children }) {
       console.error("Error fetching notifications:", error);
     }
   };
+
+  const getNotificationContent = async () => {
+    try {
+      const response = await apiInstance.get("/api/v1/notify");
+      if (response.status === 200) {
+        // 조회 성공
+        setNotificationContent((prev) => [...prev, ...response.data.data]);
+      }
+    } catch (error) {
+      // 조회 실패
+      //Toast.error("데이터를 불러오는 중 오류가 발생했습니다.");
+      console.error("Error fetching notification data:", error);
+    }
+    return [];
+  }
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -43,7 +60,10 @@ export default function NotificationProvider({ children }) {
         hasUnreadNotifications, 
         setHasUnreadChat,
         setHasUnreadNotifications,
-        checkForNotifications 
+        checkForNotifications,
+        notificationContent,
+        getNotificationContent,
+        setNotificationContent,
       }}
     >
       {children}

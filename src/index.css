@@ -86,7 +86,7 @@ ul {
 /* Basic editor styles */
 .tiptap {
   /* Youtube embed */
-  div[data-youtube-video] {
+  div[data-youtube-video]:not(.readOnlyEditor div[data-youtube-video]) {
     cursor: move;
 
     iframe {

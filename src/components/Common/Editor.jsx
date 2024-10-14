@@ -234,7 +234,7 @@ export const ReadOnlyEditor = ({ content }) => {
   });
 
   return (
-    <div className={classes.editor}>
+    <div className={`${classes.editor} readOnlyEditor`}>
       <EditorContent editor={editor} />
     </div>
   );
