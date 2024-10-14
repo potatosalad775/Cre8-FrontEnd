@@ -124,6 +124,7 @@
   span {
     margin: 0.6rem 0.6rem 0 0.5rem;
     background-color: var(--color-primary-200);
+    max-width: 60%;
   }
 }
 
@@ -133,6 +134,7 @@
   span {
     margin: 0.6rem 0.5rem 0 0.6rem;
     background-color: var(--color-gray-200);
+    max-width: 60%;
   }
 }
 
