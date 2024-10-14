@@ -106,9 +106,9 @@ export default function PortfolioAccordion({ memberCode = -1, memberNickname = "
       <AccordionDetails>
         <TabContext value={value}>
           <TabList onChange={handleChange} sx={{ borderBottom: "1px solid rgba(0, 0, 0, .3)" }}>
-            <Tab value="ptf" label="포트폴리오" />
+            <Tab value="ptf" label="포트폴리오" sx={{ padding: "12px 1.3rem" }} />
             <Tab label="" icon={<Divider orientation="vertical"/>} sx={{ maxWidth: "1px", minWidth: "1px", padding: "0.8rem 0" }} disabled />
-            <Tab value="int" label="자기소개" />
+            <Tab value="int" label="자기소개" sx={{ padding: "12px 1.3rem" }} />
           </TabList>
           <TabPanel value="ptf" sx={{ padding: "1.3rem"}}>
             <ImageList cols={matchDownMd ? 3 : 5 } gap={10}>
