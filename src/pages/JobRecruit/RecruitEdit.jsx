@@ -94,10 +94,7 @@ export default function RecruitEditPage() {
   useEffect(() => {
     // After Tag Element loaded...
     // load post data as initial value
-    if (
-      data?.tagPostResponseDto?.subCategoryWithChildTagResponseDtoList?.length >
-      0
-    ) {
+    if (data?.tagPostResponseDto?.subCategoryWithChildTagResponseDtoList?.length > 0) {
       let tempData = [];
       data.tagPostResponseDto.subCategoryWithChildTagResponseDtoList.map(
         (subItem) => {
@@ -107,14 +104,16 @@ export default function RecruitEditPage() {
       const tempElement = [];
       //
       if (tagElementData && tempData) {
-        tagElementData.map((elementItem) => {
-          elementItem.workFieldChildTagResponseDtoList.map((childItem) => {
-            if (tempData[0] == childItem.name) {
-              tempElement.push(childItem.workFieldChildTagId);
-              tempData.shift();
-            }
+        while (tempData.length > 0) {
+          tagElementData.map((elementItem) => {
+            elementItem.workFieldChildTagResponseDtoList.map((childItem) => {
+              if (tempData[0] == childItem.name) {
+                tempElement.push(childItem.workFieldChildTagId);
+                tempData.shift();
+              }
+            });
           });
-        });
+        }
         if (tempData.length == 0) {
           setSelectedElement(tempElement);
         }
