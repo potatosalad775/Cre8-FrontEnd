@@ -184,12 +184,6 @@ export default function RecruitEditPage() {
     } else {
       formData.append("workFieldChildTagId", "") 
     }
-    selectedElement.forEach((element) => {
-      if(element) { 
-        formData.append("workFieldChildTagId", element) 
-      } else {
-      };
-    })
     if(!isEmpty(data.paymentMethod)) {
       formData.append("paymentMethod", data.paymentMethod);
     }
