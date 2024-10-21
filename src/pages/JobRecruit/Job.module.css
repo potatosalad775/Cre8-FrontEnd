@@ -93,17 +93,27 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
+  height: 32px;
+  margin: 0.9rem 0;
 
   input {
     width: 1rem;
     flex-grow: 3;
     margin: 0;
+    height: 14px;
   }
   ul {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
+}
+.jobPostInfoAreaRow:last-child {
+  margin-bottom: 0.2rem;
+}
+.jobPostIntoAreaRowDisp {
+  height: 24px;
+  margin: 0;
 }
 
 .jobPostDescArea {

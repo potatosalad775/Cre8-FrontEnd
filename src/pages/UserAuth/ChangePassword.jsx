@@ -103,7 +103,7 @@ export default function ChangePasswordPage() {
                 required
               />
               {changePasswordError.password && focus.password && (
-                <span>{changePasswordError.password}</span>
+                <p>{changePasswordError.password}</p>
               )}
             </>
           )}
@@ -118,7 +118,7 @@ export default function ChangePasswordPage() {
             required
           />
           {changePasswordError.newPassword && focus.newPassword && (
-            <span>{changePasswordError.newPassword}</span>
+            <p>{changePasswordError.newPassword}</p>
           )}
           <p style={{ fontWeight: "bold", fontSize: "14px" }}>{helperText}</p>
         </div>
@@ -129,6 +129,7 @@ export default function ChangePasswordPage() {
             color="primary"
             size="large"
             disabled={isSubmitting}
+            sx={{ marginTop: "1.3rem" }}
           >
             {isSubmitting ? "비밀번호 변경 중" : "비밀번호 변경"}
           </Button>

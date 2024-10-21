@@ -100,7 +100,7 @@ export default function JobPostPage() {
           </div>
           <PortfolioAccordion 
             memberCode={data.writerId} 
-            memberNickname={data.writerNickName}
+            memberId={data.writerLoginId}
             portfolioData={data.portfolioSimpleResponseDtoList} 
           />
           <div className={classes.jobPostInfoArea}>
@@ -117,7 +117,7 @@ export default function JobPostPage() {
                 <h3>역량</h3>
                 {data.tagPostResponseDto.subCategoryWithChildTagResponseDtoList.map(
                   (item, itemIndex) => (
-                    <div key={itemIndex} className={classes.jobPostInfoAreaRow}>
+                    <div key={itemIndex} className={`${classes.jobPostInfoAreaRow} ${classes.jobPostIntoAreaRowDisp}`}>
                       <p>{item.subCategoryName}</p>
                       <ul>
                         {item.childTagName.map((child, childIndex) => (
@@ -137,12 +137,12 @@ export default function JobPostPage() {
               />
               <Grid item xs={2} sm={15} className={classes.jobPostInfoBox}>
                 <h3>작성자 정보</h3>
-                <div className={classes.jobPostInfoAreaRow}>
+                <div className={`${classes.jobPostInfoAreaRow} ${classes.jobPostIntoAreaRowDisp}`}>
                   <p>희망 급여</p>
                   <Chip label={data.paymentMethod} size="small" />
                   <b>{data.paymentAmount}원</b>
                 </div>
-                <div className={classes.jobPostInfoAreaRow}>
+                <div className={`${classes.jobPostInfoAreaRow} ${classes.jobPostIntoAreaRowDisp}`}>
                   <p>작업 경력</p>
                   <b>{data.careerYear}년</b>
                 </div>
