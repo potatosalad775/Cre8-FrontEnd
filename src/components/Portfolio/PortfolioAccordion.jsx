@@ -61,7 +61,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: '1px solid rgba(0, 0, 0, .3)',
 }));
 
-export default function PortfolioAccordion({ memberCode = -1, memberNickname = "", portfolioData = [] }) {
+export default function PortfolioAccordion({ memberCode = -1, memberId = "", portfolioData = [] }) {
   const navigate = useNavigate();
   const theme = useTheme();
   const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
@@ -91,7 +91,7 @@ export default function PortfolioAccordion({ memberCode = -1, memberNickname = "
             variant="contained"
             size="small"
             onClick={() => {
-              navigate(`/p/${memberNickname}`);
+              navigate(`/p/${memberId}`);
             }}
             sx={{ 
               lineHeight: "1.4rem",

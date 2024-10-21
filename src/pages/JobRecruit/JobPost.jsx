@@ -100,7 +100,7 @@ export default function JobPostPage() {
           </div>
           <PortfolioAccordion 
             memberCode={data.writerId} 
-            memberNickname={data.writerNickName}
+            memberId={data.writerLoginId}
             portfolioData={data.portfolioSimpleResponseDtoList} 
           />
           <div className={classes.jobPostInfoArea}>
