@@ -87,7 +87,7 @@ export default function LoginPage() {
             required
           />
           {loginError.userID && focus.userID && (
-            <span>{loginError.userID}</span>
+            <p>{loginError.userID}</p>
           )}
         </div>
         <div className={classes.authLabel}>
@@ -102,7 +102,7 @@ export default function LoginPage() {
             required
           />
           {loginError.password && focus.password && (
-            <span>{loginError.password}</span>
+            <p>{loginError.password}</p>
           )}
         </div>
         <ul className={classes.rightUL}>
