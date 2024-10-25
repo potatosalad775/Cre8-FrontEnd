@@ -12,7 +12,7 @@ import JobPostPage, { JobPostLoader } from "../pages/JobRecruit/JobPost.jsx";
 import JobEditPage from "../pages/JobRecruit/JobEdit.jsx";
 import BookmarkPage from "../pages/Bookmark/Bookmark.jsx";
 import MyPostPage from "../pages/MyPost/MyPost.jsx";
-import CommunityPage, { CommunityLoader } from "../pages/Community/Community.jsx";
+import CommunityPage from "../pages/Community/Community.jsx";
 import CommunityEditPage, { CommunityEditLoader } from "../pages/Community/CommunityEdit.jsx";
 import CommunityPostPage, { CommunityPostLoader } from "../pages/Community/CommunityPost.jsx";
 import ChatPage, { ChatListLoader } from "../pages/Chat/Chat.jsx";
@@ -27,7 +27,6 @@ import PortfolioEditPage from "../pages/Portfolio/PortfolioEdit.jsx";
 import SettingsPage from "../pages/Settings/Settings.jsx";
 import DeleteAccountPage from "../pages/UserAuth/DeleteAccount.jsx";
 import ErrorPage from "../pages/Error.jsx";
-import TestPage from "../pages/Test.jsx";
 import { TagLoader } from "../components/Tag/TagLoader.jsx";
 
 const Routes = () => {
@@ -84,7 +83,6 @@ const Routes = () => {
     {
       path: "c",
       id: "community-page",
-      loader: CommunityLoader,
       children: [
         {
           index: true,
@@ -116,7 +114,6 @@ const Routes = () => {
       ],
     },
     { path: "register", element: <RegisterPage />, action: RegisterAction },
-    { path: "test", element: <TestPage /> },
   ];
 
   // Accessible only to authenticated users
