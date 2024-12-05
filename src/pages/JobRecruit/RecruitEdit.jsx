@@ -36,11 +36,11 @@ export default function RecruitEditPage() {
     imgFile: null,
     imgURL: null,
   })
-  // Portfolio Description in JSON type
+  // Portfolio Description
   const [postContent, setPostContent] = useState(
     location.state?.isCreation == null || location.state?.isCreation
       ? "" 
-      : JSON.parse(data.contents)
+      : data.contents
   );
   // Tag Data
   const [tagData, setTagData] = useState();
@@ -169,7 +169,7 @@ export default function RecruitEditPage() {
     formData.append("title", data.title);
     formData.append("companyName", data.companyName);
     formData.append("contact", data.contact);
-    formData.append("contents", JSON.stringify(postContent));
+    formData.append("contents", postContent);
     if(!location.state?.isCreation) {
       formData.append("employerPostId", data.employerPostId)
     };
@@ -464,15 +464,9 @@ async function recPostEditAction(formData, isCreation = true) {
 const RecPostEditor = ({ postContent, setPostContent }) => {
   const editor = useEditor({
     extensions: editorExtensions,
-    content: postContent
-      ? {
-          type: "doc",
-          content: postContent,
-        }
-      : "",
+    content: postContent ?? "",
     onUpdate: ({ editor }) => {
-      const json = editor.getJSON();
-      const data = json.content;
+      const data = editor.getHTML();
       setPostContent(data);
     },
     editorProps: {

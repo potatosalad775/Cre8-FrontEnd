@@ -9,7 +9,6 @@ import {
   TextField,
 } from "@mui/material";
 import { useMemo, useState } from "react";
-import { Toast } from "../Common/Toast";
 import classes from "./Editor.module.css";
 
 export default function EditorGeminiDialog({ editor, open, onClose }) {
@@ -23,26 +22,28 @@ export default function EditorGeminiDialog({ editor, open, onClose }) {
     e.preventDefault();
     const content = editor.getHTML();
     const userPrompt = e.target.elements.userPrompt.value;
-    const defaultPrompt =
-      " = 앞서 제공된 HTML 형식의 본문 내용을 뒤이어 입력될 사용자의 요청에 맞게 개선해주세요. 출력값은 반드시 아래 사항들을 준수해야 합니다. \
+    const defaultPromptOne =
+      " : 앞서 제공된 HTML 형식의 본문 내용을 뒤이어 입력될 사용자의 요청에 맞게 개선해주세요 : ";
+    const defaultPromptTwo =
+      " : 출력값은 반드시 아래 사항들을 반드시 준수해야 합니다. \
       1. 만약 사용자가 입력한 요청이 충분하지 않더라도 반드시 결과값은 제공된 본문을 바탕으로 개선된 내용을 담고 있을 것 \
-      2. 결과값은 #, *를 비롯한 각종 마크다운 기호를 완전 배제한 채, 순수히 HTML 태그과 한국어만으로 이루어진 HTML 문법을 준수하는 코드의 형태를 갖춰야 함. \
-      3. ```html 같은 코드블럭은 사용하지 말 것. \
-      이 다음은 사용자의 요청임. = ";
+      2. 결과값을 표현하는데 Header, List, Ul, Ol을 활용할 수 있다. 다만 마크다운 문법이 아닌 HTML 태그를 활용할 것. \
+      3. 본문 내용을 표현하는데 불필요한 태그 및 Boilerplate 코드는 담지 말 것.";
 
-    // Generate Content if editor is not empty
-    if (!editor.isEmpty) {
-      setIsGeminiRunning(true);
-      model
-        .generateContent(content + defaultPrompt + userPrompt)
-        .then((result) => {
-          editor.commands.setContent(result.response.text());
-          setIsGeminiRunning(false);
-          onClose();
-        });
-    } else {
-      Toast.error("본문이 비어있는 상태에서는 사용할 수 없습니다.");
-    }
+    setIsGeminiRunning(true);
+    model
+      .generateContent(content + defaultPromptOne + userPrompt + defaultPromptTwo)
+      .then((result) => {
+        const generatedContent = result.response.text().trim();
+        if (generatedContent.startsWith("```html") && generatedContent.endsWith("```")) {
+          const contentWithoutBlock = generatedContent.slice(7, -3);
+          editor.commands.setContent(contentWithoutBlock, true);
+        } else {
+          editor.commands.setContent(generatedContent, true);
+        }
+        setIsGeminiRunning(false);
+        onClose();
+      });
   };
 
   return (

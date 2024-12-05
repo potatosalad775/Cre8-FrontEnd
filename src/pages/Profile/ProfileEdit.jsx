@@ -34,9 +34,9 @@ export default function ProfileEditPage() {
     uLinkWebpage: data.personalLink || "",
     uMemberCode: data.memberCode,
   });
-  // Profile Description in JSON type
+  // Profile Description
   const [profileAbout, setProfileAbout] = useState(
-    JSON.parse(data.personalStatement) || ""
+    data.personalStatement || ""
   );
   // Uploaded Profile Image
   const [uploadedPFP, setUploadedPFP] = useState(null);
@@ -57,7 +57,7 @@ export default function ProfileEditPage() {
     formData.append("youtubeLink", getExternalLink(profileData.uLinkYoutube));
     formData.append("twitterLink", getExternalLink(profileData.uLinkTwitter));
     formData.append("personalLink", getExternalLink(profileData.uLinkWebpage));
-    formData.append("personalStatement", JSON.stringify(profileAbout));
+    formData.append("personalStatement", profileAbout);
 
     profileEditAction(formData).then((res) => {
       // Success
@@ -214,15 +214,10 @@ export default function ProfileEditPage() {
 const ProfileEditor = ({ profileAbout, setProfileAbout }) => {
   const editor = useEditor({
     extensions: editorExtensions,
-    content: profileAbout
-      ? {
-          type: "doc",
-          content: profileAbout,
-        }
-      : "",
+    content: profileAbout ?? "",
     onUpdate: ({ editor }) => {
-      const json = editor.getJSON();
-      const data = json.content;
+      const data = editor.getHTML();
+      console.log("UPDATED")
       setProfileAbout(data);
     },
   });

@@ -35,11 +35,11 @@ export default function JobEditPage() {
     imgFile: null,
     imgURL: null,
   });
-  // Job Description in JSON type
+  // Job Description
   const [postContent, setPostContent] = useState(
     location.state?.isCreation == null || location.state?.isCreation
       ? ""
-      : JSON.parse(data.contents)
+      : data.contents
   );
   // Tag Data
   const [tagData, setTagData] = useState();
@@ -165,7 +165,7 @@ export default function JobEditPage() {
     };
     formData.append("title", data.title);
     formData.append("contact", data.contact);
-    formData.append("contents", JSON.stringify(postContent));
+    formData.append("contents", postContent);
     if(!isEmpty(selectedTag)) {
       formData.append("workFieldId", selectedTag);
     }
@@ -391,15 +391,9 @@ async function jobPostEditAction(formData, isCreation = true) {
 const RecPostEditor = ({ postContent, setPostContent }) => {
   const editor = useEditor({
     extensions: editorExtensions,
-    content: postContent
-      ? {
-          type: "doc",
-          content: postContent,
-        }
-      : "",
+    content: postContent ?? "",
     onUpdate: ({ editor }) => {
-      const json = editor.getJSON();
-      const data = json.content;
+      const data = editor.getHTML();
       setPostContent(data);
     },
     editorProps: {
