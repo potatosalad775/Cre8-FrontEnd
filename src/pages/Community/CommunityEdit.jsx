@@ -31,11 +31,11 @@ export default function CommunityEditPage() {
       ? INITIAL_POST_EDIT_VALUE
       : useRouteLoaderData("community-page-edit")
   );
-  // Post Content in JSON type
+  // Post Content
   const [postContent, setPostContent] = useState(
     location.state?.isCreation == null || location.state?.isCreation
       ? ""
-      : JSON.parse(data.contents)
+      : data.contents
   );
   const [imageData, setImageData] = useState({
     imgFile: null,
@@ -89,7 +89,7 @@ export default function CommunityEditPage() {
       formData.append("communityPostId", location.state.postId);
     }
     formData.append("title", data.title);
-    formData.append("contents", JSON.stringify(postContent));
+    formData.append("contents", postContent);
     if (imageData.imgFile !== null) {
       formData.append("multipartFile", imageData.imgFile);
     }
@@ -203,15 +203,9 @@ async function communityPostEditAction(formData, isCreation = true) {
 const CommunityPostEditor = ({ postContent, setPostContent }) => {
   const editor = useEditor({
     extensions: editorExtensions,
-    content: postContent
-      ? {
-          type: "doc",
-          content: postContent,
-        }
-      : "",
+    content: postContent ?? "",
     onUpdate: ({ editor }) => {
-      const json = editor.getJSON();
-      const data = json.content;
+      const data = editor.getHTML();
       setPostContent(data);
     },
     editorProps: {

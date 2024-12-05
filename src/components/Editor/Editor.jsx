@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 
 import { useEditor, EditorContent } from "@tiptap/react";
+import { generateHTML } from '@tiptap/core'
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
@@ -150,32 +151,10 @@ export const EditorMenuBar = ({ editor, enableGemini = false }) => {
 };
 
 export const ReadOnlyEditor = ({ content }) => {
-  let contentData;
-  try {
-    contentData = JSON.parse(content);
-  } catch (e) {
-    contentData = [
-      {
-        type: "paragraph",
-        content: [
-          {
-            type: "text",
-            text: `${content}`,
-          },
-        ],
-      },
-    ];
-  }
-
   const editor = useEditor({
     editable: false,
     extensions: editorExtensions,
-    content: content
-      ? {
-          type: "doc",
-          content: contentData,
-        }
-      : "",
+    content: content ?? "",
     editorProps: {
       attributes: {
         style: "padding: 0.3rem 0;",

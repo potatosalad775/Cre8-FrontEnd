@@ -36,8 +36,8 @@ export default function PortfolioEditPage() {
   const location = useLocation();
   const { userID } = useAuth();
   const [data, setData] = useState(useLoaderData());
-  // Portfolio Description in JSON type
-  const [ptfDesc, setPtfDesc] = useState(JSON.parse(data.description) || "");
+  // Portfolio Description
+  const [ptfDesc, setPtfDesc] = useState(data.description || "");
   // Uploaded Image Array
   const [uploadedImgArray, setUploadedImgArray] = useState([]);
   // Deleted Image Array
@@ -191,7 +191,7 @@ export default function PortfolioEditPage() {
       }
     })
     if(deletedImageList.length == 0) formData.append("deletePortfolioImageList", "");
-    formData.append("description", JSON.stringify(ptfDesc));
+    formData.append("description", ptfDesc);
 
     portfolioEditAction(formData)
       .then((res) => {
@@ -323,15 +323,9 @@ async function portfolioEditAction(formData) {
 const PortfolioEditor = ({ ptfDesc, setPtfDesc }) => {
   const editor = useEditor({
     extensions: editorExtensions,
-    content: ptfDesc
-      ? {
-          type: "doc",
-          content: ptfDesc,
-        }
-      : "",
+    content: ptfDesc ?? "",
     onUpdate: ({ editor }) => {
-      const json = editor.getJSON();
-      const data = json.content;
+      const data = editor.getHTML();
       setPtfDesc(data);
     },
     editorProps: {
