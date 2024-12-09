@@ -2,6 +2,8 @@ import { useState } from "react";
 import { TextField, Button } from "@mui/material";
 import apiInstance from "../../provider/networkProvider";
 import { useAuth } from "../../provider/authProvider";
+import { isEmpty } from "../../provider/utilityProvider";
+import DataValidate from "../../provider/DataValidate";
 import { Toast } from "../Common/Toast";
 import classes from "./CommComponent.module.css";
 
@@ -17,7 +19,21 @@ export default function CommunityTextField({
 
   const handleAddComment = (e) => {
     e.preventDefault();
+
+    // Data Validation
+    const commentError = DataValidate({
+      comment: commentData
+    }, "comment");
+    if (!isEmpty(commentError)) {
+      Object.keys(commentError).forEach((key) => {
+        Toast.error(commentError[key]);
+      });
+      return;
+    }
+
+    // Updating State
     setIsUpdating("true");
+
     // Upload Comment
     CommunityPostCommentRequest({
       ...(communityPostId && { communityPostId }),

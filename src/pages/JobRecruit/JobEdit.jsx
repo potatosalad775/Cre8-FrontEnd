@@ -22,6 +22,7 @@ import { Toast } from "../../components/Common/Toast";
 import { EditorMenuBar, editorExtensions } from "../../components/Editor/Editor";
 import classes from "./Job.module.css";
 import { isEmpty, isFileSizeUnderLimit } from "../../provider/utilityProvider";
+import DataValidate from "../../provider/DataValidate";
 
 export default function JobEditPage() {
   const navigate = useNavigate();
@@ -149,16 +150,23 @@ export default function JobEditPage() {
   const handleSaveEdit = (e) => {
     e.preventDefault();
 
-    if (
-      isEmpty(data.title) ||
-      isEmpty(data.contact) ||
-      isEmpty(postContent)
-    ) {
-      Toast.error("입력되지 않은 내용이 있습니다.");
+    // Data Validation
+    const jobPostError = DataValidate({
+      title: data.title,
+      contact: data.contact,
+      content: postContent
+    }, "jobPost");
+    if (!isEmpty(jobPostError)) {
+      Object.keys(jobPostError).forEach((key) => {
+        Toast.error(jobPostError[key]);
+      });
       return;
     }
+
+    // Loading State
     setIsUploading(true);
 
+    // Create Form Data
     const formData = new FormData();
     if(!location.state?.isCreation) {
       formData.append("employeePostId", data.employeePostId)
