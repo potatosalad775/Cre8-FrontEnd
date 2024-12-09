@@ -18,11 +18,12 @@ import TagSelector from "../../components/Tag/TagSelector";
 import SubTagSelector from "../../components/Tag/SubTagSelector";
 import TagChildSelector from "../../components/Tag/TagChildSelector";
 import { TagElementLoader, TagLoader } from "../../components/Tag/TagLoader";
-import apiInstance from "../../provider/networkProvider";
 import { Toast } from "../../components/Common/Toast";
 import { EditorMenuBar, editorExtensions } from "../../components/Editor/Editor";
 import classes from "./Job.module.css";
 import { isEmpty, isFileSizeUnderLimit } from "../../provider/utilityProvider";
+import apiInstance from "../../provider/networkProvider";
+import DataValidate from "../../provider/DataValidate";
 
 export default function RecruitEditPage() {
   const navigate = useNavigate();
@@ -154,17 +155,24 @@ export default function RecruitEditPage() {
   const handleSaveEdit = (e) => {
     e.preventDefault();
 
-    if (
-      isEmpty(data.title) ||
-      isEmpty(data.companyName) ||
-      isEmpty(data.contact) ||
-      isEmpty(postContent)
-    ) {
-      Toast.error("입력되지 않은 내용이 있습니다.");
+    // Data Validation
+    const recPostError = DataValidate({
+      title: data.title,
+      contact: data.contact,
+      companyName : data.companyName,
+      content: postContent
+    }, "recPost");
+    if (!isEmpty(recPostError)) {
+      Object.keys(recPostError).forEach((key) => {
+        Toast.error(recPostError[key]);
+      });
       return;
     }
+
+    // Loading State
     setIsUploading(true);
 
+    // Create Form Data
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("companyName", data.companyName);

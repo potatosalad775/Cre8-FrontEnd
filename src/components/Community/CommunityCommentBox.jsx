@@ -13,6 +13,8 @@ import { RiMore2Line } from "@remixicon/react";
 
 import apiInstance from "../../provider/networkProvider";
 import { useAuth } from "../../provider/authProvider";
+import { isEmpty } from "../../provider/utilityProvider";
+import DataValidate from "../../provider/DataValidate";
 import { Toast } from "../Common/Toast";
 import classes from "./CommComponent.module.css";
 
@@ -56,6 +58,18 @@ export default function CommunityCommentBox({
   };
 
   const handleSaveEdit = () => {
+    // Data Validation
+    const commentError = DataValidate({
+      comment: contents
+    }, "comment");
+    if (!isEmpty(commentError)) {
+      Object.keys(commentError).forEach((key) => {
+        Toast.error(commentError[key]);
+      });
+      return;
+    }
+
+    // Update Comment
     CommunityCommentUpdateRequest(item.replyId, contents).then((res) => {
       if (res == 200) {
         Toast.success("댓글 수정 성공");

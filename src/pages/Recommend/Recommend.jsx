@@ -11,19 +11,9 @@ import classes from "./Recommend.module.css";
 
 export default function RecommendPage() {
   const navigate = useNavigate();
-  const [imageData, setImageData] = useState(null);
+  const [imageData, setImageData] = useState({ url: null, isImage: false});
   const [isUploading, setIsUploading] = useState(false);
   const [recommendData, setRecommendData] = useState([]);
-
-  const CheckImage = (link) => {
-    const imageRegex =
-      /https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg)(?:\?.*)?$/i;
-
-    if (!imageRegex.test(link)) {
-      return false;
-    }
-    return true;
-  };
 
   const handleAddImg = async (e) => {
     setIsUploading(true);
@@ -34,7 +24,7 @@ export default function RecommendPage() {
       // Fetch Preview Image
       const uploadedImg = e.target.files[0];
       const uploadedImgURL = window.URL.createObjectURL(uploadedImg);
-      setImageData(uploadedImgURL);
+      setImageData({ url: uploadedImgURL, isImage: false });
       try {
         const formData = new FormData();
         formData.append("imageFile", uploadedImg);
@@ -55,8 +45,7 @@ export default function RecommendPage() {
     e.preventDefault();
     setIsUploading(true);
 
-    // Check if the link is an image
-    if (!CheckImage(imageData)) {
+    if (!imageData.isImage) {
       Toast.error("링크가 이미지 파일이 아닙니다.");
       setIsUploading(false);
       return;
@@ -64,7 +53,7 @@ export default function RecommendPage() {
 
     try {
       const formData = new FormData();
-      formData.append("imageUrl", imageData);
+      formData.append("imageUrl", imageData.url);
       const res = await RecommendRequestWithImage(formData);
       if (res.status == "success") {
         setRecommendData(res.data);
@@ -120,7 +109,18 @@ export default function RecommendPage() {
         {!isUploading ? (
           <label htmlFor="recommendImageUploadBtn">
             <div className={classes.recommendUploadedImageArea}>
-              {!isEmpty(imageData) && <img src={imageData} alt="postImage" />}
+              <img
+                src={imageData.url}
+                alt="postImage"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  setImageData((prev) => ({ ...prev, isImage: false }));
+                }}
+                onLoad={(e) => {
+                  e.currentTarget.style.display = "block";
+                  setImageData((prev) => ({ ...prev, isImage: true }));
+                }}
+              />
               <div className={classes.recommendUploadedImageAreaText}>
                 <p>이미지를 드래그 & 드랍하거나 아래 버튼을 눌러 추가하세요.</p>
                 <Button
@@ -137,7 +137,7 @@ export default function RecommendPage() {
                     id="recommendImageLinkInput"
                     type="link"
                     placeholder="https://"
-                    onChange={(e) => setImageData(e.target.value)}
+                    onChange={(e) => setImageData({ url: e.target.value, isImage: false })}
                   />
                   <Button variant="contained" onClick={handleAddImageLink}>
                     <RiSearchLine size={20} />
@@ -190,6 +190,7 @@ async function RecommendRequestWithImage(formData) {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      timeout: 10000,
     });
     // 성공
     return response.data;

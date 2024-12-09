@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Card, Divider, Tab } from "@mui/material";
+import { Card, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 import TitleBar from "../../components/Common/TitleBar";
@@ -8,9 +8,11 @@ import {
   JobListCard,
   RecruitListCard,
 } from "../../components/Joblist/JobListCard";
+import CommunityPostCard from "../../components/Community/CommunityPostCard";
 import { isEmpty, throttle } from "../../provider/utilityProvider";
 import apiInstance from "../../provider/networkProvider";
 import classes from "./MyPost.module.css";
+import TabDivider from "../../components/Common/TabDivider";
 
 export default function MyPostPage() {
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ export default function MyPostPage() {
     throttle(() => {
       //console.log("FETCHING!");
       searchMyPostwithKeyword(tabType, pageSearchObj).then((data) => {
-        //console.log(data);
+        if(isEmpty(data)) return;
         // Update Data
         if (tabType == "recruit") {
           setMyPostData(
@@ -42,6 +44,10 @@ export default function MyPostPage() {
         } else if (tabType == "job") {
           setMyPostData(
             myPostData.concat(data.employeePostSearchResponseDtoList)
+          );
+        } else if (tabType == "c") {
+          setMyPostData(
+            myPostData.concat(data.communityPostSearchResponseDtoList)
           );
         }
         setPageSearchObj({
@@ -52,7 +58,7 @@ export default function MyPostPage() {
         setIsFetching(false);
       });
     }, 500),
-    [pageSearchObj]
+    [pageSearchObj, tabType]
   );
 
   const handleTabChange = (e, newValue) => {
@@ -102,8 +108,10 @@ export default function MyPostPage() {
             className={classes.bookmarkTabList}
           >
             <Tab value="recruit" label="구인" />
-            <Tab label="" icon={<Divider orientation="vertical"/>} sx={{ maxWidth: "1px", minWidth: "1px", padding: "0.8rem 0" }} disabled />
+            <TabDivider />
             <Tab value="job" label="구직" />
+            <TabDivider />
+            <Tab value="c" label="커뮤니티" />
           </TabList>
           <TabPanel value="recruit" sx={{padding: "0"}}>
             {isEmpty(myPostData) && <p>표시할 내용이 없습니다.</p>}
@@ -127,6 +135,17 @@ export default function MyPostPage() {
                 />
               ))}
           </TabPanel>
+          <TabPanel value="c" sx={{padding: "0"}}>
+            {isEmpty(myPostData) && <p>표시할 내용이 없습니다.</p>}
+            {!isEmpty(myPostData) &&
+              myPostData.map((item, index) => (
+                <CommunityPostCard
+                  key={index}
+                  item={item}
+                  onClick={() => { handleCardClick(item.communityPostId) }}
+                />
+              ))}
+          </TabPanel>
         </TabContext>
       </div>
     </Card>
@@ -140,10 +159,12 @@ async function searchMyPostwithKeyword(
   keywordData = null
 ) {
   let apiAddress;
-  if (tabType == "job") {
+  if (tabType === "job") {
     apiAddress = "/api/v1/employee-posts/search/my-posts";
-  } else if ((tabType = "recruit")) {
+  } else if ((tabType === "recruit")) {
     apiAddress = "/api/v1/employer-posts/search/my-posts";
+  } else if ((tabType === "c")) {
+    apiAddress = "/api/v1/community/posts/search/my-Post";
   }
 
   // Append Keyword if it exists

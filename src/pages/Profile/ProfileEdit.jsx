@@ -1,8 +1,4 @@
-import {
-  useNavigate,
-  useRouteLoaderData,
-  useLocation,
-} from "react-router-dom";
+import { useNavigate, useRouteLoaderData, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { Avatar, Tab, IconButton, Button, Card } from "@mui/material";
@@ -10,9 +6,13 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { RiGlobalLine, RiTwitterXLine, RiYoutubeLine } from "@remixicon/react";
 
 import { useAuth } from "../../provider/authProvider";
-import apiInstance from "../../provider/networkProvider"
-import { isFileSizeUnderLimit } from "../../provider/utilityProvider";
-import { EditorMenuBar, editorExtensions } from "../../components/Editor/Editor";
+import DataValidate from "../../provider/DataValidate";
+import apiInstance from "../../provider/networkProvider";
+import { isEmpty, isFileSizeUnderLimit } from "../../provider/utilityProvider";
+import {
+  EditorMenuBar,
+  editorExtensions,
+} from "../../components/Editor/Editor";
 import { PortfolioGrid } from "../../components/Portfolio/PortfolioGrid";
 import { Toast } from "../../components/Common/Toast";
 import classes from "./Profile.module.css";
@@ -43,6 +43,16 @@ export default function ProfileEditPage() {
 
   const handleSaveClick = (e) => {
     e.preventDefault();
+
+    // Validate NickName Length
+    const nickNameError = DataValidate(
+      { nickName: profileData.uNickName },
+      "changeNickName"
+    );
+    if (!isEmpty(nickNameError)) {
+      Toast.error(nickNameError.nickName);
+      return;
+    }
 
     // Update ProFile Picture
     setUserPFP(profileData.uProfileImage);
@@ -123,18 +133,18 @@ export default function ProfileEditPage() {
         <ul className={classes.contextButtonList}>
           <li>
             <input
-                id="uNickName"
-                name="uNickName"
-                type="text"
-                className={classes.nicknameInput}
-                value={profileData.uNickName || ""}
-                onChange={handleChange}
-              />
+              id="uNickName"
+              name="uNickName"
+              type="text"
+              className={classes.nicknameInput}
+              value={profileData.uNickName || ""}
+              onChange={handleChange}
+            />
           </li>
           <li>
             {data.memberCode == memberCode && (
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 onClick={handleSaveClick}
                 variant="contained"
                 color="secondary"
@@ -217,7 +227,6 @@ const ProfileEditor = ({ profileAbout, setProfileAbout }) => {
     content: profileAbout ?? "",
     onUpdate: ({ editor }) => {
       const data = editor.getHTML();
-      console.log("UPDATED")
       setProfileAbout(data);
     },
   });
@@ -235,11 +244,11 @@ async function profileEditAction(formData) {
   try {
     const response = await apiInstance({
       method: "put",
-      url: "/api/v1/profiles", 
+      url: "/api/v1/profiles",
       data: formData,
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        "Content-Type": "multipart/form-data",
+      },
     });
     if (response.status === 200) {
       // 저장 성공
@@ -248,7 +257,7 @@ async function profileEditAction(formData) {
     }
   } catch (error) {
     // 로그인 실패
-    console.log(error)
+    console.log(error);
     if (error.response && error.response.status === 400) {
       Toast.error("이미 사용 중인 닉네임입니다.");
     } else if (error.response && error.response.status === 401) {
@@ -258,7 +267,7 @@ async function profileEditAction(formData) {
     } else {
       Toast.error("알 수 없는 오류가 발생했습니다.");
     }
-  } 
+  }
   return null;
 }
 

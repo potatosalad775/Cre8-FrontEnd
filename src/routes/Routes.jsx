@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { useAuth } from "../provider/authProvider";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { useAuth } from "../provider/authProvider";
+import { TagLoader } from "../components/Tag/TagLoader.jsx";
 
 import RootLayout from "../pages/RootLayout.jsx";
 import HomePage from "../pages/Home/Home.jsx";
@@ -28,7 +29,8 @@ import RecommendPage from "../pages/Recommend/Recommend.jsx";
 import SettingsPage from "../pages/Settings/Settings.jsx";
 import DeleteAccountPage from "../pages/UserAuth/DeleteAccount.jsx";
 import ErrorPage from "../pages/Error.jsx";
-import { TagLoader } from "../components/Tag/TagLoader.jsx";
+import AgreementPage from "../pages/Common/Agreement.jsx";
+import PolicyPage from "../pages/Common/Policy.jsx";
 
 const Routes = () => {
   const { isLoggedIn, reissueToken } = useAuth();
@@ -113,6 +115,8 @@ const Routes = () => {
       ],
     },
     { path: "register", element: <RegisterPage />, action: RegisterAction },
+    { path: "agreement", element: <AgreementPage /> },
+    { path: "policy", element: <PolicyPage /> },
   ];
 
   // Accessible only to authenticated users

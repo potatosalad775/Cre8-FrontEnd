@@ -20,6 +20,7 @@ import {
 import { isEmpty, isFileSizeUnderLimit } from "../../provider/utilityProvider";
 import { Toast } from "../../components/Common/Toast";
 import apiInstance from "../../provider/networkProvider";
+import DataValidate from "../../provider/DataValidate";
 import classes from "./Community.module.css";
 
 export default function CommunityEditPage() {
@@ -76,12 +77,22 @@ export default function CommunityEditPage() {
   const handleSaveEdit = (e) => {
     e.preventDefault();
 
-    if (isEmpty(data.title) || isEmpty(postContent)) {
-      Toast.error("입력되지 않은 내용이 있습니다.");
+    // Data Validation
+    const communityPostError = DataValidate({
+      title: data.title,
+      content: postContent
+    }, "communityPost");
+    if (!isEmpty(communityPostError)) {
+      Object.keys(communityPostError).forEach((key) => {
+        Toast.error(communityPostError[key]);
+      });
       return;
     }
+
+    // Loading State
     setIsUploading(true);
 
+    // Create Form Data
     const formData = new FormData();
     if (location.state.isCreation) {
       formData.append("communityBoardId", location.state.boardId);

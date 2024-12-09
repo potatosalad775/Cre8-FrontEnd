@@ -1,7 +1,8 @@
 import { Divider, IconButton, Link } from "@mui/material";
-import classes from "./Footer.module.css";
 import { RiSunLine, RiMoonLine } from "@remixicon/react";
+import FooterLink from "./FooterLink";
 import { useDarkMode } from "../../provider/darkModeProvider";
+import classes from "./Footer.module.css";
 
 export default function Footer() {
   const { darkMode, toggleDarkMode } = useDarkMode();
@@ -20,9 +21,9 @@ export default function Footer() {
           <Divider />
           <div className={classes.footerBottomArea}>
             <div className={classes.footerLinkRow}>
-              <Link color="inherit" underline="hover">Cre8 소개</Link>
-              <Link color="inherit" underline="hover">이용약관</Link>
-              <Link color="inherit" underline="hover">개인정보 처리방침</Link>
+              <FooterLink href={"/agreement"}>이용약관</FooterLink>
+              <FooterLink href={"https://forms.gle/reZc8LzyYNE4mnzx7"}>건의하기</FooterLink>
+              <FooterLink href={"/policy"} >개인정보 처리방침</FooterLink>
             </div>
           </div>
         </div>
