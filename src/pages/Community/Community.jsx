@@ -157,7 +157,7 @@ export default function CommunityPage() {
 }
 
 // 커뮤니티 게시글 목록 데이터 요청 함수
-export async function searchCommunityPost(
+async function searchCommunityPost(
   boardType = 1,
   pageObj = {
     size: 10,
