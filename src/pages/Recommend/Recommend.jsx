@@ -190,6 +190,7 @@ async function RecommendRequestWithImage(formData) {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      timeout: 10000,
     });
     // 성공
     return response.data;
