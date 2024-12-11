@@ -49,7 +49,8 @@ export default function HomeJobRecruitList({dataType = "job"}) {
             </Grid>
           ))}
       </Grid>
-      {isEmpty(data) && <p>구인 공고를 불러오지 못했습니다.</p>}
+      {isEmpty(data) && dataType == "job" && <p>표시할 구직 공고가 없습니다.</p>}
+      {isEmpty(data) && dataType == "recruit" && <p>표시할 구인 공고가 없습니다.</p>}
     </div>
   );
 }

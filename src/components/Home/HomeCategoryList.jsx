@@ -44,37 +44,37 @@ const categoryData = [
   {
     title: "영상 편집",
     image: homeIcon_video,
-    tagID: 18,
+    tagID: 1,
     alt: "Video Editing",
   },
   {
     title: "2D 그래픽",
     image: homeIcon_2d,
-    tagID: 19,
+    tagID: 2,
     alt: "2D Graphic Design",
   },
   {
     title: "3D 그래픽",
     image: homeIcon_3d,
-    tagID: 20,
+    tagID: 3,
     alt: "3D Graphic Design",
-  },
-  {
-    title: "일러스트",
-    image: homeIcon_illust,
-    tagID: 22,
-    alt: "Illustration",
   },
   {
     title: "영상 자막",
     image: homeIcon_transcript,
-    tagID: 21,
+    tagID: 4,
     alt: "Transcript",
+  },
+  {
+    title: "일러스트",
+    image: homeIcon_illust,
+    tagID: 5,
+    alt: "Illustration",
   },
   {
     title: "음성 / 오디오",
     image: homeIcon_audio,
-    tagID: 23,
+    tagID: 6,
     alt: "Audio / Voice",
   },
 ];

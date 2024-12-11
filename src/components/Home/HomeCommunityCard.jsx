@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Link } from "@mui/material";
 import apiInstance from "../../provider/networkProvider";
+import { isEmpty } from "../../provider/utilityProvider";
 import classes from "./HomeComponent.module.css";
 
 export default function HomeCommunityCard({ title, boardID }) {
@@ -22,7 +23,8 @@ export default function HomeCommunityCard({ title, boardID }) {
     <div className={classes.homeCommunityCardArea}>
       <h3>{title}</h3>
       <Card elevation={2} className={classes.homeCommunityCard}>
-        {data?.map((item, index) => (
+        {isEmpty(data) && <p style={{ textAlign: "center" }}>첫 게시글의 주인공이 되어보세요!</p>}
+        {!isEmpty(data) && data?.map((item, index) => (
           <Link
             key={index}
             color="inherit"
@@ -61,31 +63,3 @@ async function HomeCommunityListRequest(boardID) {
   }
   return [];
 }
-
-const dummyData = [
-  {
-    type: "공모전",
-    title: "오늘의 공모전 소식",
-    comment: 2,
-  },
-  {
-    type: "asdf",
-    title: "gawehgarg",
-    comment: 3,
-  },
-  {
-    type: "waerfaew",
-    title: "hjkdaskjbgaasdfasdfasdfkre",
-    comment: 1,
-  },
-  {
-    type: "asdf",
-    title: "gawehgarg",
-    comment: 3,
-  },
-  {
-    type: "공모전",
-    title: "오늘의 공모전 소식",
-    comment: 2,
-  },
-];

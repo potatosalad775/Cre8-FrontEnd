@@ -30,8 +30,18 @@ export default function CommunityNavBar() {
         communityListData.map((item, index) => (
           <Button 
             key={`CM_NAV_BTN_${index}`} 
-            variant="contained" 
-            color={boardId == item.communityBoardId ? "primary" : "inherit"}
+            variant="text" 
+            sx={boardId == item.communityBoardId ? {
+              color: "var(--color-primary-600)",
+              borderLeft: "0.2rem solid var(--color-primary-600)",
+              padding: "0.7rem 1.3rem 0.7rem 1.1rem",
+              fontWeight: "800"
+            } : {
+              color: "inherit",
+              borderLeft: "0",
+              padding: "0.7rem 1.3rem",
+              fontWeight: "inherit"
+            }}
             onClick={() => handleClick(item.communityBoardId, item.communityBoardName)}
             fullWidth
           >
