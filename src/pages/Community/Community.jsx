@@ -116,7 +116,7 @@ export default function CommunityPage() {
 
   return (
     <div className={classes.communityContent}>
-      <Card sx={{ borderRadius: "0.7rem", margin: "1.3rem 0", flexGrow: "4" }}>
+      <Card sx={{ borderRadius: "0.7rem", margin: "1.3rem 0", flexGrow: "1" }}>
         <TitleBar title={boardName}>
           {isLoggedIn && (
             <Button
@@ -137,7 +137,7 @@ export default function CommunityPage() {
               onClick={() => handlePostClick(item.communityPostId)}
             />
           ))}
-        {isFetching && <p>로딩 중</p>}
+        {isFetching && <p></p>}
         {!isFetching && isEmpty(data) && <p>표시할 내용이 없습니다.</p>}
       </Card>
       {!matchDownSm && (
@@ -145,7 +145,7 @@ export default function CommunityPage() {
           sx={{
             borderRadius: "0.7rem",
             margin: "1.3rem 0",
-            flexGrow: "1",
+            width: "14rem",
             height: "100%",
           }}
         >
