@@ -9,7 +9,7 @@ export default function HomePage() {
     return <div className={classes.homePage}>
       <HomeBanner />
       <div className={classes.homePostArea}>
-        <HomeCommunityCard title="자유게시판" boardID={1}/>
+        <HomeCommunityCard title="자유 게시판" boardID={1}/>
         <HomeCommunityCard title="공모전 게시판" boardID={2} />
       </div>
       <HomeCategoryList />
