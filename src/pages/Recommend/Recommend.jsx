@@ -112,6 +112,7 @@ export default function RecommendPage() {
               <img
                 src={imageData.url}
                 alt="postImage"
+                style={{ display: "none" }}
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                   setImageData((prev) => ({ ...prev, isImage: false }));
