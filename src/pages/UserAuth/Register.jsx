@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { Form, useSubmit, useNavigation, redirect } from "react-router-dom";
-import { Link, Button, Select, MenuItem } from "@mui/material";
+import {
+  Link,
+  Button,
+  Select,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 
 import UserValidate from "../../provider/UserValidate";
 import { Toast } from "../../components/Common/Toast";
@@ -16,6 +23,8 @@ export default function RegisterPage() {
   const [registerData, setRegisterData] = useState(INIT_ERROR_DATA);
   const [focus, setFocus] = useState({});
   const [registerError, setRegisterError] = useState({});
+
+  const [checkboxStatus, setCheckboxStatus] = useState([false, false]);
 
   const [inputCode, setInputCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
@@ -50,52 +59,58 @@ export default function RegisterPage() {
       // 입력값 오류가 한 개 이상 발견 시
       Toast.registerError("입력하신 내용들을 다시 확인해주세요!");
       setFocus(FOCUS_ALL_DATA);
-    } else if (!isCodeSent) {
-      // 입력값 오류 없음 & 이메일 인증번호 전송 전
-      checkDuplicateId(registerData.loginId).then((resID) => {
-        switch (resID.status) {
-          // 아이디 사용 가능
-          case 200:
-            delete registerError.loginId; // 아이디 오류 메시지 제거
-            // 이메일 인증번호 발송 요청
-            sendVerifyCode(registerData.email).then((resCode) => {
-              switch (resCode.status) {
-                // 이메일 사용 가능
-                case 200:
-                  setIsCodeSent(true);
-                  break;
-                // 이메일 사용 불가 (중복)
-                case 400:
-                  setRegisterError({
-                    ...registerError,
-                    email: "이미 사용 중인 이메일입니다.",
-                  });
-                  break;
-              }
-            });
-            break;
-          // 아이디 사용 불가 (중복)
-          case 400:
-            setRegisterError({
-              ...registerError,
-              loginId: "이미 사용 중인 아이디입니다.",
-            });
-            break;
-        }
-      });
-      setFocus(FOCUS_ALL_DATA);
+    } else if (!checkboxStatus[0] || !checkboxStatus[1]) {
+      // 이용약관 및 개인정보처리방침 미동의 시
+      Toast.registerError("이용약관 및 개인정보처리방침에 동의해주세요.");
     } else {
-      // 입력값 오류 없음 & 인증번호 전송 후
-      // 인증번호 검증
-      checkVerifyCode({
-        email: registerData.email,
-        authNum: inputCode,
-      }).then((res) => {
-        if (res.status === 200) {
-          submit(registerData, { method: "POST" });
-        }
-        // console.log(registerData);
-      });
+      // 입력값 오류 없음
+      if (!isCodeSent) {
+        // 이메일 인증번호 전송 전
+        checkDuplicateId(registerData.loginId).then((resID) => {
+          switch (resID.status) {
+            // 아이디 사용 가능
+            case 200:
+              delete registerError.loginId; // 아이디 오류 메시지 제거
+              // 이메일 인증번호 발송 요청
+              sendVerifyCode(registerData.email).then((resCode) => {
+                switch (resCode.status) {
+                  // 이메일 사용 가능
+                  case 200:
+                    setIsCodeSent(true);
+                    break;
+                  // 이메일 사용 불가 (중복)
+                  case 400:
+                    setRegisterError({
+                      ...registerError,
+                      email: "이미 사용 중인 이메일입니다.",
+                    });
+                    break;
+                }
+              });
+              break;
+            // 아이디 사용 불가 (중복)
+            case 400:
+              setRegisterError({
+                ...registerError,
+                loginId: "이미 사용 중인 아이디입니다.",
+              });
+              break;
+          }
+        });
+        setFocus(FOCUS_ALL_DATA);
+      } else {
+        // 입력값 오류 없음 & 인증번호 전송 후
+        // 인증번호 검증
+        checkVerifyCode({
+          email: registerData.email,
+          authNum: inputCode,
+        }).then((res) => {
+          if (res.status === 200) {
+            submit(registerData, { method: "POST" });
+          }
+          // console.log(registerData);
+        });
+      }
     }
   };
 
@@ -125,7 +140,9 @@ export default function RegisterPage() {
             required
           />
           {registerError.loginId && focus.loginId && (
-            <span>{registerError.loginId}</span>
+            <span className={classes.authLabelError}>
+              {registerError.loginId}
+            </span>
           )}
         </div>
         <div className={classes.authLabel}>
@@ -140,7 +157,9 @@ export default function RegisterPage() {
             required
           />
           {registerError.password && focus.password && (
-            <span>{registerError.password}</span>
+            <span className={classes.authLabelError}>
+              {registerError.password}
+            </span>
           )}
         </div>
         <div className={classes.authLabel}>
@@ -155,7 +174,9 @@ export default function RegisterPage() {
             required
           />
           {registerError.confirmPassword && focus.confirmPassword && (
-            <span>{registerError.confirmPassword}</span>
+            <span className={classes.authLabelError}>
+              {registerError.confirmPassword}
+            </span>
           )}
         </div>
         <div className={classes.authLabel}>
@@ -170,7 +191,9 @@ export default function RegisterPage() {
             required
           />
           {registerError.email && focus.email && (
-            <span>{registerError.email}</span>
+            <span className={classes.authLabelError}>
+              {registerError.email}
+            </span>
           )}
         </div>
         <div className={classes.authLabel}>
@@ -185,7 +208,9 @@ export default function RegisterPage() {
             required
           />
           {registerError.nickName && focus.nickName && (
-            <span>{registerError.nickName}</span>
+            <span className={classes.authLabelError}>
+              {registerError.nickName}
+            </span>
           )}
         </div>
         <div className={classes.authLabel}>
@@ -200,7 +225,9 @@ export default function RegisterPage() {
             required
           />
           {registerError.name && focus.name && (
-            <span>{registerError.name}</span>
+            <span className={classes.authLabelError}>
+              {registerError.name}
+            </span>
           )}
         </div>
         <div className={classes.authLabel}>
@@ -220,7 +247,11 @@ export default function RegisterPage() {
             <MenuItem value="M">남자</MenuItem>
             <MenuItem value="W">여자</MenuItem>
           </Select>
-          {registerError.sex && focus.sex && <span>{registerError.sex}</span>}
+          {registerError.sex && focus.sex && (
+            <span className={classes.authLabelError}>
+              {registerError.sex}
+            </span>
+          )}
         </div>
         <div className={classes.authLabel}>
           <label htmlFor="birthDay">생년월일 *</label>
@@ -235,10 +266,15 @@ export default function RegisterPage() {
             required
           />
           {registerError.birthDay && focus.birthDay && (
-            <span>{registerError.birthDay}</span>
+            <span className={classes.authLabelError}>
+              {registerError.birthDay}
+            </span>
           )}
         </div>
-        <div style={{ display: isCodeSent ? undefined : "none" }} className={classes.authLabel}>
+        <div
+          style={{ display: isCodeSent ? undefined : "none" }}
+          className={classes.authLabel}
+        >
           <label htmlFor="authCode">확인 코드 *</label>
           <input
             id="authCode"
@@ -251,8 +287,52 @@ export default function RegisterPage() {
             required
           />
           {registerError.authCode && focus.authCode && (
-            <span>{registerError.authCode}</span>
+            <span className={classes.authLabelError}>
+              {registerError.authCode}
+            </span>
           )}
+        </div>
+        <div style={{ marginTop: "1rem" }}>
+          <FormControlLabel
+            label={
+              <span>
+                <Link href="/agreement" target="_blank">
+                  Cre8 이용약관
+                </Link>
+                에 동의합니다
+              </span>
+            }
+            control={
+              <Checkbox
+                name="CB_agreement"
+                checked={checkboxStatus[0]}
+                onChange={(e) =>
+                  setCheckboxStatus([e.target.checked, checkboxStatus[1]])
+                }
+                required
+              />
+            }
+          />
+          <FormControlLabel
+            label={
+              <span>
+                <Link href="/policy" target="_blank">
+                  Cre8 개인정보 처리방침
+                </Link>
+                에 동의합니다
+              </span>
+            }
+            control={
+              <Checkbox
+                name="CB_policy"
+                checked={checkboxStatus[1]}
+                onChange={(e) =>
+                  setCheckboxStatus([checkboxStatus[0], e.target.checked])
+                }
+                required
+              />
+            }
+          />
         </div>
         <div className={classes.authLabel}>
           <Button
@@ -260,7 +340,7 @@ export default function RegisterPage() {
             variant="contained"
             color="primary"
             size="large"
-            sx={{ marginTop: "2rem" }}
+            sx={{ marginTop: "1rem" }}
             disabled={isSubmitting}
             onClick={handleSubmit}
           >

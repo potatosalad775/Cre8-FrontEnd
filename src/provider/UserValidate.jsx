@@ -54,6 +54,14 @@ export default function UserValidate(data, type) {
       delete errors.loginId;
     }
 
+    if (!data.name.trim()) {
+      errors.name = "이름을 입력해주세요.";
+    } else if (data.name.length > 20) {
+      errors.name = "이름은은 20글자 이하이어야 합니다.";
+    } else {
+      delete errors.name;
+    }
+
     if (!data.sex) {
       errors.sex = "성별을 선택해주세요.";
     } else {

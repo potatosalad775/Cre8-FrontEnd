@@ -138,7 +138,7 @@ export default function CommunityPage() {
             />
           ))}
         {isFetching && <p></p>}
-        {!isFetching && isEmpty(data) && <p>표시할 내용이 없습니다.</p>}
+        {!isFetching && isEmpty(data) && <p style={{ margin: "1.3rem" }}>표시할 내용이 없습니다.</p>}
       </Card>
       {!matchDownSm && (
         <Card
