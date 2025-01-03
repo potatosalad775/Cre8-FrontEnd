@@ -60,8 +60,8 @@ export default function MainNavBarDrawer({ open, onClose }) {
         {navList.map((item, index) => (
           <ListItemButton
             key={`NAV_DRAWER_LIST_${index}`}
+            href={item.link}
             onClick={() => {
-              navigate(item.link);
               onClose();
             }}
           >
@@ -86,6 +86,7 @@ export default function MainNavBarDrawer({ open, onClose }) {
                 <ListItemButton
                   sx={{ pl: 4 }}
                   key={`NAV_DRAWER_COLLAPSE_LIST_${index}`}
+                  href={`/c?b=${subItem.communityBoardId}`}
                   onClick={() => {
                     navigate(`/c?b=${subItem.communityBoardId}`, {
                       state: { boardName: subItem.communityBoardName },

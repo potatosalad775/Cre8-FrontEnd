@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Disallow: /p/*?
+
+Sitemap: https://withcre8.kr/sitemap.xml

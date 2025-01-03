@@ -15,10 +15,6 @@ export default function HomeCommunityCard({ title, boardID }) {
     });
   }, []);
 
-  const handleLinkClick = (postID) => {
-    navigate(`/c/${postID}`);
-  }
-
   return (
     <div className={classes.homeCommunityCardArea}>
       <h3>{title}</h3>
@@ -30,7 +26,7 @@ export default function HomeCommunityCard({ title, boardID }) {
             color="inherit"
             underline="none"
             className={classes.homeCommunityCardLink}
-            onClick={() => {handleLinkClick(item.communityPostId)}}
+            href={`/c/${item.communityPostId}`}
           >
             <span className={classes.titleName}>{item.title} </span>
             <span className={classes.titleComment}>[{item.replyCount}]</span>
